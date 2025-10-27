@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: ihosi-backend
+    name: bull-backend
     runtime: node
     plan: free
     region: oregon
