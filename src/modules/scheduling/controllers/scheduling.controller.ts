@@ -166,7 +166,12 @@ export class SchedulingController {
     @Request() req: any,
     @Body() updateAvailabilityDto: UpdateAvailabilityDto,
   ) {
-    const doctorId = req.user.userId || req.user.id;
+    console.log('🔍 DEBUG: req.user =', JSON.stringify(req.user));
+    const doctorId = req.user?.userId || req.user?.id;
+    console.log('🔍 DEBUG: doctorId =', doctorId);
+    if (!doctorId) {
+      throw new Error('Doctor ID is missing from authentication');
+    }
     return this.schedulingService.updateAvailability(
       doctorId,
       updateAvailabilityDto.date,

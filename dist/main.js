@@ -956,7 +956,12 @@ let SchedulingController = class SchedulingController {
         return this.schedulingService.doctorAvailability.getAvailableSlots(doctorId, date);
     }
     async updateAvailability(req, updateAvailabilityDto) {
-        const doctorId = req.user.userId || req.user.id;
+        console.log('🔍 DEBUG: req.user =', JSON.stringify(req.user));
+        const doctorId = req.user?.userId || req.user?.id;
+        console.log('🔍 DEBUG: doctorId =', doctorId);
+        if (!doctorId) {
+            throw new Error('Doctor ID is missing from authentication');
+        }
         return this.schedulingService.updateAvailability(doctorId, updateAvailabilityDto.date, updateAvailabilityDto.timeSlots);
     }
     async setupRecurringAvailability(req, availabilityData) {
