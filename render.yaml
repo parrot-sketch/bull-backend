@@ -1,6 +1,7 @@
 services:
   - type: web
     name: ihosi-backend
+    runtime: node
     plan: free
     region: oregon
     rootDir: .
