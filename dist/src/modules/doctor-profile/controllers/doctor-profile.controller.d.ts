@@ -14,10 +14,6 @@ export declare class DoctorProfileController {
         success: boolean;
         data: {
             id: string;
-            npiNumber: string | null;
-            createdAt: Date;
-            updatedAt: Date;
-            doctorId: string;
             title: string | null;
             credentials: string[];
             specialties: string[];
@@ -36,6 +32,7 @@ export declare class DoctorProfileController {
             medicalLicenseState: string | null;
             medicalLicenseExpiry: Date | null;
             deaNumber: string | null;
+            npiNumber: string | null;
             boardCertifications: string[];
             professionalBio: string | null;
             education: string | null;
@@ -44,6 +41,9 @@ export declare class DoctorProfileController {
             languages: string[];
             isAcceptingNewPatients: boolean;
             consultationTypes: import(".prisma/client").$Enums.ConsultationType[];
+            createdAt: Date;
+            updatedAt: Date;
+            doctorId: string;
         };
         message: string;
     }>;
@@ -60,10 +60,6 @@ export declare class DoctorProfileController {
             };
         } & {
             id: string;
-            npiNumber: string | null;
-            createdAt: Date;
-            updatedAt: Date;
-            doctorId: string;
             title: string | null;
             credentials: string[];
             specialties: string[];
@@ -82,6 +78,7 @@ export declare class DoctorProfileController {
             medicalLicenseState: string | null;
             medicalLicenseExpiry: Date | null;
             deaNumber: string | null;
+            npiNumber: string | null;
             boardCertifications: string[];
             professionalBio: string | null;
             education: string | null;
@@ -90,6 +87,9 @@ export declare class DoctorProfileController {
             languages: string[];
             isAcceptingNewPatients: boolean;
             consultationTypes: import(".prisma/client").$Enums.ConsultationType[];
+            createdAt: Date;
+            updatedAt: Date;
+            doctorId: string;
         };
     }>;
     updateProfile(req: any, updateData: {
@@ -100,14 +100,11 @@ export declare class DoctorProfileController {
         consultationFee?: number;
         services?: string;
         availability?: string;
+        yearsOfExperience?: number;
     }): Promise<{
         success: boolean;
         data: {
             id: string;
-            npiNumber: string | null;
-            createdAt: Date;
-            updatedAt: Date;
-            doctorId: string;
             title: string | null;
             credentials: string[];
             specialties: string[];
@@ -126,6 +123,7 @@ export declare class DoctorProfileController {
             medicalLicenseState: string | null;
             medicalLicenseExpiry: Date | null;
             deaNumber: string | null;
+            npiNumber: string | null;
             boardCertifications: string[];
             professionalBio: string | null;
             education: string | null;
@@ -134,6 +132,9 @@ export declare class DoctorProfileController {
             languages: string[];
             isAcceptingNewPatients: boolean;
             consultationTypes: import(".prisma/client").$Enums.ConsultationType[];
+            createdAt: Date;
+            updatedAt: Date;
+            doctorId: string;
         };
         message: string;
     }>;
@@ -148,10 +149,6 @@ export declare class DoctorProfileController {
             };
         } & {
             id: string;
-            npiNumber: string | null;
-            createdAt: Date;
-            updatedAt: Date;
-            doctorId: string;
             title: string | null;
             credentials: string[];
             specialties: string[];
@@ -170,6 +167,7 @@ export declare class DoctorProfileController {
             medicalLicenseState: string | null;
             medicalLicenseExpiry: Date | null;
             deaNumber: string | null;
+            npiNumber: string | null;
             boardCertifications: string[];
             professionalBio: string | null;
             education: string | null;
@@ -178,6 +176,9 @@ export declare class DoctorProfileController {
             languages: string[];
             isAcceptingNewPatients: boolean;
             consultationTypes: import(".prisma/client").$Enums.ConsultationType[];
+            createdAt: Date;
+            updatedAt: Date;
+            doctorId: string;
         };
     }>;
 }

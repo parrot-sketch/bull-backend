@@ -37,7 +37,9 @@ export class DoctorProfileController {
     services?: string;
     availability?: string;
   }) {
-    return this.doctorProfileService.createProfile(req.user.id, profileData);
+    const doctorId = req.user.userId || req.user.id;
+    console.log('🔍 DEBUG: Creating profile for doctorId =', doctorId);
+    return this.doctorProfileService.createProfile(doctorId, profileData);
   }
 
   @Get()
@@ -45,7 +47,9 @@ export class DoctorProfileController {
   @ApiResponse({ status: 200, description: 'Profile retrieved successfully' })
   @ApiResponse({ status: 404, description: 'Profile not found' })
   async getProfile(@Request() req: any) {
-    return this.doctorProfileService.getProfile(req.user.id);
+    const doctorId = req.user.userId || req.user.id;
+    console.log('🔍 DEBUG: Getting profile for doctorId =', doctorId);
+    return this.doctorProfileService.getProfile(doctorId);
   }
 
   @Put()
@@ -60,8 +64,12 @@ export class DoctorProfileController {
     consultationFee?: number;
     services?: string;
     availability?: string;
+    yearsOfExperience?: number;
   }) {
-    return this.doctorProfileService.updateProfile(req.user.id, updateData);
+    const doctorId = req.user.userId || req.user.id;
+    console.log('🔍 DEBUG: Updating profile for doctorId =', doctorId);
+    console.log('🔍 DEBUG: Update data =', updateData);
+    return this.doctorProfileService.updateProfile(doctorId, updateData);
   }
 
   // ===========================================

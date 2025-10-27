@@ -656,13 +656,20 @@ let DoctorProfileController = class DoctorProfileController {
         this.doctorProfileService = doctorProfileService;
     }
     async createProfile(req, profileData) {
-        return this.doctorProfileService.createProfile(req.user.id, profileData);
+        const doctorId = req.user.userId || req.user.id;
+        console.log('🔍 DEBUG: Creating profile for doctorId =', doctorId);
+        return this.doctorProfileService.createProfile(doctorId, profileData);
     }
     async getProfile(req) {
-        return this.doctorProfileService.getProfile(req.user.id);
+        const doctorId = req.user.userId || req.user.id;
+        console.log('🔍 DEBUG: Getting profile for doctorId =', doctorId);
+        return this.doctorProfileService.getProfile(doctorId);
     }
     async updateProfile(req, updateData) {
-        return this.doctorProfileService.updateProfile(req.user.id, updateData);
+        const doctorId = req.user.userId || req.user.id;
+        console.log('🔍 DEBUG: Updating profile for doctorId =', doctorId);
+        console.log('🔍 DEBUG: Update data =', updateData);
+        return this.doctorProfileService.updateProfile(doctorId, updateData);
     }
     async getPublicProfile(doctorId) {
         return this.doctorProfileService.getPublicProfile(doctorId);
