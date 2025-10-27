@@ -242,6 +242,18 @@ let SchedulingService = class SchedulingService {
             },
         });
         if (!schedule) {
+            let profile = await this.db.doctorProfile.findUnique({
+                where: { doctorId },
+            });
+            if (!profile) {
+                profile = await this.db.doctorProfile.create({
+                    data: {
+                        doctorId,
+                        specialties: ['General Practice'],
+                        isAcceptingNewPatients: true,
+                    },
+                });
+            }
             let template = await this.db.doctorScheduleTemplate.findFirst({
                 where: { doctorId, isDefault: true },
             });
@@ -273,7 +285,7 @@ let SchedulingService = class SchedulingService {
             schedule = await this.db.doctorSchedule.create({
                 data: {
                     doctorId,
-                    profileId: doctorId,
+                    profileId: profile.id,
                     templateId: template.id,
                     dayOfWeek,
                     date: scheduleDate,

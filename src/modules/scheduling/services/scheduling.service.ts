@@ -316,6 +316,21 @@ export class SchedulingService {
 
     // If schedule doesn't exist, create it
     if (!schedule) {
+      // Get or create a DoctorProfile for this doctor
+      let profile = await this.db.doctorProfile.findUnique({
+        where: { doctorId },
+      });
+
+      if (!profile) {
+        profile = await this.db.doctorProfile.create({
+          data: {
+            doctorId,
+            specialties: ['General Practice'],
+            isAcceptingNewPatients: true,
+          } as any,
+        });
+      }
+
       // Get or create a default template for this doctor
       let template = await this.db.doctorScheduleTemplate.findFirst({
         where: { doctorId, isDefault: true },
@@ -355,7 +370,7 @@ export class SchedulingService {
       schedule = await this.db.doctorSchedule.create({
         data: {
           doctorId,
-          profileId: doctorId, // Assuming profileId is the same as doctorId for now
+          profileId: profile.id,
           templateId: template.id,
           dayOfWeek,
           date: scheduleDate,
