@@ -23,10 +23,12 @@ let SchedulingController = class SchedulingController {
         this.schedulingService = schedulingService;
     }
     async createScheduleTemplate(req, createTemplateDto) {
-        return this.schedulingService.createScheduleTemplate(req.user.id, createTemplateDto);
+        const doctorId = req.user.userId || req.user.id;
+        return this.schedulingService.createScheduleTemplate(doctorId, createTemplateDto);
     }
     async getScheduleTemplates(req) {
-        return this.schedulingService.getScheduleTemplates(req.user.id);
+        const doctorId = req.user.userId || req.user.id;
+        return this.schedulingService.getScheduleTemplates(doctorId);
     }
     async updateScheduleTemplate(templateId, updateTemplateDto) {
         return this.schedulingService.updateScheduleTemplate(templateId, updateTemplateDto);
@@ -44,28 +46,36 @@ let SchedulingController = class SchedulingController {
         return this.schedulingService.deleteTimeSlot(slotId);
     }
     async generateSchedule(req, body) {
-        return this.schedulingService.generateSchedule(req.user.id, body.templateId, body.date);
+        const doctorId = req.user.userId || req.user.id;
+        return this.schedulingService.generateSchedule(doctorId, body.templateId, body.date);
     }
     async getAvailability(req, query) {
-        return this.schedulingService.getAvailability(req.user.id, query.date);
+        const doctorId = req.user.userId || req.user.id;
+        return this.schedulingService.getAvailability(doctorId, query.date);
     }
     async getAvailabilityRange(req, startDate, endDate) {
-        return this.schedulingService.doctorAvailability.getAvailability(req.user.id, startDate, endDate);
+        const doctorId = req.user.userId || req.user.id;
+        return this.schedulingService.doctorAvailability.getAvailability(doctorId, startDate, endDate);
     }
     async getAvailableSlots(req, date, startTime, endTime) {
-        return this.schedulingService.doctorAvailability.getAvailableSlots(req.user.id, date);
+        const doctorId = req.user.userId || req.user.id;
+        return this.schedulingService.doctorAvailability.getAvailableSlots(doctorId, date);
     }
     async updateAvailability(req, updateAvailabilityDto) {
-        return this.schedulingService.updateAvailability(req.user.id, updateAvailabilityDto.date, updateAvailabilityDto.timeSlots);
+        const doctorId = req.user.userId || req.user.id;
+        return this.schedulingService.updateAvailability(doctorId, updateAvailabilityDto.date, updateAvailabilityDto.timeSlots);
     }
     async setupRecurringAvailability(req, availabilityData) {
-        return this.schedulingService.doctorAvailability.setRecurringAvailability(req.user.id, availabilityData);
+        const doctorId = req.user.userId || req.user.id;
+        return this.schedulingService.doctorAvailability.setRecurringAvailability(doctorId, availabilityData);
     }
     async createException(req, createExceptionDto) {
-        return this.schedulingService.createException(req.user.id, createExceptionDto);
+        const doctorId = req.user.userId || req.user.id;
+        return this.schedulingService.createException(doctorId, createExceptionDto);
     }
     async getExceptions(req, startDate, endDate) {
-        return this.schedulingService.getExceptions(req.user.id, startDate, endDate);
+        const doctorId = req.user.userId || req.user.id;
+        return this.schedulingService.getExceptions(doctorId, startDate, endDate);
     }
     async deleteException(exceptionId) {
         return this.schedulingService.deleteException(exceptionId);
@@ -105,19 +115,23 @@ let SchedulingController = class SchedulingController {
         };
     }
     async getUpcomingAppointments(req, limit) {
-        return this.schedulingService.appointmentManagement.getUpcomingAppointments(req.user.id, limit || 10);
+        const doctorId = req.user.userId || req.user.id;
+        return this.schedulingService.appointmentManagement.getUpcomingAppointments(doctorId, limit || 10);
     }
     async getTodaysAppointments(req) {
-        return this.schedulingService.appointmentManagement.getTodaysAppointments(req.user.id);
+        const doctorId = req.user.userId || req.user.id;
+        return this.schedulingService.appointmentManagement.getTodaysAppointments(doctorId);
     }
     async getAppointmentStats(req, startDate, endDate) {
-        return this.schedulingService.appointmentManagement.getAppointmentStats(req.user.id, startDate, endDate);
+        const doctorId = req.user.userId || req.user.id;
+        return this.schedulingService.appointmentManagement.getAppointmentStats(doctorId, startDate, endDate);
     }
     async updateAppointment(appointmentId, updateAppointmentDto) {
         return this.schedulingService.updateAppointment(appointmentId, updateAppointmentDto);
     }
     async confirmAppointment(req, appointmentId) {
-        return this.schedulingService.appointmentManagement.confirmAppointment(appointmentId, req.user.id);
+        const doctorId = req.user.userId || req.user.id;
+        return this.schedulingService.appointmentManagement.confirmAppointment(appointmentId, doctorId);
     }
     async rescheduleAppointment(appointmentId, body) {
         return this.schedulingService.appointmentManagement.rescheduleAppointment(appointmentId, body.newDate, body.newStartTime, body.newEndTime, body.reason);
@@ -126,9 +140,11 @@ let SchedulingController = class SchedulingController {
         return this.schedulingService.appointmentManagement.cancelAppointment(appointmentId, body.reason, body.cancelledBy);
     }
     async completeAppointment(req, appointmentId, body) {
-        return this.schedulingService.appointmentManagement.completeAppointment(appointmentId, req.user.id, body.notes);
+        const doctorId = req.user.userId || req.user.id;
+        return this.schedulingService.appointmentManagement.completeAppointment(appointmentId, doctorId, body.notes);
     }
     async getAnalytics(req, query) {
+        const doctorId = req.user.userId || req.user.id;
         return {
             success: true,
             data: {

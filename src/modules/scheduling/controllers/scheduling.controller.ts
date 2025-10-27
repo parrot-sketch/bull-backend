@@ -44,14 +44,16 @@ export class SchedulingController {
     @Request() req: any,
     @Body() createTemplateDto: CreateScheduleTemplateDto,
   ) {
-    return this.schedulingService.createScheduleTemplate(req.user.id, createTemplateDto);
+    const doctorId = req.user.userId || req.user.id;
+    return this.schedulingService.createScheduleTemplate(doctorId, createTemplateDto);
   }
 
   @Get('templates')
   @ApiOperation({ summary: 'Get all schedule templates for a doctor' })
   @ApiResponse({ status: 200, description: 'Schedule templates retrieved successfully' })
   async getScheduleTemplates(@Request() req: any) {
-    return this.schedulingService.getScheduleTemplates(req.user.id);
+    const doctorId = req.user.userId || req.user.id;
+    return this.schedulingService.getScheduleTemplates(doctorId);
   }
 
   @Put('templates/:templateId')
@@ -113,7 +115,8 @@ export class SchedulingController {
     @Request() req: any,
     @Body() body: { templateId: string; date: string },
   ) {
-    return this.schedulingService.generateSchedule(req.user.id, body.templateId, body.date);
+    const doctorId = req.user.userId || req.user.id;
+    return this.schedulingService.generateSchedule(doctorId, body.templateId, body.date);
   }
 
   // ===========================================
@@ -127,7 +130,8 @@ export class SchedulingController {
     @Request() req: any,
     @Query() query: GetAvailabilityDto,
   ) {
-    return this.schedulingService.getAvailability(req.user.id, query.date);
+    const doctorId = req.user.userId || req.user.id;
+    return this.schedulingService.getAvailability(doctorId, query.date);
   }
 
   @Get('availability/range')
@@ -138,7 +142,8 @@ export class SchedulingController {
     @Query('startDate') startDate: string,
     @Query('endDate') endDate: string,
   ) {
-    return this.schedulingService.doctorAvailability.getAvailability(req.user.id, startDate, endDate);
+    const doctorId = req.user.userId || req.user.id;
+    return this.schedulingService.doctorAvailability.getAvailability(doctorId, startDate, endDate);
   }
 
   @Get('availability/slots')
@@ -150,7 +155,8 @@ export class SchedulingController {
     @Query('startTime') startTime?: string,
     @Query('endTime') endTime?: string,
   ) {
-    return this.schedulingService.doctorAvailability.getAvailableSlots(req.user.id, date);
+    const doctorId = req.user.userId || req.user.id;
+    return this.schedulingService.doctorAvailability.getAvailableSlots(doctorId, date);
   }
 
   @Put('availability')
@@ -160,8 +166,9 @@ export class SchedulingController {
     @Request() req: any,
     @Body() updateAvailabilityDto: UpdateAvailabilityDto,
   ) {
+    const doctorId = req.user.userId || req.user.id;
     return this.schedulingService.updateAvailability(
-      req.user.id,
+      doctorId,
       updateAvailabilityDto.date,
       updateAvailabilityDto.timeSlots,
     );
@@ -181,7 +188,8 @@ export class SchedulingController {
       breaks?: Array<{ startTime: string; endTime: string; }>;
     },
   ) {
-    return this.schedulingService.doctorAvailability.setRecurringAvailability(req.user.id, availabilityData);
+    const doctorId = req.user.userId || req.user.id;
+    return this.schedulingService.doctorAvailability.setRecurringAvailability(doctorId, availabilityData);
   }
 
   // ===========================================
@@ -195,7 +203,8 @@ export class SchedulingController {
     @Request() req: any,
     @Body() createExceptionDto: CreateExceptionDto,
   ) {
-    return this.schedulingService.createException(req.user.id, createExceptionDto);
+    const doctorId = req.user.userId || req.user.id;
+    return this.schedulingService.createException(doctorId, createExceptionDto);
   }
 
   @Get('exceptions')
@@ -206,7 +215,8 @@ export class SchedulingController {
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string,
   ) {
-    return this.schedulingService.getExceptions(req.user.id, startDate, endDate);
+    const doctorId = req.user.userId || req.user.id;
+    return this.schedulingService.getExceptions(doctorId, startDate, endDate);
   }
 
   @Delete('exceptions/:exceptionId')
@@ -277,8 +287,9 @@ export class SchedulingController {
     @Request() req: any,
     @Query('limit') limit?: number,
   ) {
+    const doctorId = req.user.userId || req.user.id;
     return this.schedulingService.appointmentManagement.getUpcomingAppointments(
-      req.user.id, 
+      doctorId, 
       limit || 10
     );
   }
@@ -287,7 +298,8 @@ export class SchedulingController {
   @ApiOperation({ summary: 'Get today\'s appointments for a doctor' })
   @ApiResponse({ status: 200, description: 'Today\'s appointments retrieved successfully' })
   async getTodaysAppointments(@Request() req: any) {
-    return this.schedulingService.appointmentManagement.getTodaysAppointments(req.user.id);
+    const doctorId = req.user.userId || req.user.id;
+    return this.schedulingService.appointmentManagement.getTodaysAppointments(doctorId);
   }
 
   @Get('appointments/stats')
@@ -298,8 +310,9 @@ export class SchedulingController {
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string,
   ) {
+    const doctorId = req.user.userId || req.user.id;
     return this.schedulingService.appointmentManagement.getAppointmentStats(
-      req.user.id, 
+      doctorId, 
       startDate, 
       endDate
     );
@@ -322,7 +335,8 @@ export class SchedulingController {
     @Request() req: any,
     @Param('appointmentId') appointmentId: string,
   ) {
-    return this.schedulingService.appointmentManagement.confirmAppointment(appointmentId, req.user.id);
+    const doctorId = req.user.userId || req.user.id;
+    return this.schedulingService.appointmentManagement.confirmAppointment(appointmentId, doctorId);
   }
 
   @Put('appointments/:appointmentId/reschedule')
@@ -363,9 +377,10 @@ export class SchedulingController {
     @Param('appointmentId') appointmentId: string,
     @Body() body: { notes?: string },
   ) {
+    const doctorId = req.user.userId || req.user.id;
     return this.schedulingService.appointmentManagement.completeAppointment(
       appointmentId,
-      req.user.id,
+      doctorId,
       body.notes,
     );
   }
@@ -382,6 +397,7 @@ export class SchedulingController {
     @Query() query: ScheduleAnalyticsDto,
   ) {
     // This would be implemented to provide analytics
+    const doctorId = req.user.userId || req.user.id;
     return {
       success: true,
       data: {
