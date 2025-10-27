@@ -177,35 +177,97 @@ export declare class SchedulingService {
     private generateTimeSlotsFromTemplate;
     getAvailability(doctorId: string, date: string): Promise<{
         success: boolean;
-        data: any[];
+        data: {
+            isAvailable: boolean;
+            date: string;
+            template?: undefined;
+            timeSlots?: undefined;
+            schedule?: undefined;
+        };
+        message: string;
+    } | {
+        success: boolean;
+        data: {
+            isAvailable: boolean;
+            template: {
+                id: string;
+                name: string;
+                description: string | null;
+                isDefault: boolean;
+                isActive: boolean;
+                createdAt: Date;
+                updatedAt: Date;
+                doctorId: string;
+            };
+            timeSlots: any[];
+            schedule: {
+                template: {
+                    id: string;
+                    name: string;
+                    description: string | null;
+                    isDefault: boolean;
+                    isActive: boolean;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    doctorId: string;
+                };
+            } & {
+                id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                doctorId: string;
+                templateId: string | null;
+                dayOfWeek: import(".prisma/client").$Enums.DayOfWeek;
+                startTime: string;
+                endTime: string;
+                slotDuration: number;
+                bufferTime: number;
+                isAvailable: boolean;
+                maxBookings: number;
+                location: string | null;
+                serviceType: string | null;
+                date: Date | null;
+                notes: string | null;
+                breakStartTime: string | null;
+                breakEndTime: string | null;
+                isRecurring: boolean;
+                effectiveFrom: Date;
+                effectiveUntil: Date | null;
+                profileId: string;
+            };
+            date?: undefined;
+        };
         message: string;
     }>;
     private generateTimeSlotsForSchedule;
     updateAvailability(doctorId: string, date: string, timeSlots: any[]): Promise<{
         success: boolean;
         data: {
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            doctorId: string;
-            templateId: string | null;
-            dayOfWeek: import(".prisma/client").$Enums.DayOfWeek;
-            startTime: string;
-            endTime: string;
-            slotDuration: number;
-            bufferTime: number;
-            isAvailable: boolean;
-            maxBookings: number;
-            location: string | null;
-            serviceType: string | null;
-            date: Date | null;
-            notes: string | null;
-            breakStartTime: string | null;
-            breakEndTime: string | null;
-            isRecurring: boolean;
-            effectiveFrom: Date;
-            effectiveUntil: Date | null;
-            profileId: string;
+            schedule: {
+                id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                doctorId: string;
+                templateId: string | null;
+                dayOfWeek: import(".prisma/client").$Enums.DayOfWeek;
+                startTime: string;
+                endTime: string;
+                slotDuration: number;
+                bufferTime: number;
+                isAvailable: boolean;
+                maxBookings: number;
+                location: string | null;
+                serviceType: string | null;
+                date: Date | null;
+                notes: string | null;
+                breakStartTime: string | null;
+                breakEndTime: string | null;
+                isRecurring: boolean;
+                effectiveFrom: Date;
+                effectiveUntil: Date | null;
+                profileId: string;
+            };
+            timeSlots: any[];
         };
         message: string;
     }>;

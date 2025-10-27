@@ -260,12 +260,18 @@ export class SchedulingService {
         date: new Date(date),
         isAvailable: true,
       },
+      include: {
+        template: true,
+      },
     });
 
     if (!schedule) {
       return {
         success: true,
-        data: [],
+        data: {
+          isAvailable: false,
+          date,
+        },
         message: 'No schedule found for this date',
       };
     }
@@ -275,7 +281,12 @@ export class SchedulingService {
 
     return {
       success: true,
-      data: timeSlots,
+      data: {
+        isAvailable: true,
+        template: schedule.template,
+        timeSlots,
+        schedule,
+      },
       message: 'Availability retrieved successfully',
     };
   }
@@ -398,7 +409,10 @@ export class SchedulingService {
 
     return {
       success: true,
-      data: schedule,
+      data: {
+        schedule,
+        timeSlots,
+      },
       message: 'Availability updated successfully',
     };
   }
