@@ -234,26 +234,72 @@ let SchedulingService = class SchedulingService {
         return slots;
     }
     async updateAvailability(doctorId, date, timeSlots) {
-        const schedule = await this.db.doctorSchedule.findFirst({
+        const scheduleDate = new Date(date);
+        let schedule = await this.db.doctorSchedule.findFirst({
             where: {
                 doctorId,
-                date: new Date(date),
+                date: scheduleDate,
             },
         });
         if (!schedule) {
-            throw new common_1.NotFoundException('Schedule not found for this date');
+            let template = await this.db.doctorScheduleTemplate.findFirst({
+                where: { doctorId, isDefault: true },
+            });
+            if (!template) {
+                template = await this.db.doctorScheduleTemplate.create({
+                    data: {
+                        doctorId,
+                        name: 'Default Availability',
+                        isDefault: true,
+                        isActive: true,
+                    },
+                });
+            }
+            const dayOfWeekMap = {
+                0: 'SUNDAY',
+                1: 'MONDAY',
+                2: 'TUESDAY',
+                3: 'WEDNESDAY',
+                4: 'THURSDAY',
+                5: 'FRIDAY',
+                6: 'SATURDAY',
+            };
+            const dayOfWeek = dayOfWeekMap[scheduleDate.getDay()];
+            const sortedSlots = timeSlots.sort((a, b) => a.startTime.localeCompare(b.startTime));
+            const startTime = sortedSlots[0]?.startTime || '09:00';
+            const endTime = sortedSlots[sortedSlots.length - 1]?.endTime || '17:00';
+            const slotDuration = 30;
+            const bufferTime = 5;
+            schedule = await this.db.doctorSchedule.create({
+                data: {
+                    doctorId,
+                    profileId: doctorId,
+                    templateId: template.id,
+                    dayOfWeek,
+                    date: scheduleDate,
+                    startTime,
+                    endTime,
+                    slotDuration,
+                    bufferTime,
+                    isAvailable: timeSlots.some(slot => slot.isAvailable),
+                    notes: `Availability created for ${date}`,
+                },
+            });
         }
-        const availableSlots = timeSlots.filter(slot => slot.isAvailable).length;
-        const totalSlots = timeSlots.length;
-        await this.db.doctorSchedule.update({
-            where: { id: schedule.id },
-            data: {
-                isAvailable: availableSlots > 0,
-                notes: `Updated availability: ${availableSlots}/${totalSlots} slots available`,
-            },
-        });
+        else {
+            const availableSlots = timeSlots.filter(slot => slot.isAvailable).length;
+            const totalSlots = timeSlots.length;
+            await this.db.doctorSchedule.update({
+                where: { id: schedule.id },
+                data: {
+                    isAvailable: availableSlots > 0,
+                    notes: `Updated availability: ${availableSlots}/${totalSlots} slots available`,
+                },
+            });
+        }
         return {
             success: true,
+            data: schedule,
             message: 'Availability updated successfully',
         };
     }

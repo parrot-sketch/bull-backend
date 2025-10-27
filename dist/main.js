@@ -1,26 +1,11 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
-/******/ 	var __webpack_modules__ = ([
-/* 0 */,
-/* 1 */
-/***/ ((module) => {
+/******/ 	var __webpack_modules__ = ({
 
-module.exports = require("@nestjs/common");
-
-/***/ }),
-/* 2 */
-/***/ ((module) => {
-
-module.exports = require("@nestjs/core");
-
-/***/ }),
-/* 3 */
-/***/ ((module) => {
-
-module.exports = require("@nestjs/swagger");
-
-/***/ }),
-/* 4 */
+/***/ "./src/app.module.ts":
+/*!***************************!*\
+  !*** ./src/app.module.ts ***!
+  \***************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -32,11 +17,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppModule = void 0;
-const common_1 = __webpack_require__(1);
-const config_1 = __webpack_require__(5);
-const auth_module_1 = __webpack_require__(6);
-const doctor_profile_module_1 = __webpack_require__(18);
-const scheduling_module_1 = __webpack_require__(21);
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
+const auth_module_1 = __webpack_require__(/*! ./modules/auth/auth.module */ "./src/modules/auth/auth.module.ts");
+const doctor_profile_module_1 = __webpack_require__(/*! ./modules/doctor-profile/doctor-profile.module */ "./src/modules/doctor-profile/doctor-profile.module.ts");
+const scheduling_module_1 = __webpack_require__(/*! ./modules/scheduling/scheduling.module */ "./src/modules/scheduling/scheduling.module.ts");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -57,13 +42,11 @@ exports.AppModule = AppModule = __decorate([
 
 
 /***/ }),
-/* 5 */
-/***/ ((module) => {
 
-module.exports = require("@nestjs/config");
-
-/***/ }),
-/* 6 */
+/***/ "./src/modules/auth/auth.module.ts":
+/*!*****************************************!*\
+  !*** ./src/modules/auth/auth.module.ts ***!
+  \*****************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -75,15 +58,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AuthModule = void 0;
-const common_1 = __webpack_require__(1);
-const config_1 = __webpack_require__(5);
-const jwt_1 = __webpack_require__(7);
-const passport_1 = __webpack_require__(8);
-const appointments_controller_1 = __webpack_require__(9);
-const auth_controller_1 = __webpack_require__(11);
-const auth_service_1 = __webpack_require__(12);
-const database_service_1 = __webpack_require__(14);
-const jwt_strategy_1 = __webpack_require__(16);
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
+const jwt_1 = __webpack_require__(/*! @nestjs/jwt */ "@nestjs/jwt");
+const passport_1 = __webpack_require__(/*! @nestjs/passport */ "@nestjs/passport");
+const appointments_controller_1 = __webpack_require__(/*! ./controllers/appointments.controller */ "./src/modules/auth/controllers/appointments.controller.ts");
+const auth_controller_1 = __webpack_require__(/*! ./controllers/auth.controller */ "./src/modules/auth/controllers/auth.controller.ts");
+const auth_service_1 = __webpack_require__(/*! ./services/auth.service */ "./src/modules/auth/services/auth.service.ts");
+const database_service_1 = __webpack_require__(/*! ./services/database.service */ "./src/modules/auth/services/database.service.ts");
+const jwt_strategy_1 = __webpack_require__(/*! ./strategies/jwt.strategy */ "./src/modules/auth/strategies/jwt.strategy.ts");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
@@ -111,19 +94,11 @@ exports.AuthModule = AuthModule = __decorate([
 
 
 /***/ }),
-/* 7 */
-/***/ ((module) => {
 
-module.exports = require("@nestjs/jwt");
-
-/***/ }),
-/* 8 */
-/***/ ((module) => {
-
-module.exports = require("@nestjs/passport");
-
-/***/ }),
-/* 9 */
+/***/ "./src/modules/auth/controllers/appointments.controller.ts":
+/*!*****************************************************************!*\
+  !*** ./src/modules/auth/controllers/appointments.controller.ts ***!
+  \*****************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -141,9 +116,9 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppointmentsController = void 0;
-const common_1 = __webpack_require__(1);
-const swagger_1 = __webpack_require__(3);
-const jwt_auth_guard_1 = __webpack_require__(10);
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const jwt_auth_guard_1 = __webpack_require__(/*! ../guards/jwt-auth.guard */ "./src/modules/auth/guards/jwt-auth.guard.ts");
 let AppointmentsController = class AppointmentsController {
     async getAppointments(req, startDate, endDate, status, limit) {
         try {
@@ -210,56 +185,11 @@ exports.AppointmentsController = AppointmentsController = __decorate([
 
 
 /***/ }),
-/* 10 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.JwtAuthGuard = void 0;
-const common_1 = __webpack_require__(1);
-const passport_1 = __webpack_require__(8);
-const core_1 = __webpack_require__(2);
-let JwtAuthGuard = class JwtAuthGuard extends (0, passport_1.AuthGuard)('jwt') {
-    constructor(reflector) {
-        super();
-        this.reflector = reflector;
-    }
-    canActivate(context) {
-        const isPublic = this.reflector.getAllAndOverride('isPublic', [
-            context.getHandler(),
-            context.getClass(),
-        ]);
-        if (isPublic) {
-            return true;
-        }
-        return super.canActivate(context);
-    }
-    handleRequest(err, user, info, context) {
-        if (err || !user) {
-            throw err || new common_1.UnauthorizedException('Invalid or expired token');
-        }
-        return user;
-    }
-};
-exports.JwtAuthGuard = JwtAuthGuard;
-exports.JwtAuthGuard = JwtAuthGuard = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof core_1.Reflector !== "undefined" && core_1.Reflector) === "function" ? _a : Object])
-], JwtAuthGuard);
-
-
-/***/ }),
-/* 11 */
+/***/ "./src/modules/auth/controllers/auth.controller.ts":
+/*!*********************************************************!*\
+  !*** ./src/modules/auth/controllers/auth.controller.ts ***!
+  \*********************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -278,10 +208,10 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AuthController = void 0;
-const common_1 = __webpack_require__(1);
-const swagger_1 = __webpack_require__(3);
-const jwt_auth_guard_1 = __webpack_require__(10);
-const auth_service_1 = __webpack_require__(12);
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const jwt_auth_guard_1 = __webpack_require__(/*! ../guards/jwt-auth.guard */ "./src/modules/auth/guards/jwt-auth.guard.ts");
+const auth_service_1 = __webpack_require__(/*! ../services/auth.service */ "./src/modules/auth/services/auth.service.ts");
 let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
@@ -366,7 +296,64 @@ exports.AuthController = AuthController = __decorate([
 
 
 /***/ }),
-/* 12 */
+
+/***/ "./src/modules/auth/guards/jwt-auth.guard.ts":
+/*!***************************************************!*\
+  !*** ./src/modules/auth/guards/jwt-auth.guard.ts ***!
+  \***************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.JwtAuthGuard = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const passport_1 = __webpack_require__(/*! @nestjs/passport */ "@nestjs/passport");
+const core_1 = __webpack_require__(/*! @nestjs/core */ "@nestjs/core");
+let JwtAuthGuard = class JwtAuthGuard extends (0, passport_1.AuthGuard)('jwt') {
+    constructor(reflector) {
+        super();
+        this.reflector = reflector;
+    }
+    canActivate(context) {
+        const isPublic = this.reflector.getAllAndOverride('isPublic', [
+            context.getHandler(),
+            context.getClass(),
+        ]);
+        if (isPublic) {
+            return true;
+        }
+        return super.canActivate(context);
+    }
+    handleRequest(err, user, info, context) {
+        if (err || !user) {
+            throw err || new common_1.UnauthorizedException('Invalid or expired token');
+        }
+        return user;
+    }
+};
+exports.JwtAuthGuard = JwtAuthGuard;
+exports.JwtAuthGuard = JwtAuthGuard = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof core_1.Reflector !== "undefined" && core_1.Reflector) === "function" ? _a : Object])
+], JwtAuthGuard);
+
+
+/***/ }),
+
+/***/ "./src/modules/auth/services/auth.service.ts":
+/*!***************************************************!*\
+  !*** ./src/modules/auth/services/auth.service.ts ***!
+  \***************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -382,10 +369,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AuthService = void 0;
-const common_1 = __webpack_require__(1);
-const jwt_1 = __webpack_require__(7);
-const bcrypt = __webpack_require__(13);
-const database_service_1 = __webpack_require__(14);
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const jwt_1 = __webpack_require__(/*! @nestjs/jwt */ "@nestjs/jwt");
+const bcrypt = __webpack_require__(/*! bcrypt */ "bcrypt");
+const database_service_1 = __webpack_require__(/*! ./database.service */ "./src/modules/auth/services/database.service.ts");
 let AuthService = class AuthService {
     constructor(db, jwtService) {
         this.db = db;
@@ -530,13 +517,11 @@ exports.AuthService = AuthService = __decorate([
 
 
 /***/ }),
-/* 13 */
-/***/ ((module) => {
 
-module.exports = require("bcrypt");
-
-/***/ }),
-/* 14 */
+/***/ "./src/modules/auth/services/database.service.ts":
+/*!*******************************************************!*\
+  !*** ./src/modules/auth/services/database.service.ts ***!
+  \*******************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -548,8 +533,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DatabaseService = void 0;
-const common_1 = __webpack_require__(1);
-const client_1 = __webpack_require__(15);
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const client_1 = __webpack_require__(/*! @prisma/client */ "@prisma/client");
 let DatabaseService = class DatabaseService extends client_1.PrismaClient {
     async onModuleInit() {
         await this.$connect();
@@ -567,13 +552,11 @@ exports.DatabaseService = DatabaseService = __decorate([
 
 
 /***/ }),
-/* 15 */
-/***/ ((module) => {
 
-module.exports = require("@prisma/client");
-
-/***/ }),
-/* 16 */
+/***/ "./src/modules/auth/strategies/jwt.strategy.ts":
+/*!*****************************************************!*\
+  !*** ./src/modules/auth/strategies/jwt.strategy.ts ***!
+  \*****************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -589,11 +572,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.JwtStrategy = void 0;
-const common_1 = __webpack_require__(1);
-const config_1 = __webpack_require__(5);
-const passport_1 = __webpack_require__(8);
-const passport_jwt_1 = __webpack_require__(17);
-const database_service_1 = __webpack_require__(14);
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
+const passport_1 = __webpack_require__(/*! @nestjs/passport */ "@nestjs/passport");
+const passport_jwt_1 = __webpack_require__(/*! passport-jwt */ "passport-jwt");
+const database_service_1 = __webpack_require__(/*! ../services/database.service */ "./src/modules/auth/services/database.service.ts");
 let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy) {
     constructor(configService, db) {
         super({
@@ -641,42 +624,11 @@ exports.JwtStrategy = JwtStrategy = __decorate([
 
 
 /***/ }),
-/* 17 */
-/***/ ((module) => {
 
-module.exports = require("passport-jwt");
-
-/***/ }),
-/* 18 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DoctorProfileModule = void 0;
-const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(14);
-const doctor_profile_controller_1 = __webpack_require__(19);
-const doctor_profile_service_1 = __webpack_require__(20);
-let DoctorProfileModule = class DoctorProfileModule {
-};
-exports.DoctorProfileModule = DoctorProfileModule;
-exports.DoctorProfileModule = DoctorProfileModule = __decorate([
-    (0, common_1.Module)({
-        controllers: [doctor_profile_controller_1.DoctorProfileController],
-        providers: [doctor_profile_service_1.DoctorProfileService, database_service_1.DatabaseService],
-        exports: [doctor_profile_service_1.DoctorProfileService],
-    })
-], DoctorProfileModule);
-
-
-/***/ }),
-/* 19 */
+/***/ "./src/modules/doctor-profile/controllers/doctor-profile.controller.ts":
+/*!*****************************************************************************!*\
+  !*** ./src/modules/doctor-profile/controllers/doctor-profile.controller.ts ***!
+  \*****************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -695,10 +647,10 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DoctorProfileController = void 0;
-const common_1 = __webpack_require__(1);
-const swagger_1 = __webpack_require__(3);
-const jwt_auth_guard_1 = __webpack_require__(10);
-const doctor_profile_service_1 = __webpack_require__(20);
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const jwt_auth_guard_1 = __webpack_require__(/*! ../../auth/guards/jwt-auth.guard */ "./src/modules/auth/guards/jwt-auth.guard.ts");
+const doctor_profile_service_1 = __webpack_require__(/*! ../services/doctor-profile.service */ "./src/modules/doctor-profile/services/doctor-profile.service.ts");
 let DoctorProfileController = class DoctorProfileController {
     constructor(doctorProfileService) {
         this.doctorProfileService = doctorProfileService;
@@ -770,7 +722,44 @@ exports.DoctorProfileController = DoctorProfileController = __decorate([
 
 
 /***/ }),
-/* 20 */
+
+/***/ "./src/modules/doctor-profile/doctor-profile.module.ts":
+/*!*************************************************************!*\
+  !*** ./src/modules/doctor-profile/doctor-profile.module.ts ***!
+  \*************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DoctorProfileModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const database_service_1 = __webpack_require__(/*! ../auth/services/database.service */ "./src/modules/auth/services/database.service.ts");
+const doctor_profile_controller_1 = __webpack_require__(/*! ./controllers/doctor-profile.controller */ "./src/modules/doctor-profile/controllers/doctor-profile.controller.ts");
+const doctor_profile_service_1 = __webpack_require__(/*! ./services/doctor-profile.service */ "./src/modules/doctor-profile/services/doctor-profile.service.ts");
+let DoctorProfileModule = class DoctorProfileModule {
+};
+exports.DoctorProfileModule = DoctorProfileModule;
+exports.DoctorProfileModule = DoctorProfileModule = __decorate([
+    (0, common_1.Module)({
+        controllers: [doctor_profile_controller_1.DoctorProfileController],
+        providers: [doctor_profile_service_1.DoctorProfileService, database_service_1.DatabaseService],
+        exports: [doctor_profile_service_1.DoctorProfileService],
+    })
+], DoctorProfileModule);
+
+
+/***/ }),
+
+/***/ "./src/modules/doctor-profile/services/doctor-profile.service.ts":
+/*!***********************************************************************!*\
+  !*** ./src/modules/doctor-profile/services/doctor-profile.service.ts ***!
+  \***********************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -786,8 +775,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DoctorProfileService = void 0;
-const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(14);
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const database_service_1 = __webpack_require__(/*! ../../auth/services/database.service */ "./src/modules/auth/services/database.service.ts");
 let DoctorProfileService = class DoctorProfileService {
     constructor(db) {
         this.db = db;
@@ -895,58 +884,11 @@ exports.DoctorProfileService = DoctorProfileService = __decorate([
 
 
 /***/ }),
-/* 21 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SchedulingModule = void 0;
-const common_1 = __webpack_require__(1);
-const schedule_1 = __webpack_require__(22);
-const database_service_1 = __webpack_require__(14);
-const scheduling_controller_1 = __webpack_require__(23);
-const appointment_management_service_1 = __webpack_require__(28);
-const doctor_availability_service_1 = __webpack_require__(30);
-const scheduling_service_1 = __webpack_require__(27);
-const slot_engine_service_1 = __webpack_require__(29);
-let SchedulingModule = class SchedulingModule {
-};
-exports.SchedulingModule = SchedulingModule;
-exports.SchedulingModule = SchedulingModule = __decorate([
-    (0, common_1.Module)({
-        imports: [schedule_1.ScheduleModule.forRoot()],
-        controllers: [scheduling_controller_1.SchedulingController],
-        providers: [
-            scheduling_service_1.SchedulingService,
-            doctor_availability_service_1.DoctorAvailabilityService,
-            slot_engine_service_1.SlotEngineService,
-            appointment_management_service_1.AppointmentManagementService,
-            database_service_1.DatabaseService,
-        ],
-        exports: [
-            scheduling_service_1.SchedulingService,
-            doctor_availability_service_1.DoctorAvailabilityService,
-            slot_engine_service_1.SlotEngineService,
-            appointment_management_service_1.AppointmentManagementService,
-        ],
-    })
-], SchedulingModule);
-
-
-/***/ }),
-/* 22 */
-/***/ ((module) => {
-
-module.exports = require("@nestjs/schedule");
-
-/***/ }),
-/* 23 */
+/***/ "./src/modules/scheduling/controllers/scheduling.controller.ts":
+/*!*********************************************************************!*\
+  !*** ./src/modules/scheduling/controllers/scheduling.controller.ts ***!
+  \*********************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -965,11 +907,11 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SchedulingController = void 0;
-const common_1 = __webpack_require__(1);
-const swagger_1 = __webpack_require__(3);
-const jwt_auth_guard_1 = __webpack_require__(10);
-const scheduling_dto_1 = __webpack_require__(24);
-const scheduling_service_1 = __webpack_require__(27);
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const jwt_auth_guard_1 = __webpack_require__(/*! ../../auth/guards/jwt-auth.guard */ "./src/modules/auth/guards/jwt-auth.guard.ts");
+const scheduling_dto_1 = __webpack_require__(/*! ../dto/scheduling.dto */ "./src/modules/scheduling/dto/scheduling.dto.ts");
+const scheduling_service_1 = __webpack_require__(/*! ../services/scheduling.service */ "./src/modules/scheduling/services/scheduling.service.ts");
 let SchedulingController = class SchedulingController {
     constructor(schedulingService) {
         this.schedulingService = schedulingService;
@@ -1380,7 +1322,11 @@ exports.SchedulingController = SchedulingController = __decorate([
 
 
 /***/ }),
-/* 24 */
+
+/***/ "./src/modules/scheduling/dto/scheduling.dto.ts":
+/*!******************************************************!*\
+  !*** ./src/modules/scheduling/dto/scheduling.dto.ts ***!
+  \******************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1395,8 +1341,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ScheduleAnalyticsDto = exports.TimeSlotAvailabilityDto = exports.UpdateAvailabilityDto = exports.GetAvailabilityDto = exports.UpdateAppointmentDto = exports.BookAppointmentDto = exports.AppointmentStatus = exports.AppointmentType = exports.CreateExceptionDto = exports.ExceptionType = exports.UpdateTimeSlotDto = exports.CreateTimeSlotDto = exports.UpdateScheduleTemplateDto = exports.CreateScheduleTemplateDto = void 0;
-const class_validator_1 = __webpack_require__(25);
-const class_transformer_1 = __webpack_require__(26);
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+const class_transformer_1 = __webpack_require__(/*! class-transformer */ "class-transformer");
 class CreateScheduleTemplateDto {
 }
 exports.CreateScheduleTemplateDto = CreateScheduleTemplateDto;
@@ -1726,19 +1672,11 @@ __decorate([
 
 
 /***/ }),
-/* 25 */
-/***/ ((module) => {
 
-module.exports = require("class-validator");
-
-/***/ }),
-/* 26 */
-/***/ ((module) => {
-
-module.exports = require("class-transformer");
-
-/***/ }),
-/* 27 */
+/***/ "./src/modules/scheduling/scheduling.module.ts":
+/*!*****************************************************!*\
+  !*** ./src/modules/scheduling/scheduling.module.ts ***!
+  \*****************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1748,409 +1686,46 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b, _c, _d;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SchedulingService = void 0;
-const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(14);
-const appointment_management_service_1 = __webpack_require__(28);
-const doctor_availability_service_1 = __webpack_require__(30);
-const slot_engine_service_1 = __webpack_require__(29);
-let SchedulingService = class SchedulingService {
-    constructor(db, doctorAvailability, slotEngine, appointmentManagement) {
-        this.db = db;
-        this.doctorAvailability = doctorAvailability;
-        this.slotEngine = slotEngine;
-        this.appointmentManagement = appointmentManagement;
-    }
-    async createScheduleTemplate(doctorId, templateData) {
-        const doctor = await this.db.user.findUnique({ where: { id: doctorId } });
-        if (!doctor) {
-            throw new common_1.NotFoundException('Doctor not found');
-        }
-        const template = await this.db.doctorScheduleTemplate.create({
-            data: {
-                doctorId,
-                ...templateData,
-            },
-            include: {
-                timeSlots: true,
-            },
-        });
-        return {
-            success: true,
-            data: template,
-            message: 'Schedule template created successfully',
-        };
-    }
-    async getScheduleTemplates(doctorId) {
-        const templates = await this.db.doctorScheduleTemplate.findMany({
-            where: { doctorId },
-            include: {
-                timeSlots: true,
-            },
-            orderBy: { createdAt: 'desc' },
-        });
-        return {
-            success: true,
-            data: templates,
-            message: 'Schedule templates retrieved successfully',
-        };
-    }
-    async updateScheduleTemplate(templateId, updateData) {
-        const template = await this.db.doctorScheduleTemplate.findUnique({ where: { id: templateId } });
-        if (!template) {
-            throw new common_1.NotFoundException('Schedule template not found');
-        }
-        const updatedTemplate = await this.db.doctorScheduleTemplate.update({
-            where: { id: templateId },
-            data: updateData,
-            include: {
-                timeSlots: true,
-            },
-        });
-        return {
-            success: true,
-            data: updatedTemplate,
-            message: 'Schedule template updated successfully',
-        };
-    }
-    async deleteScheduleTemplate(templateId) {
-        const template = await this.db.doctorScheduleTemplate.findUnique({ where: { id: templateId } });
-        if (!template) {
-            throw new common_1.NotFoundException('Schedule template not found');
-        }
-        await this.db.doctorScheduleTemplate.delete({ where: { id: templateId } });
-        return {
-            success: true,
-            message: 'Schedule template deleted successfully',
-        };
-    }
-    async createTimeSlot(templateId, slotData) {
-        const template = await this.db.doctorScheduleTemplate.findUnique({ where: { id: templateId } });
-        if (!template) {
-            throw new common_1.NotFoundException('Schedule template not found');
-        }
-        const timeSlot = await this.db.doctorTimeSlot.create({
-            data: {
-                templateId,
-                ...slotData,
-            },
-        });
-        return {
-            success: true,
-            data: timeSlot,
-            message: 'Time slot created successfully',
-        };
-    }
-    async updateTimeSlot(slotId, updateData) {
-        const timeSlot = await this.db.doctorTimeSlot.findUnique({ where: { id: slotId } });
-        if (!timeSlot) {
-            throw new common_1.NotFoundException('Time slot not found');
-        }
-        const updatedSlot = await this.db.doctorTimeSlot.update({
-            where: { id: slotId },
-            data: updateData,
-        });
-        return {
-            success: true,
-            data: updatedSlot,
-            message: 'Time slot updated successfully',
-        };
-    }
-    async deleteTimeSlot(slotId) {
-        const timeSlot = await this.db.doctorTimeSlot.findUnique({ where: { id: slotId } });
-        if (!timeSlot) {
-            throw new common_1.NotFoundException('Time slot not found');
-        }
-        await this.db.doctorTimeSlot.delete({ where: { id: slotId } });
-        return {
-            success: true,
-            message: 'Time slot deleted successfully',
-        };
-    }
-    async generateSchedule(doctorId, templateId, date) {
-        const template = await this.db.doctorScheduleTemplate.findUnique({
-            where: { id: templateId },
-        });
-        if (!template) {
-            throw new common_1.NotFoundException('Schedule template not found');
-        }
-        const existingSchedule = await this.db.doctorSchedule.findFirst({
-            where: {
-                doctorId,
-                date: new Date(date),
-            },
-        });
-        if (existingSchedule) {
-            throw new common_1.BadRequestException('Schedule already exists for this date');
-        }
-        const profile = await this.db.doctorProfile.findFirst({
-            where: { doctorId },
-        });
-        if (!profile) {
-            throw new common_1.NotFoundException('Doctor profile not found');
-        }
-        const schedule = await this.db.doctorSchedule.create({
-            data: {
-                doctorId,
-                profileId: profile.id,
-                templateId,
-                dayOfWeek: this.getDayOfWeek(new Date(date)),
-                startTime: '09:00',
-                endTime: '17:00',
-                date: new Date(date),
-                slotDuration: 30,
-                bufferTime: 10,
-                maxBookings: 1,
-                location: 'Main Clinic',
-                serviceType: 'CONSULTATION',
-                isAvailable: true,
-            },
-        });
-        return {
-            success: true,
-            data: schedule,
-            message: 'Schedule generated successfully',
-        };
-    }
-    getDayOfWeek(date) {
-        const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
-        return days[date.getDay()];
-    }
-    generateTimeSlotsFromTemplate(template, date) {
-        const slots = [];
-        const startTime = new Date(`${date}T${template.startTime}`);
-        const endTime = new Date(`${date}T${template.endTime}`);
-        let currentTime = new Date(startTime);
-        while (currentTime < endTime) {
-            const slotEnd = new Date(currentTime.getTime() + template.slotDuration * 60000);
-            slots.push({
-                startTime: currentTime.toTimeString().split(' ')[0].substring(0, 5),
-                endTime: slotEnd.toTimeString().split(' ')[0].substring(0, 5),
-                isAvailable: true,
-            });
-            currentTime = new Date(currentTime.getTime() + (template.slotDuration + template.bufferTime) * 60000);
-        }
-        return slots;
-    }
-    async getAvailability(doctorId, date) {
-        const schedule = await this.db.doctorSchedule.findFirst({
-            where: {
-                doctorId,
-                date: new Date(date),
-                isAvailable: true,
-            },
-        });
-        if (!schedule) {
-            return {
-                success: true,
-                data: [],
-                message: 'No schedule found for this date',
-            };
-        }
-        const timeSlots = this.generateTimeSlotsForSchedule(schedule);
-        return {
-            success: true,
-            data: timeSlots,
-            message: 'Availability retrieved successfully',
-        };
-    }
-    generateTimeSlotsForSchedule(schedule) {
-        const slots = [];
-        const startTime = new Date(`${schedule.date.toISOString().split('T')[0]}T${schedule.startTime}`);
-        const endTime = new Date(`${schedule.date.toISOString().split('T')[0]}T${schedule.endTime}`);
-        let currentTime = new Date(startTime);
-        while (currentTime < endTime) {
-            const slotEnd = new Date(currentTime.getTime() + schedule.slotDuration * 60000);
-            slots.push({
-                id: `${schedule.id}-${currentTime.toTimeString().split(' ')[0]}`,
-                startTime: currentTime.toTimeString().split(' ')[0].substring(0, 5),
-                endTime: slotEnd.toTimeString().split(' ')[0].substring(0, 5),
-                isAvailable: true,
-                isBooked: false,
-            });
-            currentTime = new Date(currentTime.getTime() + (schedule.slotDuration + schedule.bufferTime) * 60000);
-        }
-        return slots;
-    }
-    async updateAvailability(doctorId, date, timeSlots) {
-        const schedule = await this.db.doctorSchedule.findFirst({
-            where: {
-                doctorId,
-                date: new Date(date),
-            },
-        });
-        if (!schedule) {
-            throw new common_1.NotFoundException('Schedule not found for this date');
-        }
-        const availableSlots = timeSlots.filter(slot => slot.isAvailable).length;
-        const totalSlots = timeSlots.length;
-        await this.db.doctorSchedule.update({
-            where: { id: schedule.id },
-            data: {
-                isAvailable: availableSlots > 0,
-                notes: `Updated availability: ${availableSlots}/${totalSlots} slots available`,
-            },
-        });
-        return {
-            success: true,
-            message: 'Availability updated successfully',
-        };
-    }
-    async createException(doctorId, exceptionData) {
-        const exception = await this.db.doctorScheduleException.create({
-            data: {
-                doctorId,
-                ...exceptionData,
-            },
-        });
-        return {
-            success: true,
-            data: exception,
-            message: 'Schedule exception created successfully',
-        };
-    }
-    async getExceptions(doctorId, startDate, endDate) {
-        const where = { doctorId };
-        if (startDate && endDate) {
-            where.date = {
-                gte: new Date(startDate),
-                lte: new Date(endDate),
-            };
-        }
-        const exceptions = await this.db.doctorScheduleException.findMany({
-            where,
-            orderBy: { date: 'desc' },
-        });
-        return {
-            success: true,
-            data: exceptions,
-            message: 'Schedule exceptions retrieved successfully',
-        };
-    }
-    async deleteException(exceptionId) {
-        const exception = await this.db.doctorScheduleException.findUnique({ where: { id: exceptionId } });
-        if (!exception) {
-            throw new common_1.NotFoundException('Schedule exception not found');
-        }
-        await this.db.doctorScheduleException.delete({ where: { id: exceptionId } });
-        return {
-            success: true,
-            message: 'Schedule exception deleted successfully',
-        };
-    }
-    async bookAppointment(appointmentData) {
-        const schedule = await this.db.doctorSchedule.findFirst({
-            where: {
-                id: appointmentData.scheduleId,
-                isAvailable: true,
-            },
-        });
-        if (!schedule) {
-            throw new common_1.BadRequestException('Schedule is not available');
-        }
-        const existingAppointment = await this.db.appointment.findFirst({
-            where: {
-                doctorId: appointmentData.doctorId,
-                appointmentDate: new Date(appointmentData.date),
-                startTime: appointmentData.startTime,
-                status: { not: 'CANCELLED' },
-            },
-        });
-        if (existingAppointment) {
-            throw new common_1.BadRequestException('Time slot is already booked');
-        }
-        const appointment = await this.db.appointment.create({
-            data: {
-                patientId: appointmentData.patientId,
-                doctorId: appointmentData.doctorId,
-                scheduleId: appointmentData.scheduleId,
-                appointmentDate: new Date(appointmentData.date),
-                startTime: appointmentData.startTime,
-                endTime: appointmentData.endTime,
-                duration: 30,
-                type: appointmentData.type,
-                status: 'SCHEDULED',
-                notes: appointmentData.notes,
-            },
-            include: {
-                patient: true,
-            },
-        });
-        return {
-            success: true,
-            data: appointment,
-            message: 'Appointment booked successfully',
-        };
-    }
-    async getAppointments(doctorId, startDate, endDate) {
-        const where = { doctorId };
-        if (startDate && endDate) {
-            where.appointmentDate = {
-                gte: new Date(startDate),
-                lte: new Date(endDate),
-            };
-        }
-        const appointments = await this.db.appointment.findMany({
-            where,
-            include: {
-                patient: true,
-            },
-            orderBy: { appointmentDate: 'desc' },
-        });
-        return {
-            success: true,
-            data: appointments,
-            message: 'Appointments retrieved successfully',
-        };
-    }
-    async updateAppointment(appointmentId, updateData) {
-        const appointment = await this.db.appointment.findUnique({ where: { id: appointmentId } });
-        if (!appointment) {
-            throw new common_1.NotFoundException('Appointment not found');
-        }
-        const updatedAppointment = await this.db.appointment.update({
-            where: { id: appointmentId },
-            data: updateData,
-            include: {
-                patient: true,
-            },
-        });
-        return {
-            success: true,
-            data: updatedAppointment,
-            message: 'Appointment updated successfully',
-        };
-    }
-    async cancelAppointment(appointmentId) {
-        const appointment = await this.db.appointment.findUnique({ where: { id: appointmentId } });
-        if (!appointment) {
-            throw new common_1.NotFoundException('Appointment not found');
-        }
-        const updatedAppointment = await this.db.appointment.update({
-            where: { id: appointmentId },
-            data: { status: 'CANCELLED' },
-        });
-        return {
-            success: true,
-            data: updatedAppointment,
-            message: 'Appointment cancelled successfully',
-        };
-    }
+exports.SchedulingModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const schedule_1 = __webpack_require__(/*! @nestjs/schedule */ "@nestjs/schedule");
+const database_service_1 = __webpack_require__(/*! ../auth/services/database.service */ "./src/modules/auth/services/database.service.ts");
+const scheduling_controller_1 = __webpack_require__(/*! ./controllers/scheduling.controller */ "./src/modules/scheduling/controllers/scheduling.controller.ts");
+const appointment_management_service_1 = __webpack_require__(/*! ./services/appointment-management.service */ "./src/modules/scheduling/services/appointment-management.service.ts");
+const doctor_availability_service_1 = __webpack_require__(/*! ./services/doctor-availability.service */ "./src/modules/scheduling/services/doctor-availability.service.ts");
+const scheduling_service_1 = __webpack_require__(/*! ./services/scheduling.service */ "./src/modules/scheduling/services/scheduling.service.ts");
+const slot_engine_service_1 = __webpack_require__(/*! ./services/slot-engine.service */ "./src/modules/scheduling/services/slot-engine.service.ts");
+let SchedulingModule = class SchedulingModule {
 };
-exports.SchedulingService = SchedulingService;
-exports.SchedulingService = SchedulingService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof database_service_1.DatabaseService !== "undefined" && database_service_1.DatabaseService) === "function" ? _a : Object, typeof (_b = typeof doctor_availability_service_1.DoctorAvailabilityService !== "undefined" && doctor_availability_service_1.DoctorAvailabilityService) === "function" ? _b : Object, typeof (_c = typeof slot_engine_service_1.SlotEngineService !== "undefined" && slot_engine_service_1.SlotEngineService) === "function" ? _c : Object, typeof (_d = typeof appointment_management_service_1.AppointmentManagementService !== "undefined" && appointment_management_service_1.AppointmentManagementService) === "function" ? _d : Object])
-], SchedulingService);
+exports.SchedulingModule = SchedulingModule;
+exports.SchedulingModule = SchedulingModule = __decorate([
+    (0, common_1.Module)({
+        imports: [schedule_1.ScheduleModule.forRoot()],
+        controllers: [scheduling_controller_1.SchedulingController],
+        providers: [
+            scheduling_service_1.SchedulingService,
+            doctor_availability_service_1.DoctorAvailabilityService,
+            slot_engine_service_1.SlotEngineService,
+            appointment_management_service_1.AppointmentManagementService,
+            database_service_1.DatabaseService,
+        ],
+        exports: [
+            scheduling_service_1.SchedulingService,
+            doctor_availability_service_1.DoctorAvailabilityService,
+            slot_engine_service_1.SlotEngineService,
+            appointment_management_service_1.AppointmentManagementService,
+        ],
+    })
+], SchedulingModule);
 
 
 /***/ }),
-/* 28 */
+
+/***/ "./src/modules/scheduling/services/appointment-management.service.ts":
+/*!***************************************************************************!*\
+  !*** ./src/modules/scheduling/services/appointment-management.service.ts ***!
+  \***************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2166,9 +1741,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppointmentManagementService = void 0;
-const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(14);
-const slot_engine_service_1 = __webpack_require__(29);
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const database_service_1 = __webpack_require__(/*! ../../auth/services/database.service */ "./src/modules/auth/services/database.service.ts");
+const slot_engine_service_1 = __webpack_require__(/*! ./slot-engine.service */ "./src/modules/scheduling/services/slot-engine.service.ts");
 let AppointmentManagementService = class AppointmentManagementService {
     constructor(db, slotEngine) {
         this.db = db;
@@ -2495,312 +2070,11 @@ exports.AppointmentManagementService = AppointmentManagementService = __decorate
 
 
 /***/ }),
-/* 29 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SlotEngineService = void 0;
-const common_1 = __webpack_require__(1);
-const schedule_1 = __webpack_require__(22);
-const database_service_1 = __webpack_require__(14);
-let SlotEngineService = class SlotEngineService {
-    constructor(db) {
-        this.db = db;
-    }
-    async generateSlotsForDate(doctorId, date) {
-        const targetDate = new Date(date);
-        const dayOfWeek = this.getDayOfWeek(targetDate);
-        const schedule = await this.db.doctorSchedule.findFirst({
-            where: {
-                doctorId,
-                date: targetDate,
-                isAvailable: true,
-            },
-        });
-        if (!schedule) {
-            return {
-                success: true,
-                data: [],
-                message: 'No schedule found for this date',
-            };
-        }
-        const slots = this.generateTimeSlotsFromSchedule(schedule, date);
-        const appointments = await this.db.appointment.findMany({
-            where: {
-                doctorId,
-                appointmentDate: targetDate,
-                status: {
-                    not: 'CANCELLED',
-                },
-            },
-        });
-        const processedSlots = slots.map(slot => {
-            const isBooked = appointments.some(apt => apt.startTime === slot.startTime);
-            return {
-                ...slot,
-                isAvailable: !isBooked,
-                isBooked,
-                status: isBooked ? 'BOOKED' : 'AVAILABLE',
-            };
-        });
-        return {
-            success: true,
-            data: processedSlots,
-            message: 'Slots generated successfully',
-        };
-    }
-    generateTimeSlotsFromSchedule(schedule, date) {
-        const slots = [];
-        const startTime = new Date(`${date}T${schedule.startTime}`);
-        const endTime = new Date(`${date}T${schedule.endTime}`);
-        let currentTime = new Date(startTime);
-        while (currentTime < endTime) {
-            const slotEnd = new Date(currentTime.getTime() + schedule.slotDuration * 60000);
-            if (slotEnd <= endTime) {
-                slots.push({
-                    id: `${schedule.id}-${currentTime.toTimeString().split(' ')[0]}`,
-                    scheduleId: schedule.id,
-                    startTime: currentTime.toTimeString().split(' ')[0].substring(0, 5),
-                    endTime: slotEnd.toTimeString().split(' ')[0].substring(0, 5),
-                    duration: schedule.slotDuration,
-                    bufferTime: schedule.bufferTime,
-                    location: schedule.location,
-                    serviceType: schedule.serviceType,
-                    isAvailable: true,
-                    isBooked: false,
-                    status: 'AVAILABLE',
-                });
-            }
-            currentTime = new Date(currentTime.getTime() + (schedule.slotDuration + schedule.bufferTime) * 60000);
-        }
-        return slots;
-    }
-    async checkSlotAvailability(doctorId, date, startTime, endTime) {
-        const targetDate = new Date(date);
-        const conflictingAppointment = await this.db.appointment.findFirst({
-            where: {
-                doctorId,
-                appointmentDate: targetDate,
-                startTime,
-                status: {
-                    not: 'CANCELLED',
-                },
-            },
-        });
-        if (conflictingAppointment) {
-            throw new common_1.BadRequestException('Time slot is already booked');
-        }
-        const schedule = await this.db.doctorSchedule.findFirst({
-            where: {
-                doctorId,
-                date: targetDate,
-                isAvailable: true,
-                startTime: { lte: startTime },
-                endTime: { gte: endTime },
-            },
-        });
-        if (!schedule) {
-            throw new common_1.BadRequestException('Doctor is not available at this time');
-        }
-        return {
-            success: true,
-            data: {
-                isAvailable: true,
-                scheduleId: schedule.id,
-            },
-            message: 'Slot is available',
-        };
-    }
-    async lockSlot(doctorId, scheduleId, startTime, endTime) {
-        return {
-            success: true,
-            message: 'Slot locked successfully',
-        };
-    }
-    async releaseSlot(doctorId, scheduleId, startTime) {
-        return {
-            success: true,
-            message: 'Slot released successfully',
-        };
-    }
-    async generateSlotsForDateRange(doctorId, startDate, endDate) {
-        const start = new Date(startDate);
-        const end = new Date(endDate);
-        const allSlots = [];
-        const currentDate = new Date(start);
-        while (currentDate <= end) {
-            const dateStr = currentDate.toISOString().split('T')[0];
-            const slots = await this.generateSlotsForDate(doctorId, dateStr);
-            if (slots.success && slots.data.length > 0) {
-                allSlots.push({
-                    date: dateStr,
-                    slots: slots.data,
-                });
-            }
-            currentDate.setDate(currentDate.getDate() + 1);
-        }
-        return {
-            success: true,
-            data: allSlots,
-            message: 'Slots generated for date range',
-        };
-    }
-    async getAvailableSlotsInRange(doctorId, date, startTime, endTime) {
-        const slots = await this.generateSlotsForDate(doctorId, date);
-        if (!slots.success) {
-            return slots;
-        }
-        let filteredSlots = slots.data.filter(slot => slot.isAvailable);
-        if (startTime) {
-            filteredSlots = filteredSlots.filter(slot => slot.startTime >= startTime);
-        }
-        if (endTime) {
-            filteredSlots = filteredSlots.filter(slot => slot.endTime <= endTime);
-        }
-        return {
-            success: true,
-            data: filteredSlots,
-            message: 'Available slots retrieved successfully',
-        };
-    }
-    async updateSlotStatus(slotId, status) {
-        return {
-            success: true,
-            message: `Slot status updated to ${status}`,
-        };
-    }
-    async markExpiredSlots() {
-        const now = new Date();
-        const currentTime = now.toTimeString().split(' ')[0].substring(0, 5);
-        const expiredSchedules = await this.db.doctorSchedule.findMany({
-            where: {
-                date: {
-                    gte: new Date(now.toISOString().split('T')[0]),
-                    lt: new Date(now.toISOString().split('T')[0] + 'T23:59:59'),
-                },
-                endTime: { lt: currentTime },
-                isAvailable: true,
-            },
-        });
-        for (const schedule of expiredSchedules) {
-            await this.db.doctorSchedule.update({
-                where: { id: schedule.id },
-                data: { isAvailable: false },
-            });
-        }
-        console.log(`Marked ${expiredSchedules.length} expired schedules as unavailable`);
-    }
-    async checkConflicts(doctorId, date, startTime, endTime, excludeAppointmentId) {
-        const targetDate = new Date(date);
-        const whereClause = {
-            doctorId,
-            appointmentDate: targetDate,
-            status: { not: 'CANCELLED' },
-        };
-        if (excludeAppointmentId) {
-            whereClause.id = { not: excludeAppointmentId };
-        }
-        const conflicts = await this.db.appointment.findMany({
-            where: whereClause,
-        });
-        const overlappingAppointments = conflicts.filter(apt => {
-            return ((startTime >= apt.startTime && startTime < apt.endTime) ||
-                (endTime > apt.startTime && endTime <= apt.endTime) ||
-                (startTime <= apt.startTime && endTime >= apt.endTime));
-        });
-        return {
-            hasConflicts: overlappingAppointments.length > 0,
-            conflicts: overlappingAppointments,
-            message: overlappingAppointments.length > 0
-                ? 'Scheduling conflicts detected'
-                : 'No conflicts found',
-        };
-    }
-    async validateSlotDuration(doctorId, duration) {
-        const schedule = await this.db.doctorSchedule.findFirst({
-            where: {
-                doctorId,
-                isAvailable: true,
-            },
-            orderBy: { createdAt: 'desc' },
-        });
-        if (!schedule) {
-            return {
-                isValid: true,
-                message: 'No existing schedule to validate against',
-            };
-        }
-        const isValid = duration >= schedule.slotDuration;
-        return {
-            isValid,
-            message: isValid
-                ? 'Slot duration is valid'
-                : `Slot duration must be at least ${schedule.slotDuration} minutes`,
-        };
-    }
-    getDayOfWeek(date) {
-        const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
-        return days[date.getDay()];
-    }
-    calculateSlotDuration(startTime, endTime) {
-        const start = new Date(`2000-01-01T${startTime}`);
-        const end = new Date(`2000-01-01T${endTime}`);
-        return (end.getTime() - start.getTime()) / (1000 * 60);
-    }
-    async getNextAvailableSlot(doctorId, fromDate) {
-        const startDate = fromDate || new Date().toISOString().split('T')[0];
-        const endDate = new Date();
-        endDate.setDate(endDate.getDate() + 30);
-        const slots = await this.generateSlotsForDateRange(doctorId, startDate, endDate.toISOString().split('T')[0]);
-        if (!slots.success) {
-            return slots;
-        }
-        for (const daySlots of slots.data) {
-            const availableSlot = daySlots.slots.find(slot => slot.isAvailable);
-            if (availableSlot) {
-                return {
-                    success: true,
-                    data: {
-                        date: daySlots.date,
-                        slot: availableSlot,
-                    },
-                    message: 'Next available slot found',
-                };
-            }
-        }
-        return {
-            success: false,
-            data: null,
-            message: 'No available slots found in the next 30 days',
-        };
-    }
-};
-exports.SlotEngineService = SlotEngineService;
-__decorate([
-    (0, schedule_1.Cron)(schedule_1.CronExpression.EVERY_HOUR),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], SlotEngineService.prototype, "markExpiredSlots", null);
-exports.SlotEngineService = SlotEngineService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof database_service_1.DatabaseService !== "undefined" && database_service_1.DatabaseService) === "function" ? _a : Object])
-], SlotEngineService);
-
-
-/***/ }),
-/* 30 */
+/***/ "./src/modules/scheduling/services/doctor-availability.service.ts":
+/*!************************************************************************!*\
+  !*** ./src/modules/scheduling/services/doctor-availability.service.ts ***!
+  \************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2816,9 +2090,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DoctorAvailabilityService = void 0;
-const common_1 = __webpack_require__(1);
-const schedule_1 = __webpack_require__(22);
-const database_service_1 = __webpack_require__(14);
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const schedule_1 = __webpack_require__(/*! @nestjs/schedule */ "@nestjs/schedule");
+const database_service_1 = __webpack_require__(/*! ../../auth/services/database.service */ "./src/modules/auth/services/database.service.ts");
 let DoctorAvailabilityService = class DoctorAvailabilityService {
     constructor(db) {
         this.db = db;
@@ -3248,8 +2522,900 @@ exports.DoctorAvailabilityService = DoctorAvailabilityService = __decorate([
 ], DoctorAvailabilityService);
 
 
+/***/ }),
+
+/***/ "./src/modules/scheduling/services/scheduling.service.ts":
+/*!***************************************************************!*\
+  !*** ./src/modules/scheduling/services/scheduling.service.ts ***!
+  \***************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c, _d;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SchedulingService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const database_service_1 = __webpack_require__(/*! ../../auth/services/database.service */ "./src/modules/auth/services/database.service.ts");
+const appointment_management_service_1 = __webpack_require__(/*! ./appointment-management.service */ "./src/modules/scheduling/services/appointment-management.service.ts");
+const doctor_availability_service_1 = __webpack_require__(/*! ./doctor-availability.service */ "./src/modules/scheduling/services/doctor-availability.service.ts");
+const slot_engine_service_1 = __webpack_require__(/*! ./slot-engine.service */ "./src/modules/scheduling/services/slot-engine.service.ts");
+let SchedulingService = class SchedulingService {
+    constructor(db, doctorAvailability, slotEngine, appointmentManagement) {
+        this.db = db;
+        this.doctorAvailability = doctorAvailability;
+        this.slotEngine = slotEngine;
+        this.appointmentManagement = appointmentManagement;
+    }
+    async createScheduleTemplate(doctorId, templateData) {
+        const doctor = await this.db.user.findUnique({ where: { id: doctorId } });
+        if (!doctor) {
+            throw new common_1.NotFoundException('Doctor not found');
+        }
+        const template = await this.db.doctorScheduleTemplate.create({
+            data: {
+                doctorId,
+                ...templateData,
+            },
+            include: {
+                timeSlots: true,
+            },
+        });
+        return {
+            success: true,
+            data: template,
+            message: 'Schedule template created successfully',
+        };
+    }
+    async getScheduleTemplates(doctorId) {
+        const templates = await this.db.doctorScheduleTemplate.findMany({
+            where: { doctorId },
+            include: {
+                timeSlots: true,
+            },
+            orderBy: { createdAt: 'desc' },
+        });
+        return {
+            success: true,
+            data: templates,
+            message: 'Schedule templates retrieved successfully',
+        };
+    }
+    async updateScheduleTemplate(templateId, updateData) {
+        const template = await this.db.doctorScheduleTemplate.findUnique({ where: { id: templateId } });
+        if (!template) {
+            throw new common_1.NotFoundException('Schedule template not found');
+        }
+        const updatedTemplate = await this.db.doctorScheduleTemplate.update({
+            where: { id: templateId },
+            data: updateData,
+            include: {
+                timeSlots: true,
+            },
+        });
+        return {
+            success: true,
+            data: updatedTemplate,
+            message: 'Schedule template updated successfully',
+        };
+    }
+    async deleteScheduleTemplate(templateId) {
+        const template = await this.db.doctorScheduleTemplate.findUnique({ where: { id: templateId } });
+        if (!template) {
+            throw new common_1.NotFoundException('Schedule template not found');
+        }
+        await this.db.doctorScheduleTemplate.delete({ where: { id: templateId } });
+        return {
+            success: true,
+            message: 'Schedule template deleted successfully',
+        };
+    }
+    async createTimeSlot(templateId, slotData) {
+        const template = await this.db.doctorScheduleTemplate.findUnique({ where: { id: templateId } });
+        if (!template) {
+            throw new common_1.NotFoundException('Schedule template not found');
+        }
+        const timeSlot = await this.db.doctorTimeSlot.create({
+            data: {
+                templateId,
+                ...slotData,
+            },
+        });
+        return {
+            success: true,
+            data: timeSlot,
+            message: 'Time slot created successfully',
+        };
+    }
+    async updateTimeSlot(slotId, updateData) {
+        const timeSlot = await this.db.doctorTimeSlot.findUnique({ where: { id: slotId } });
+        if (!timeSlot) {
+            throw new common_1.NotFoundException('Time slot not found');
+        }
+        const updatedSlot = await this.db.doctorTimeSlot.update({
+            where: { id: slotId },
+            data: updateData,
+        });
+        return {
+            success: true,
+            data: updatedSlot,
+            message: 'Time slot updated successfully',
+        };
+    }
+    async deleteTimeSlot(slotId) {
+        const timeSlot = await this.db.doctorTimeSlot.findUnique({ where: { id: slotId } });
+        if (!timeSlot) {
+            throw new common_1.NotFoundException('Time slot not found');
+        }
+        await this.db.doctorTimeSlot.delete({ where: { id: slotId } });
+        return {
+            success: true,
+            message: 'Time slot deleted successfully',
+        };
+    }
+    async generateSchedule(doctorId, templateId, date) {
+        const template = await this.db.doctorScheduleTemplate.findUnique({
+            where: { id: templateId },
+        });
+        if (!template) {
+            throw new common_1.NotFoundException('Schedule template not found');
+        }
+        const existingSchedule = await this.db.doctorSchedule.findFirst({
+            where: {
+                doctorId,
+                date: new Date(date),
+            },
+        });
+        if (existingSchedule) {
+            throw new common_1.BadRequestException('Schedule already exists for this date');
+        }
+        const profile = await this.db.doctorProfile.findFirst({
+            where: { doctorId },
+        });
+        if (!profile) {
+            throw new common_1.NotFoundException('Doctor profile not found');
+        }
+        const schedule = await this.db.doctorSchedule.create({
+            data: {
+                doctorId,
+                profileId: profile.id,
+                templateId,
+                dayOfWeek: this.getDayOfWeek(new Date(date)),
+                startTime: '09:00',
+                endTime: '17:00',
+                date: new Date(date),
+                slotDuration: 30,
+                bufferTime: 10,
+                maxBookings: 1,
+                location: 'Main Clinic',
+                serviceType: 'CONSULTATION',
+                isAvailable: true,
+            },
+        });
+        return {
+            success: true,
+            data: schedule,
+            message: 'Schedule generated successfully',
+        };
+    }
+    getDayOfWeek(date) {
+        const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+        return days[date.getDay()];
+    }
+    generateTimeSlotsFromTemplate(template, date) {
+        const slots = [];
+        const startTime = new Date(`${date}T${template.startTime}`);
+        const endTime = new Date(`${date}T${template.endTime}`);
+        let currentTime = new Date(startTime);
+        while (currentTime < endTime) {
+            const slotEnd = new Date(currentTime.getTime() + template.slotDuration * 60000);
+            slots.push({
+                startTime: currentTime.toTimeString().split(' ')[0].substring(0, 5),
+                endTime: slotEnd.toTimeString().split(' ')[0].substring(0, 5),
+                isAvailable: true,
+            });
+            currentTime = new Date(currentTime.getTime() + (template.slotDuration + template.bufferTime) * 60000);
+        }
+        return slots;
+    }
+    async getAvailability(doctorId, date) {
+        const schedule = await this.db.doctorSchedule.findFirst({
+            where: {
+                doctorId,
+                date: new Date(date),
+                isAvailable: true,
+            },
+        });
+        if (!schedule) {
+            return {
+                success: true,
+                data: [],
+                message: 'No schedule found for this date',
+            };
+        }
+        const timeSlots = this.generateTimeSlotsForSchedule(schedule);
+        return {
+            success: true,
+            data: timeSlots,
+            message: 'Availability retrieved successfully',
+        };
+    }
+    generateTimeSlotsForSchedule(schedule) {
+        const slots = [];
+        const startTime = new Date(`${schedule.date.toISOString().split('T')[0]}T${schedule.startTime}`);
+        const endTime = new Date(`${schedule.date.toISOString().split('T')[0]}T${schedule.endTime}`);
+        let currentTime = new Date(startTime);
+        while (currentTime < endTime) {
+            const slotEnd = new Date(currentTime.getTime() + schedule.slotDuration * 60000);
+            slots.push({
+                id: `${schedule.id}-${currentTime.toTimeString().split(' ')[0]}`,
+                startTime: currentTime.toTimeString().split(' ')[0].substring(0, 5),
+                endTime: slotEnd.toTimeString().split(' ')[0].substring(0, 5),
+                isAvailable: true,
+                isBooked: false,
+            });
+            currentTime = new Date(currentTime.getTime() + (schedule.slotDuration + schedule.bufferTime) * 60000);
+        }
+        return slots;
+    }
+    async updateAvailability(doctorId, date, timeSlots) {
+        const scheduleDate = new Date(date);
+        let schedule = await this.db.doctorSchedule.findFirst({
+            where: {
+                doctorId,
+                date: scheduleDate,
+            },
+        });
+        if (!schedule) {
+            let template = await this.db.doctorScheduleTemplate.findFirst({
+                where: { doctorId, isDefault: true },
+            });
+            if (!template) {
+                template = await this.db.doctorScheduleTemplate.create({
+                    data: {
+                        doctorId,
+                        name: 'Default Availability',
+                        isDefault: true,
+                        isActive: true,
+                    },
+                });
+            }
+            const dayOfWeekMap = {
+                0: 'SUNDAY',
+                1: 'MONDAY',
+                2: 'TUESDAY',
+                3: 'WEDNESDAY',
+                4: 'THURSDAY',
+                5: 'FRIDAY',
+                6: 'SATURDAY',
+            };
+            const dayOfWeek = dayOfWeekMap[scheduleDate.getDay()];
+            const sortedSlots = timeSlots.sort((a, b) => a.startTime.localeCompare(b.startTime));
+            const startTime = sortedSlots[0]?.startTime || '09:00';
+            const endTime = sortedSlots[sortedSlots.length - 1]?.endTime || '17:00';
+            const slotDuration = 30;
+            const bufferTime = 5;
+            schedule = await this.db.doctorSchedule.create({
+                data: {
+                    doctorId,
+                    profileId: doctorId,
+                    templateId: template.id,
+                    dayOfWeek,
+                    date: scheduleDate,
+                    startTime,
+                    endTime,
+                    slotDuration,
+                    bufferTime,
+                    isAvailable: timeSlots.some(slot => slot.isAvailable),
+                    notes: `Availability created for ${date}`,
+                },
+            });
+        }
+        else {
+            const availableSlots = timeSlots.filter(slot => slot.isAvailable).length;
+            const totalSlots = timeSlots.length;
+            await this.db.doctorSchedule.update({
+                where: { id: schedule.id },
+                data: {
+                    isAvailable: availableSlots > 0,
+                    notes: `Updated availability: ${availableSlots}/${totalSlots} slots available`,
+                },
+            });
+        }
+        return {
+            success: true,
+            data: schedule,
+            message: 'Availability updated successfully',
+        };
+    }
+    async createException(doctorId, exceptionData) {
+        const exception = await this.db.doctorScheduleException.create({
+            data: {
+                doctorId,
+                ...exceptionData,
+            },
+        });
+        return {
+            success: true,
+            data: exception,
+            message: 'Schedule exception created successfully',
+        };
+    }
+    async getExceptions(doctorId, startDate, endDate) {
+        const where = { doctorId };
+        if (startDate && endDate) {
+            where.date = {
+                gte: new Date(startDate),
+                lte: new Date(endDate),
+            };
+        }
+        const exceptions = await this.db.doctorScheduleException.findMany({
+            where,
+            orderBy: { date: 'desc' },
+        });
+        return {
+            success: true,
+            data: exceptions,
+            message: 'Schedule exceptions retrieved successfully',
+        };
+    }
+    async deleteException(exceptionId) {
+        const exception = await this.db.doctorScheduleException.findUnique({ where: { id: exceptionId } });
+        if (!exception) {
+            throw new common_1.NotFoundException('Schedule exception not found');
+        }
+        await this.db.doctorScheduleException.delete({ where: { id: exceptionId } });
+        return {
+            success: true,
+            message: 'Schedule exception deleted successfully',
+        };
+    }
+    async bookAppointment(appointmentData) {
+        const schedule = await this.db.doctorSchedule.findFirst({
+            where: {
+                id: appointmentData.scheduleId,
+                isAvailable: true,
+            },
+        });
+        if (!schedule) {
+            throw new common_1.BadRequestException('Schedule is not available');
+        }
+        const existingAppointment = await this.db.appointment.findFirst({
+            where: {
+                doctorId: appointmentData.doctorId,
+                appointmentDate: new Date(appointmentData.date),
+                startTime: appointmentData.startTime,
+                status: { not: 'CANCELLED' },
+            },
+        });
+        if (existingAppointment) {
+            throw new common_1.BadRequestException('Time slot is already booked');
+        }
+        const appointment = await this.db.appointment.create({
+            data: {
+                patientId: appointmentData.patientId,
+                doctorId: appointmentData.doctorId,
+                scheduleId: appointmentData.scheduleId,
+                appointmentDate: new Date(appointmentData.date),
+                startTime: appointmentData.startTime,
+                endTime: appointmentData.endTime,
+                duration: 30,
+                type: appointmentData.type,
+                status: 'SCHEDULED',
+                notes: appointmentData.notes,
+            },
+            include: {
+                patient: true,
+            },
+        });
+        return {
+            success: true,
+            data: appointment,
+            message: 'Appointment booked successfully',
+        };
+    }
+    async getAppointments(doctorId, startDate, endDate) {
+        const where = { doctorId };
+        if (startDate && endDate) {
+            where.appointmentDate = {
+                gte: new Date(startDate),
+                lte: new Date(endDate),
+            };
+        }
+        const appointments = await this.db.appointment.findMany({
+            where,
+            include: {
+                patient: true,
+            },
+            orderBy: { appointmentDate: 'desc' },
+        });
+        return {
+            success: true,
+            data: appointments,
+            message: 'Appointments retrieved successfully',
+        };
+    }
+    async updateAppointment(appointmentId, updateData) {
+        const appointment = await this.db.appointment.findUnique({ where: { id: appointmentId } });
+        if (!appointment) {
+            throw new common_1.NotFoundException('Appointment not found');
+        }
+        const updatedAppointment = await this.db.appointment.update({
+            where: { id: appointmentId },
+            data: updateData,
+            include: {
+                patient: true,
+            },
+        });
+        return {
+            success: true,
+            data: updatedAppointment,
+            message: 'Appointment updated successfully',
+        };
+    }
+    async cancelAppointment(appointmentId) {
+        const appointment = await this.db.appointment.findUnique({ where: { id: appointmentId } });
+        if (!appointment) {
+            throw new common_1.NotFoundException('Appointment not found');
+        }
+        const updatedAppointment = await this.db.appointment.update({
+            where: { id: appointmentId },
+            data: { status: 'CANCELLED' },
+        });
+        return {
+            success: true,
+            data: updatedAppointment,
+            message: 'Appointment cancelled successfully',
+        };
+    }
+};
+exports.SchedulingService = SchedulingService;
+exports.SchedulingService = SchedulingService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof database_service_1.DatabaseService !== "undefined" && database_service_1.DatabaseService) === "function" ? _a : Object, typeof (_b = typeof doctor_availability_service_1.DoctorAvailabilityService !== "undefined" && doctor_availability_service_1.DoctorAvailabilityService) === "function" ? _b : Object, typeof (_c = typeof slot_engine_service_1.SlotEngineService !== "undefined" && slot_engine_service_1.SlotEngineService) === "function" ? _c : Object, typeof (_d = typeof appointment_management_service_1.AppointmentManagementService !== "undefined" && appointment_management_service_1.AppointmentManagementService) === "function" ? _d : Object])
+], SchedulingService);
+
+
+/***/ }),
+
+/***/ "./src/modules/scheduling/services/slot-engine.service.ts":
+/*!****************************************************************!*\
+  !*** ./src/modules/scheduling/services/slot-engine.service.ts ***!
+  \****************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SlotEngineService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const schedule_1 = __webpack_require__(/*! @nestjs/schedule */ "@nestjs/schedule");
+const database_service_1 = __webpack_require__(/*! ../../auth/services/database.service */ "./src/modules/auth/services/database.service.ts");
+let SlotEngineService = class SlotEngineService {
+    constructor(db) {
+        this.db = db;
+    }
+    async generateSlotsForDate(doctorId, date) {
+        const targetDate = new Date(date);
+        const dayOfWeek = this.getDayOfWeek(targetDate);
+        const schedule = await this.db.doctorSchedule.findFirst({
+            where: {
+                doctorId,
+                date: targetDate,
+                isAvailable: true,
+            },
+        });
+        if (!schedule) {
+            return {
+                success: true,
+                data: [],
+                message: 'No schedule found for this date',
+            };
+        }
+        const slots = this.generateTimeSlotsFromSchedule(schedule, date);
+        const appointments = await this.db.appointment.findMany({
+            where: {
+                doctorId,
+                appointmentDate: targetDate,
+                status: {
+                    not: 'CANCELLED',
+                },
+            },
+        });
+        const processedSlots = slots.map(slot => {
+            const isBooked = appointments.some(apt => apt.startTime === slot.startTime);
+            return {
+                ...slot,
+                isAvailable: !isBooked,
+                isBooked,
+                status: isBooked ? 'BOOKED' : 'AVAILABLE',
+            };
+        });
+        return {
+            success: true,
+            data: processedSlots,
+            message: 'Slots generated successfully',
+        };
+    }
+    generateTimeSlotsFromSchedule(schedule, date) {
+        const slots = [];
+        const startTime = new Date(`${date}T${schedule.startTime}`);
+        const endTime = new Date(`${date}T${schedule.endTime}`);
+        let currentTime = new Date(startTime);
+        while (currentTime < endTime) {
+            const slotEnd = new Date(currentTime.getTime() + schedule.slotDuration * 60000);
+            if (slotEnd <= endTime) {
+                slots.push({
+                    id: `${schedule.id}-${currentTime.toTimeString().split(' ')[0]}`,
+                    scheduleId: schedule.id,
+                    startTime: currentTime.toTimeString().split(' ')[0].substring(0, 5),
+                    endTime: slotEnd.toTimeString().split(' ')[0].substring(0, 5),
+                    duration: schedule.slotDuration,
+                    bufferTime: schedule.bufferTime,
+                    location: schedule.location,
+                    serviceType: schedule.serviceType,
+                    isAvailable: true,
+                    isBooked: false,
+                    status: 'AVAILABLE',
+                });
+            }
+            currentTime = new Date(currentTime.getTime() + (schedule.slotDuration + schedule.bufferTime) * 60000);
+        }
+        return slots;
+    }
+    async checkSlotAvailability(doctorId, date, startTime, endTime) {
+        const targetDate = new Date(date);
+        const conflictingAppointment = await this.db.appointment.findFirst({
+            where: {
+                doctorId,
+                appointmentDate: targetDate,
+                startTime,
+                status: {
+                    not: 'CANCELLED',
+                },
+            },
+        });
+        if (conflictingAppointment) {
+            throw new common_1.BadRequestException('Time slot is already booked');
+        }
+        const schedule = await this.db.doctorSchedule.findFirst({
+            where: {
+                doctorId,
+                date: targetDate,
+                isAvailable: true,
+                startTime: { lte: startTime },
+                endTime: { gte: endTime },
+            },
+        });
+        if (!schedule) {
+            throw new common_1.BadRequestException('Doctor is not available at this time');
+        }
+        return {
+            success: true,
+            data: {
+                isAvailable: true,
+                scheduleId: schedule.id,
+            },
+            message: 'Slot is available',
+        };
+    }
+    async lockSlot(doctorId, scheduleId, startTime, endTime) {
+        return {
+            success: true,
+            message: 'Slot locked successfully',
+        };
+    }
+    async releaseSlot(doctorId, scheduleId, startTime) {
+        return {
+            success: true,
+            message: 'Slot released successfully',
+        };
+    }
+    async generateSlotsForDateRange(doctorId, startDate, endDate) {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const allSlots = [];
+        const currentDate = new Date(start);
+        while (currentDate <= end) {
+            const dateStr = currentDate.toISOString().split('T')[0];
+            const slots = await this.generateSlotsForDate(doctorId, dateStr);
+            if (slots.success && slots.data.length > 0) {
+                allSlots.push({
+                    date: dateStr,
+                    slots: slots.data,
+                });
+            }
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+        return {
+            success: true,
+            data: allSlots,
+            message: 'Slots generated for date range',
+        };
+    }
+    async getAvailableSlotsInRange(doctorId, date, startTime, endTime) {
+        const slots = await this.generateSlotsForDate(doctorId, date);
+        if (!slots.success) {
+            return slots;
+        }
+        let filteredSlots = slots.data.filter(slot => slot.isAvailable);
+        if (startTime) {
+            filteredSlots = filteredSlots.filter(slot => slot.startTime >= startTime);
+        }
+        if (endTime) {
+            filteredSlots = filteredSlots.filter(slot => slot.endTime <= endTime);
+        }
+        return {
+            success: true,
+            data: filteredSlots,
+            message: 'Available slots retrieved successfully',
+        };
+    }
+    async updateSlotStatus(slotId, status) {
+        return {
+            success: true,
+            message: `Slot status updated to ${status}`,
+        };
+    }
+    async markExpiredSlots() {
+        const now = new Date();
+        const currentTime = now.toTimeString().split(' ')[0].substring(0, 5);
+        const expiredSchedules = await this.db.doctorSchedule.findMany({
+            where: {
+                date: {
+                    gte: new Date(now.toISOString().split('T')[0]),
+                    lt: new Date(now.toISOString().split('T')[0] + 'T23:59:59'),
+                },
+                endTime: { lt: currentTime },
+                isAvailable: true,
+            },
+        });
+        for (const schedule of expiredSchedules) {
+            await this.db.doctorSchedule.update({
+                where: { id: schedule.id },
+                data: { isAvailable: false },
+            });
+        }
+        console.log(`Marked ${expiredSchedules.length} expired schedules as unavailable`);
+    }
+    async checkConflicts(doctorId, date, startTime, endTime, excludeAppointmentId) {
+        const targetDate = new Date(date);
+        const whereClause = {
+            doctorId,
+            appointmentDate: targetDate,
+            status: { not: 'CANCELLED' },
+        };
+        if (excludeAppointmentId) {
+            whereClause.id = { not: excludeAppointmentId };
+        }
+        const conflicts = await this.db.appointment.findMany({
+            where: whereClause,
+        });
+        const overlappingAppointments = conflicts.filter(apt => {
+            return ((startTime >= apt.startTime && startTime < apt.endTime) ||
+                (endTime > apt.startTime && endTime <= apt.endTime) ||
+                (startTime <= apt.startTime && endTime >= apt.endTime));
+        });
+        return {
+            hasConflicts: overlappingAppointments.length > 0,
+            conflicts: overlappingAppointments,
+            message: overlappingAppointments.length > 0
+                ? 'Scheduling conflicts detected'
+                : 'No conflicts found',
+        };
+    }
+    async validateSlotDuration(doctorId, duration) {
+        const schedule = await this.db.doctorSchedule.findFirst({
+            where: {
+                doctorId,
+                isAvailable: true,
+            },
+            orderBy: { createdAt: 'desc' },
+        });
+        if (!schedule) {
+            return {
+                isValid: true,
+                message: 'No existing schedule to validate against',
+            };
+        }
+        const isValid = duration >= schedule.slotDuration;
+        return {
+            isValid,
+            message: isValid
+                ? 'Slot duration is valid'
+                : `Slot duration must be at least ${schedule.slotDuration} minutes`,
+        };
+    }
+    getDayOfWeek(date) {
+        const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+        return days[date.getDay()];
+    }
+    calculateSlotDuration(startTime, endTime) {
+        const start = new Date(`2000-01-01T${startTime}`);
+        const end = new Date(`2000-01-01T${endTime}`);
+        return (end.getTime() - start.getTime()) / (1000 * 60);
+    }
+    async getNextAvailableSlot(doctorId, fromDate) {
+        const startDate = fromDate || new Date().toISOString().split('T')[0];
+        const endDate = new Date();
+        endDate.setDate(endDate.getDate() + 30);
+        const slots = await this.generateSlotsForDateRange(doctorId, startDate, endDate.toISOString().split('T')[0]);
+        if (!slots.success) {
+            return slots;
+        }
+        for (const daySlots of slots.data) {
+            const availableSlot = daySlots.slots.find(slot => slot.isAvailable);
+            if (availableSlot) {
+                return {
+                    success: true,
+                    data: {
+                        date: daySlots.date,
+                        slot: availableSlot,
+                    },
+                    message: 'Next available slot found',
+                };
+            }
+        }
+        return {
+            success: false,
+            data: null,
+            message: 'No available slots found in the next 30 days',
+        };
+    }
+};
+exports.SlotEngineService = SlotEngineService;
+__decorate([
+    (0, schedule_1.Cron)(schedule_1.CronExpression.EVERY_HOUR),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], SlotEngineService.prototype, "markExpiredSlots", null);
+exports.SlotEngineService = SlotEngineService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof database_service_1.DatabaseService !== "undefined" && database_service_1.DatabaseService) === "function" ? _a : Object])
+], SlotEngineService);
+
+
+/***/ }),
+
+/***/ "@nestjs/common":
+/*!*********************************!*\
+  !*** external "@nestjs/common" ***!
+  \*********************************/
+/***/ ((module) => {
+
+module.exports = require("@nestjs/common");
+
+/***/ }),
+
+/***/ "@nestjs/config":
+/*!*********************************!*\
+  !*** external "@nestjs/config" ***!
+  \*********************************/
+/***/ ((module) => {
+
+module.exports = require("@nestjs/config");
+
+/***/ }),
+
+/***/ "@nestjs/core":
+/*!*******************************!*\
+  !*** external "@nestjs/core" ***!
+  \*******************************/
+/***/ ((module) => {
+
+module.exports = require("@nestjs/core");
+
+/***/ }),
+
+/***/ "@nestjs/jwt":
+/*!******************************!*\
+  !*** external "@nestjs/jwt" ***!
+  \******************************/
+/***/ ((module) => {
+
+module.exports = require("@nestjs/jwt");
+
+/***/ }),
+
+/***/ "@nestjs/passport":
+/*!***********************************!*\
+  !*** external "@nestjs/passport" ***!
+  \***********************************/
+/***/ ((module) => {
+
+module.exports = require("@nestjs/passport");
+
+/***/ }),
+
+/***/ "@nestjs/schedule":
+/*!***********************************!*\
+  !*** external "@nestjs/schedule" ***!
+  \***********************************/
+/***/ ((module) => {
+
+module.exports = require("@nestjs/schedule");
+
+/***/ }),
+
+/***/ "@nestjs/swagger":
+/*!**********************************!*\
+  !*** external "@nestjs/swagger" ***!
+  \**********************************/
+/***/ ((module) => {
+
+module.exports = require("@nestjs/swagger");
+
+/***/ }),
+
+/***/ "@prisma/client":
+/*!*********************************!*\
+  !*** external "@prisma/client" ***!
+  \*********************************/
+/***/ ((module) => {
+
+module.exports = require("@prisma/client");
+
+/***/ }),
+
+/***/ "bcrypt":
+/*!*************************!*\
+  !*** external "bcrypt" ***!
+  \*************************/
+/***/ ((module) => {
+
+module.exports = require("bcrypt");
+
+/***/ }),
+
+/***/ "class-transformer":
+/*!************************************!*\
+  !*** external "class-transformer" ***!
+  \************************************/
+/***/ ((module) => {
+
+module.exports = require("class-transformer");
+
+/***/ }),
+
+/***/ "class-validator":
+/*!**********************************!*\
+  !*** external "class-validator" ***!
+  \**********************************/
+/***/ ((module) => {
+
+module.exports = require("class-validator");
+
+/***/ }),
+
+/***/ "passport-jwt":
+/*!*******************************!*\
+  !*** external "passport-jwt" ***!
+  \*******************************/
+/***/ ((module) => {
+
+module.exports = require("passport-jwt");
+
 /***/ })
-/******/ 	]);
+
+/******/ 	});
 /************************************************************************/
 /******/ 	// The module cache
 /******/ 	var __webpack_module_cache__ = {};
@@ -3280,12 +3446,15 @@ var __webpack_exports__ = {};
 // This entry needs to be wrapped in an IIFE because it needs to be isolated against other modules in the chunk.
 (() => {
 var exports = __webpack_exports__;
+/*!*********************!*\
+  !*** ./src/main.ts ***!
+  \*********************/
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const common_1 = __webpack_require__(1);
-const core_1 = __webpack_require__(2);
-const swagger_1 = __webpack_require__(3);
-const app_module_1 = __webpack_require__(4);
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const core_1 = __webpack_require__(/*! @nestjs/core */ "@nestjs/core");
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const app_module_1 = __webpack_require__(/*! ./app.module */ "./src/app.module.ts");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     app.enableCors({
