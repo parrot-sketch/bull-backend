@@ -5,7 +5,7 @@ services:
     plan: free
     region: oregon
     rootDir: .
-    buildCommand: npm install && npx nest build
+    buildCommand: npm install --production=false && npm run build
     startCommand: npm run start:prod
     envVars:
       - key: DATABASE_URL
