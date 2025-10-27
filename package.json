@@ -4,7 +4,7 @@
   "description": "iHosi Healthcare Backend - Enterprise Healthcare API",
   "main": "dist/main.js",
   "scripts": {
-    "build": "npx nest build",
+    "build": "./node_modules/.bin/nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
   "start": "nest start",
   "start:dev": "node -r tsconfig-paths/register -r ts-node/register ./node_modules/.bin/nest start --watch",
