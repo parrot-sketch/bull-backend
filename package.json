@@ -79,7 +79,8 @@
     "twilio": "^4.15.0",
     "uuid": "^9.0.0",
     "winston": "^3.10.0",
-    "winston-daily-rotate-file": "^4.7.1"
+    "winston-daily-rotate-file": "^4.7.1",
+    "typescript": "^5.1.3"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
@@ -114,8 +115,7 @@
     "ts-jest": "^29.1.0",
     "ts-loader": "^9.4.3",
     "ts-node": "^10.9.1",
-    "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.1.3"
+    "tsconfig-paths": "^4.2.0"
   },
   "jest": {
     "moduleFileExtensions": [
