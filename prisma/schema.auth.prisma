@@ -1,0 +1,395 @@
+// Enterprise Healthcare Authentication Schema
+// HIPAA Compliant - Healthcare Information Management System
+// This schema focuses ONLY on authentication and user management
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ===========================================
+// CORE USER MANAGEMENT
+// ===========================================
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String   // Encrypted with bcrypt
+  firstName String
+  lastName  String
+  role      UserRole @default(PATIENT)
+  
+  // Account Status
+  isActive     Boolean @default(true)
+  isVerified   Boolean @default(false)
+  isLocked     Boolean @default(false)
+  lockedUntil DateTime?
+  
+  // Profile Information
+  avatar         String?
+  phoneNumber   String?
+  dateOfBirth   DateTime?
+  gender        Gender?
+  address       String?
+  city          String?
+  state         String?
+  zipCode       String?
+  country       String @default("US")
+  
+  // Professional Information (for healthcare providers)
+  department     String?
+  specialization String?
+  licenseNumber  String?
+  npiNumber      String? // National Provider Identifier
+  
+  // Security Settings
+  lastLoginAt    DateTime?
+  lastPasswordChange DateTime @default(now())
+  passwordResetToken String?
+  passwordResetExpires DateTime?
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  profile       UserProfile?
+  sessions      UserSession[]
+  mfaSettings   MfaSettings?
+  auditLogs     AuditLog[]
+  permissions   UserPermission[]
+  consentRecords ConsentRecord[]
+  
+  @@map("users")
+}
+
+model UserProfile {
+  id        String @id @default(cuid())
+  userId    String @unique
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Extended Profile Information
+  bio         String?
+  preferences Json? // User preferences as JSON
+  timezone    String @default("UTC")
+  language    String @default("en")
+  
+  // Healthcare Specific
+  emergencyContactName    String?
+  emergencyContactPhone   String?
+  emergencyContactRelation String?
+  allergies              String[]
+  medications            String[]
+  medicalConditions      String[]
+  bloodType              String?
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("user_profiles")
+}
+
+// ===========================================
+// AUTHENTICATION & SESSION MANAGEMENT
+// ===========================================
+
+model UserSession {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Session Details
+  refreshToken String   @unique
+  accessToken  String?  // For tracking active sessions
+  deviceInfo   Json?    // Device fingerprint
+  ipAddress    String?
+  userAgent    String?
+  
+  // Session Status
+  isActive     Boolean  @default(true)
+  expiresAt    DateTime
+  lastActivity DateTime @default(now())
+  
+  // Security
+  isSecure     Boolean  @default(false) // HTTPS sessions
+  location     String?  // Geographic location
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("user_sessions")
+}
+
+// ===========================================
+// MULTI-FACTOR AUTHENTICATION
+// ===========================================
+
+model MfaSettings {
+  id        String @id @default(cuid())
+  userId    String @unique
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // MFA Configuration
+  isEnabled     Boolean @default(false)
+  method        MfaMethod @default(TOTP)
+  secret        String?  // Encrypted TOTP secret
+  backupCodes   String[] // Encrypted backup codes
+  
+  // SMS/Email MFA
+  phoneNumber   String?
+  emailVerified Boolean @default(false)
+  
+  // Recovery
+  recoveryCodes String[] // Encrypted recovery codes
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("mfa_settings")
+}
+
+model MfaAttempt {
+  id        String @id @default(cuid())
+  userId    String
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Attempt Details
+  method    MfaMethod
+  code      String
+  isValid   Boolean
+  ipAddress String?
+  userAgent String?
+  
+  // Timestamps
+  attemptedAt DateTime @default(now())
+  
+  @@map("mfa_attempts")
+}
+
+// ===========================================
+// ROLE-BASED ACCESS CONTROL
+// ===========================================
+
+model Permission {
+  id          String @id @default(cuid())
+  name        String @unique
+  description String
+  resource    String // e.g., "patients", "appointments"
+  action      String // e.g., "read", "write", "delete"
+  
+  // Relations
+  userPermissions UserPermission[]
+  rolePermissions RolePermission[]
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("permissions")
+}
+
+model Role {
+  id          String @id @default(cuid())
+  name        String @unique
+  description String
+  isSystem    Boolean @default(false) // System roles cannot be deleted
+  
+  // Relations
+  rolePermissions RolePermission[]
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("roles")
+}
+
+model UserPermission {
+  id           String @id @default(cuid())
+  userId       String
+  user         User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  permissionId String
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  
+  // Permission Scope
+  resourceId   String? // Specific resource ID (e.g., specific patient)
+  conditions   Json?   // Additional conditions as JSON
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([userId, permissionId, resourceId])
+  @@map("user_permissions")
+}
+
+model RolePermission {
+  id           String @id @default(cuid())
+  roleId       String
+  role         Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permissionId String
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+// ===========================================
+// AUDIT & COMPLIANCE
+// ===========================================
+
+model AuditLog {
+  id        String @id @default(cuid())
+  userId    String?
+  user      User?  @relation(fields: [userId], references: [id], onDelete: SetNull)
+  
+  // Audit Details
+  action    String // e.g., "LOGIN", "LOGOUT", "PASSWORD_CHANGE"
+  resource  String? // e.g., "USER", "PATIENT"
+  resourceId String? // ID of the affected resource
+  
+  // Request Details
+  ipAddress String?
+  userAgent String?
+  method    String? // HTTP method
+  endpoint  String? // API endpoint
+  
+  // Additional Data
+  metadata  Json?   // Additional audit data
+  severity  AuditSeverity @default(INFO)
+  
+  // Timestamps
+  timestamp DateTime @default(now())
+  
+  @@map("audit_logs")
+}
+
+// ===========================================
+// CONSENT MANAGEMENT (HIPAA)
+// ===========================================
+
+model ConsentRecord {
+  id        String @id @default(cuid())
+  userId    String
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Consent Details
+  type        ConsentType
+  description String
+  granted     Boolean
+  grantedAt   DateTime?
+  revokedAt   DateTime?
+  
+  // Legal Requirements
+  version     String // Consent form version
+  ipAddress   String?
+  userAgent   String?
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("consent_records")
+}
+
+// ===========================================
+// SECURITY EVENTS
+// ===========================================
+
+model SecurityEvent {
+  id        String @id @default(cuid())
+  userId    String?
+  
+  // Event Details
+  type      SecurityEventType
+  severity  SecuritySeverity
+  description String
+  
+  // Context
+  ipAddress String?
+  userAgent String?
+  metadata  Json?
+  
+  // Resolution
+  isResolved Boolean @default(false)
+  resolvedAt DateTime?
+  resolvedBy String?
+  
+  // Timestamps
+  occurredAt DateTime @default(now())
+  
+  @@map("security_events")
+}
+
+// ===========================================
+// ENUMS
+// ===========================================
+
+enum UserRole {
+  DOCTOR
+  NURSE
+  PATIENT
+  ADMIN
+  TECHNICIAN
+  RECEPTIONIST
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+  PREFER_NOT_TO_SAY
+}
+
+enum MfaMethod {
+  TOTP    // Time-based One-Time Password
+  SMS     // SMS-based
+  EMAIL   // Email-based
+  BACKUP  // Backup codes
+}
+
+enum AuditSeverity {
+  DEBUG
+  INFO
+  WARN
+  ERROR
+  CRITICAL
+}
+
+enum ConsentType {
+  DATA_PROCESSING
+  MARKETING
+  RESEARCH
+  SHARING
+  EMERGENCY_ACCESS
+}
+
+enum SecurityEventType {
+  LOGIN_FAILURE
+  PASSWORD_BREACH
+  SUSPICIOUS_ACTIVITY
+  UNAUTHORIZED_ACCESS
+  DATA_EXPORT
+  ACCOUNT_LOCKOUT
+}
+
+enum SecuritySeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+
+

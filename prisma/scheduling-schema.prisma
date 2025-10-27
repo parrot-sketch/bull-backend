@@ -1,0 +1,349 @@
+// Doctor Scheduling System Schema
+// Based on 3-layer hierarchical structure: Default Template → Monthly Calendar → Exceptions
+
+// ===========================================
+// Core Scheduling Models
+// ===========================================
+
+model DoctorScheduleTemplate {
+  id          String   @id @default(cuid())
+  doctorId    String
+  name        String   // e.g., "Standard Week", "Telemedicine Week"
+  isDefault   Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  doctor      User     @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  timeSlots   DoctorTimeSlot[]
+  schedules   DoctorSchedule[]
+
+  @@unique([doctorId, isDefault])
+  @@index([doctorId, isActive])
+}
+
+model DoctorTimeSlot {
+  id          String   @id @default(cuid())
+  templateId  String
+  dayOfWeek   DayOfWeek
+  startTime   String   // HH:MM format (e.g., "09:00")
+  endTime     String   // HH:MM format (e.g., "17:00")
+  slotDuration Int     @default(30) // minutes
+  bufferTime  Int      @default(0) // minutes between slots
+  isAvailable Boolean  @default(true)
+  maxBookings Int      @default(1) // appointments per slot
+  location    String?  // "Main Office", "Telemedicine", "Hospital A"
+  serviceType String?  // "Consultation", "Follow-up", "Emergency"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  template    DoctorScheduleTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  bookings    Appointment[]
+  exceptions  DoctorScheduleException[]
+
+  @@index([templateId, dayOfWeek])
+  @@index([startTime, endTime])
+}
+
+model DoctorSchedule {
+  id          String   @id @default(cuid())
+  doctorId    String
+  templateId  String?
+  date        DateTime @db.Date
+  startTime   String   // HH:MM format
+  endTime     String   // HH:MM format
+  slotDuration Int     @default(30)
+  bufferTime  Int      @default(0)
+  isAvailable Boolean  @default(true)
+  maxBookings Int      @default(1)
+  location    String?
+  serviceType String?
+  notes       String?  // "Conference day", "Half day"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  doctor      User     @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  template    DoctorScheduleTemplate? @relation(fields: [templateId], references: [id])
+  bookings    Appointment[]
+  exceptions  DoctorScheduleException[]
+
+  @@unique([doctorId, date, startTime])
+  @@index([doctorId, date])
+  @@index([date, isAvailable])
+}
+
+model DoctorScheduleException {
+  id          String   @id @default(cuid())
+  doctorId    String
+  scheduleId  String?
+  timeSlotId  String?
+  date        DateTime @db.Date
+  startTime   String?  // HH:MM format
+  endTime     String?  // HH:MM format
+  type        ExceptionType
+  reason      String?  // "Sick leave", "Conference", "Personal"
+  isAllDay    Boolean  @default(false)
+  isRecurring Boolean  @default(false)
+  recurringPattern String? // "weekly", "monthly", "yearly"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  doctor      User     @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  schedule    DoctorSchedule? @relation(fields: [scheduleId], references: [id])
+  timeSlot    DoctorTimeSlot? @relation(fields: [timeSlotId], references: [id])
+
+  @@index([doctorId, date])
+  @@index([date, type])
+}
+
+// ===========================================
+// Appointment Management
+// ===========================================
+
+model Appointment {
+  id              String            @id @default(cuid())
+  doctorId        String
+  patientId       String
+  scheduleId      String?
+  timeSlotId      String?
+  appointmentDate DateTime          @db.Date
+  startTime       String            // HH:MM format
+  endTime         String            // HH:MM format
+  duration        Int               // minutes
+  status          AppointmentStatus @default(PENDING)
+  type            AppointmentType   @default(CONSULTATION)
+  location        String?           // "Main Office", "Telemedicine"
+  serviceId       String?           // Reference to doctor service
+  notes           String?
+  symptoms        String?
+  diagnosis       String?
+  prescription    String?
+  followUpDate    DateTime?         @db.Date
+  isRecurring     Boolean           @default(false)
+  recurringPattern String?          // "weekly", "monthly"
+  parentAppointmentId String?       // For recurring appointments
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  // Relations
+  doctor          User              @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  patient         User              @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  schedule        DoctorSchedule?   @relation(fields: [scheduleId], references: [id])
+  timeSlot        DoctorTimeSlot?   @relation(fields: [timeSlotId], references: [id])
+  service         DoctorService?    @relation(fields: [serviceId], references: [id])
+  parentAppointment Appointment?   @relation("RecurringAppointments", fields: [parentAppointmentId], references: [id])
+  childAppointments Appointment[]   @relation("RecurringAppointments")
+  reminders       AppointmentReminder[]
+  payments        Payment[]
+
+  @@unique([doctorId, appointmentDate, startTime])
+  @@index([doctorId, appointmentDate])
+  @@index([patientId, appointmentDate])
+  @@index([status, appointmentDate])
+}
+
+model AppointmentReminder {
+  id            String   @id @default(cuid())
+  appointmentId String
+  type          ReminderType
+  scheduledFor  DateTime
+  sentAt        DateTime?
+  status        ReminderStatus @default(PENDING)
+  method        ReminderMethod
+  message       String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+
+  @@index([appointmentId, scheduledFor])
+  @@index([status, scheduledFor])
+}
+
+// ===========================================
+// Availability & Booking Management
+// ===========================================
+
+model DoctorAvailability {
+  id              String   @id @default(cuid())
+  doctorId        String
+  date            DateTime @db.Date
+  startTime       String   // HH:MM format
+  endTime         String   // HH:MM format
+  slotDuration    Int      @default(30)
+  bufferTime      Int      @default(0)
+  maxBookings     Int      @default(1)
+  currentBookings Int      @default(0)
+  isAvailable     Boolean  @default(true)
+  location        String?
+  serviceType     String?
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  doctor          User     @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  bookings        Appointment[]
+
+  @@unique([doctorId, date, startTime])
+  @@index([doctorId, date])
+  @@index([isAvailable, date])
+}
+
+model BookingConflict {
+  id              String   @id @default(cuid())
+  doctorId        String
+  date            DateTime @db.Date
+  startTime       String   // HH:MM format
+  endTime         String   // HH:MM format
+  conflictType    ConflictType
+  description     String
+  isResolved      Boolean  @default(false)
+  resolvedAt      DateTime?
+  resolvedBy      String?  // User ID who resolved
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  doctor          User     @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+
+  @@index([doctorId, date])
+  @@index([isResolved])
+}
+
+// ===========================================
+// Analytics & Reporting
+// ===========================================
+
+model DoctorScheduleAnalytics {
+  id              String   @id @default(cuid())
+  doctorId        String
+  date            DateTime @db.Date
+  totalSlots      Int      @default(0)
+  bookedSlots     Int      @default(0)
+  availableSlots  Int      @default(0)
+  blockedSlots    Int      @default(0)
+  totalRevenue    Decimal  @default(0) @db.Decimal(10, 2)
+  averageSlotDuration Int  @default(30)
+  patientSatisfaction Decimal? @db.Decimal(3, 2) // 0.00 to 5.00
+  noShowRate      Decimal  @default(0) @db.Decimal(5, 2) // percentage
+  cancellationRate Decimal @default(0) @db.Decimal(5, 2) // percentage
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  doctor          User     @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+
+  @@unique([doctorId, date])
+  @@index([doctorId, date])
+}
+
+// ===========================================
+// Enums
+// ===========================================
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+enum ExceptionType {
+  BLOCKED        // Doctor unavailable
+  EXTENDED_HOURS // Extended working hours
+  REDUCED_HOURS  // Reduced working hours
+  LOCATION_CHANGE // Different location
+  SERVICE_CHANGE // Different service type
+  BREAK          // Break time
+  HOLIDAY        // Holiday
+  SICK_LEAVE     // Sick leave
+  CONFERENCE     // Conference/meeting
+  PERSONAL       // Personal time
+}
+
+enum AppointmentStatus {
+  PENDING         // Awaiting confirmation
+  CONFIRMED       // Confirmed by doctor
+  IN_PROGRESS     // Currently happening
+  COMPLETED       // Finished successfully
+  CANCELLED       // Cancelled by patient/doctor
+  NO_SHOW         // Patient didn't show up
+  RESCHEDULED     // Moved to different time
+}
+
+enum AppointmentType {
+  CONSULTATION
+  FOLLOW_UP
+  EMERGENCY
+  TELEMEDICINE
+  IN_PERSON
+  SURGERY
+  CHECKUP
+  VACCINATION
+  COUNSELING
+  THERAPY
+}
+
+enum ReminderType {
+  APPOINTMENT_REMINDER    // 24h before
+  CONFIRMATION_REMINDER   // 1h before
+  FOLLOW_UP_REMINDER      // After appointment
+  PAYMENT_REMINDER        // Payment due
+  RESCHEDULE_REMINDER     // Reschedule needed
+}
+
+enum ReminderStatus {
+  PENDING
+  SENT
+  DELIVERED
+  FAILED
+  CANCELLED
+}
+
+enum ReminderMethod {
+  SMS
+  EMAIL
+  PUSH_NOTIFICATION
+  PHONE_CALL
+  IN_APP
+}
+
+enum ConflictType {
+  DOUBLE_BOOKING
+  OVERLAPPING_SLOTS
+  UNAVAILABLE_DOCTOR
+  LOCATION_CONFLICT
+  SERVICE_CONFLICT
+  TIME_ZONE_CONFLICT
+  SYSTEM_ERROR
+}
+
+// ===========================================
+// Extend existing User model
+// ===========================================
+
+// Add these relations to the existing User model:
+// model User {
+//   // ... existing fields ...
+//   
+//   // Scheduling relations
+//   scheduleTemplates    DoctorScheduleTemplate[]
+//   schedules            DoctorSchedule[]
+//   scheduleExceptions   DoctorScheduleException[]
+//   availabilities       DoctorAvailability[]
+//   appointments         Appointment[]
+//   scheduleAnalytics    DoctorScheduleAnalytics[]
+//   bookingConflicts     BookingConflict[]
+// }
+
+
+

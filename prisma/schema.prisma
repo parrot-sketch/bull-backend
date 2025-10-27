@@ -1,0 +1,753 @@
+// Enterprise Healthcare Authentication Schema
+// HIPAA Compliant - Healthcare Information Management System
+// This schema focuses ONLY on authentication and user management
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ===========================================
+// CORE USER MANAGEMENT
+// ===========================================
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String   // Encrypted with bcrypt
+  firstName String
+  lastName  String
+  role      UserRole @default(PATIENT)
+  
+  // Account Status
+  isActive     Boolean @default(true)
+  isVerified   Boolean @default(false)
+  isLocked     Boolean @default(false)
+  lockedUntil DateTime?
+  
+  // Profile Information
+  avatar         String?
+  phoneNumber   String?
+  dateOfBirth   DateTime?
+  gender        Gender?
+  address       String?
+  city          String?
+  state         String?
+  zipCode       String?
+  country       String @default("US")
+  
+  // Professional Information (for healthcare providers)
+  department     String?
+  specialization String?
+  licenseNumber  String?
+  npiNumber      String? // National Provider Identifier
+  
+  // Security Settings
+  lastLoginAt    DateTime?
+  lastPasswordChange DateTime @default(now())
+  passwordResetToken String?
+  passwordResetExpires DateTime?
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  profile       UserProfile?
+  sessions      UserSession[]
+  mfaSettings   MfaSettings?
+  auditLogs     AuditLog[]
+  permissions   UserPermission[]
+  consentRecords ConsentRecord[]
+  
+  // Doctor-specific relations
+  doctorProfile     DoctorProfile?
+  doctorServices    DoctorService[]
+  doctorInsurances  DoctorInsurance[]
+  doctorSchedules   DoctorSchedule[]
+  doctorAvailabilities DoctorAvailability[]
+  consultationFees  ConsultationFee[]
+  scheduleTemplates DoctorScheduleTemplate[]
+  appointments      Appointment[]
+  patientAppointments Appointment[] @relation("PatientAppointments")
+  scheduleExceptions DoctorScheduleException[]
+  
+  @@map("users")
+}
+
+model UserProfile {
+  id        String @id @default(cuid())
+  userId    String @unique
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Extended Profile Information
+  bio         String?
+  preferences Json? // User preferences as JSON
+  timezone    String @default("UTC")
+  language    String @default("en")
+  
+  // Healthcare Specific
+  emergencyContactName    String?
+  emergencyContactPhone   String?
+  emergencyContactRelation String?
+  allergies              String[]
+  medications            String[]
+  medicalConditions      String[]
+  bloodType              String?
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("user_profiles")
+}
+
+// ===========================================
+// AUTHENTICATION & SESSION MANAGEMENT
+// ===========================================
+
+model UserSession {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Session Details
+  refreshToken String   @unique
+  accessToken  String?  // For tracking active sessions
+  deviceInfo   Json?    // Device fingerprint
+  ipAddress    String?
+  userAgent    String?
+  
+  // Session Status
+  isActive     Boolean  @default(true)
+  expiresAt    DateTime
+  lastActivity DateTime @default(now())
+  
+  // Security
+  isSecure     Boolean  @default(false) // HTTPS sessions
+  location     String?  // Geographic location
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("user_sessions")
+}
+
+// ===========================================
+// MULTI-FACTOR AUTHENTICATION
+// ===========================================
+
+model MfaSettings {
+  id        String @id @default(cuid())
+  userId    String @unique
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // MFA Configuration
+  isEnabled     Boolean @default(false)
+  method        MfaMethod @default(TOTP)
+  secret        String?  // Encrypted TOTP secret
+  backupCodes   String[] // Encrypted backup codes
+  
+  // SMS/Email MFA
+  phoneNumber   String?
+  emailVerified Boolean @default(false)
+  
+  // Recovery
+  recoveryCodes String[] // Encrypted recovery codes
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("mfa_settings")
+}
+
+// ===========================================
+// AUDIT & COMPLIANCE
+// ===========================================
+
+model AuditLog {
+  id        String @id @default(cuid())
+  userId    String?
+  user      User?  @relation(fields: [userId], references: [id], onDelete: SetNull)
+  
+  // Audit Details
+  action    String // e.g., "LOGIN", "LOGOUT", "PASSWORD_CHANGE"
+  resource  String? // e.g., "USER", "PATIENT"
+  resourceId String? // ID of the affected resource
+  
+  // Request Details
+  ipAddress String?
+  userAgent String?
+  method    String? // HTTP method
+  endpoint  String? // API endpoint
+  
+  // Additional Data
+  metadata  Json?   // Additional audit data
+  severity  AuditSeverity @default(INFO)
+  
+  // Timestamps
+  timestamp DateTime @default(now())
+  
+  @@map("audit_logs")
+}
+
+// ===========================================
+// CONSENT MANAGEMENT (HIPAA)
+// ===========================================
+
+model ConsentRecord {
+  id        String @id @default(cuid())
+  userId    String
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Consent Details
+  type        ConsentType
+  description String
+  granted     Boolean
+  grantedAt   DateTime?
+  revokedAt   DateTime?
+  
+  // Legal Requirements
+  version     String // Consent form version
+  ipAddress   String?
+  userAgent   String?
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("consent_records")
+}
+
+// ===========================================
+// ROLE-BASED ACCESS CONTROL
+// ===========================================
+
+model Permission {
+  id          String @id @default(cuid())
+  name        String @unique
+  description String
+  resource    String // e.g., "patients", "appointments"
+  action      String // e.g., "read", "write", "delete"
+  
+  // Relations
+  userPermissions UserPermission[]
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("permissions")
+}
+
+model UserPermission {
+  id           String @id @default(cuid())
+  userId       String
+  user         User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  permissionId String
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  
+  // Permission Scope
+  resourceId   String? // Specific resource ID (e.g., specific patient)
+  conditions   Json?   // Additional conditions as JSON
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([userId, permissionId, resourceId])
+  @@map("user_permissions")
+}
+
+// ===========================================
+// ENUMS
+// ===========================================
+
+enum UserRole {
+  DOCTOR
+  NURSE
+  PATIENT
+  ADMIN
+  TECHNICIAN
+  RECEPTIONIST
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+  PREFER_NOT_TO_SAY
+}
+
+enum MfaMethod {
+  TOTP    // Time-based One-Time Password
+  SMS     // SMS-based
+  EMAIL   // Email-based
+  BACKUP  // Backup codes
+}
+
+enum AuditSeverity {
+  DEBUG
+  INFO
+  WARN
+  ERROR
+  CRITICAL
+}
+
+enum ConsentType {
+  DATA_PROCESSING
+  MARKETING
+  RESEARCH
+  SHARING
+  EMERGENCY_ACCESS
+}
+
+// ===========================================
+// DOCTOR PROFILE SYSTEM
+// ===========================================
+
+// Professional Details
+model DoctorProfile {
+  id        String @id @default(cuid())
+  doctorId  String @unique
+  doctor    User   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  
+  // Professional Information
+  title           String? // Dr., Prof., etc.
+  credentials     String[] // MD, PhD, etc.
+  specialties     String[] // Cardiology, Neurology, etc.
+  subSpecialties  String[] // Interventional Cardiology, etc.
+  yearsExperience Int?
+  
+  // Practice Information
+  practiceName    String?
+  practiceType    PracticeType @default(PRIVATE)
+  practiceAddress String?
+  practiceCity    String?
+  practiceState   String?
+  practiceZipCode String?
+  practicePhone   String?
+  practiceEmail   String?
+  practiceWebsite String?
+  
+  // Professional Credentials
+  medicalLicenseNumber String?
+  medicalLicenseState  String?
+  medicalLicenseExpiry DateTime?
+  deaNumber           String?
+  npiNumber           String?
+  boardCertifications String[]
+  
+  // Professional Bio
+  professionalBio     String?
+  education           String? // Medical school, residency, fellowship
+  awards              String[]
+  publications        String[]
+  languages           String[] @default(["English"])
+  
+  // Availability
+  isAcceptingNewPatients Boolean @default(true)
+  consultationTypes       ConsultationType[]
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  services     DoctorService[]
+  insurances   DoctorInsurance[]
+  schedules    DoctorSchedule[]
+  consultationFees ConsultationFee[]
+  
+  @@map("doctor_profiles")
+}
+
+// Services Offered
+model DoctorService {
+  id        String @id @default(cuid())
+  doctorId  String
+  doctor    User   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  profileId String
+  profile   DoctorProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  
+  // Service Details
+  name        String
+  description String?
+  category    ServiceCategory
+  duration    Int // Duration in minutes
+  price       Decimal? // Optional price override
+  
+  // Service Status
+  isActive    Boolean @default(true)
+  isVirtual   Boolean @default(false)
+  isInPerson  Boolean @default(true)
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("doctor_services")
+}
+
+// Accepted Insurance
+model DoctorInsurance {
+  id        String @id @default(cuid())
+  doctorId  String
+  doctor    User   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  profileId String
+  profile   DoctorProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  
+  // Insurance Details
+  insuranceName    String
+  insuranceType    InsuranceType
+  planName         String?
+  isActive         Boolean @default(true)
+  copayAmount      Decimal?
+  deductibleAmount Decimal?
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("doctor_insurances")
+}
+
+// Consultation Fees
+model ConsultationFee {
+  id        String @id @default(cuid())
+  doctorId  String
+  doctor    User   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  profileId String
+  profile   DoctorProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  
+  // Fee Structure
+  consultationType ConsultationType
+  baseFee          Decimal
+  followUpFee      Decimal?
+  cancellationFee  Decimal?
+  noShowFee         Decimal?
+  
+  // Fee Status
+  isActive Boolean @default(true)
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("consultation_fees")
+}
+
+// Doctor Schedule
+model DoctorSchedule {
+  id        String @id @default(cuid())
+  doctorId  String
+  doctor    User   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  profileId String
+  profile   DoctorProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  templateId String?
+  template  DoctorScheduleTemplate? @relation(fields: [templateId], references: [id])
+  
+  // Schedule Details
+  dayOfWeek     DayOfWeek
+  startTime     String // HH:MM format
+  endTime       String // HH:MM format
+  isAvailable   Boolean @default(true)
+  
+  // Additional fields for scheduling
+  date          DateTime?
+  slotDuration  Int @default(30)
+  bufferTime    Int @default(5)
+  maxBookings   Int @default(1)
+  location      String?
+  serviceType   String?
+  notes         String?
+  
+  // Break Times
+  breakStartTime String?
+  breakEndTime   String?
+  
+  // Recurring Schedule
+  isRecurring    Boolean @default(true)
+  effectiveFrom  DateTime @default(now())
+  effectiveUntil DateTime?
+  
+  // Relations
+  bookings      Appointment[]
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("doctor_schedules")
+}
+
+// Doctor Availability Override (for specific dates)
+model DoctorAvailability {
+  id        String @id @default(cuid())
+  doctorId  String
+  doctor    User   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  
+  // Override Details
+  date          DateTime
+  startTime     String // HH:MM format
+  endTime       String // HH:MM format
+  isAvailable   Boolean
+  reason        String? // Vacation, conference, etc.
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("doctor_availabilities")
+}
+
+// ===========================================
+// ADDITIONAL ENUMS
+// ===========================================
+
+enum PracticeType {
+  PRIVATE
+  GROUP
+  HOSPITAL
+  CLINIC
+  ACADEMIC
+  TELEMEDICINE
+}
+
+enum ServiceCategory {
+  CONSULTATION
+  FOLLOW_UP
+  PROCEDURE
+  DIAGNOSTIC
+  THERAPEUTIC
+  PREVENTIVE
+  EMERGENCY
+  SPECIALIST_REFERRAL
+}
+
+enum ConsultationType {
+  INITIAL_CONSULTATION
+  FOLLOW_UP
+  TELEMEDICINE
+  IN_PERSON
+  URGENT
+  ROUTINE
+}
+
+enum InsuranceType {
+  PRIVATE
+  MEDICARE
+  MEDICAID
+  WORKERS_COMPENSATION
+  SELF_PAY
+  OTHER
+}
+
+// ===========================================
+// SCHEDULING MODELS
+// ===========================================
+
+model DoctorScheduleTemplate {
+  id          String @id @default(cuid())
+  doctorId    String
+  doctor      User   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  
+  // Template Details
+  name        String
+  description String?
+  isDefault   Boolean @default(false)
+  isActive    Boolean @default(true)
+  
+  // Relations
+  timeSlots   DoctorTimeSlot[]
+  schedules   DoctorSchedule[]
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("doctor_schedule_templates")
+}
+
+model DoctorTimeSlot {
+  id          String @id @default(cuid())
+  templateId  String
+  template    DoctorScheduleTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  
+  // Time Details
+  dayOfWeek   DayOfWeek
+  startTime   String // HH:MM format
+  endTime     String // HH:MM format
+  slotDuration Int @default(30) // minutes
+  bufferTime  Int @default(5) // minutes between slots
+  isAvailable Boolean @default(true)
+  maxBookings Int @default(1)
+  
+  // Location & Service
+  location    String?
+  serviceType String?
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("doctor_time_slots")
+}
+
+
+model DoctorScheduleException {
+  id          String @id @default(cuid())
+  doctorId    String
+  doctor      User   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  
+  // Exception Details
+  date        DateTime
+  startTime   String? // HH:MM format, null for all-day
+  endTime     String? // HH:MM format, null for all-day
+  type        ExceptionType
+  reason      String?
+  isAllDay    Boolean @default(false)
+  isRecurring Boolean @default(false)
+  recurringPattern String? // weekly, monthly, yearly
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("doctor_schedule_exceptions")
+}
+
+model Appointment {
+  id            String @id @default(cuid())
+  doctorId      String
+  doctor        User   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  patientId     String
+  patient       User   @relation("PatientAppointments", fields: [patientId], references: [id], onDelete: Cascade)
+  scheduleId    String?
+  schedule      DoctorSchedule? @relation(fields: [scheduleId], references: [id])
+  
+  // Appointment Details
+  appointmentDate DateTime
+  startTime       String // HH:MM format
+  endTime         String // HH:MM format
+  duration        Int // minutes
+  type            AppointmentType
+  status          AppointmentStatus @default(PENDING)
+  
+  // Location & Service
+  location        String?
+  serviceType     String?
+  
+  // Medical Information
+  symptoms        String?
+  diagnosis       String?
+  prescription    String?
+  notes           String?
+  
+  // Follow-up
+  followUpDate    DateTime?
+  isRecurring     Boolean @default(false)
+  recurringPattern String?
+  
+  // Relations
+  reminders      AppointmentReminder[]
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("appointments")
+}
+
+model AppointmentReminder {
+  id            String @id @default(cuid())
+  appointmentId String
+  appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  
+  // Reminder Details
+  type          ReminderType
+  method        ReminderMethod
+  scheduledFor  DateTime
+  message       String
+  status        ReminderStatus @default(PENDING)
+  
+  // Delivery Details
+  sentAt        DateTime?
+  deliveredAt   DateTime?
+  failureReason String?
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("appointment_reminders")
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+enum ExceptionType {
+  HOLIDAY
+  VACATION
+  SICK_LEAVE
+  CONFERENCE
+  PERSONAL
+  EMERGENCY
+  BLOCKED
+  OTHER
+}
+
+enum AppointmentType {
+  CONSULTATION
+  FOLLOW_UP
+  PROCEDURE
+  DIAGNOSTIC
+  THERAPEUTIC
+  PREVENTIVE
+  EMERGENCY
+  TELEMEDICINE
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+  RESCHEDULED
+}
+
+enum ReminderType {
+  APPOINTMENT_REMINDER
+  FOLLOW_UP_REMINDER
+  PAYMENT_REMINDER
+  PRESCRIPTION_REMINDER
+}
+
+enum ReminderMethod {
+  PUSH_NOTIFICATION
+  EMAIL
+  SMS
+  PHONE_CALL
+}
+
+enum ReminderStatus {
+  PENDING
+  SENT
+  DELIVERED
+  FAILED
+  CANCELLED
+}

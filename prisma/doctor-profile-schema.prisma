@@ -1,0 +1,239 @@
+// ===========================================
+// DOCTOR PROFILE SYSTEM
+// ===========================================
+
+// Professional Details
+model DoctorProfile {
+  id        String @id @default(cuid())
+  doctorId  String @unique
+  doctor    User   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  
+  // Professional Information
+  title           String? // Dr., Prof., etc.
+  credentials     String[] // MD, PhD, etc.
+  specialties     String[] // Cardiology, Neurology, etc.
+  subSpecialties  String[] // Interventional Cardiology, etc.
+  yearsExperience Int?
+  
+  // Practice Information
+  practiceName    String?
+  practiceType    PracticeType @default(PRIVATE)
+  practiceAddress String?
+  practiceCity    String?
+  practiceState   String?
+  practiceZipCode String?
+  practicePhone   String?
+  practiceEmail   String?
+  practiceWebsite String?
+  
+  // Professional Credentials
+  medicalLicenseNumber String?
+  medicalLicenseState  String?
+  medicalLicenseExpiry DateTime?
+  deaNumber           String?
+  npiNumber           String?
+  boardCertifications String[]
+  
+  // Professional Bio
+  professionalBio     String?
+  education           String? // Medical school, residency, fellowship
+  awards              String[]
+  publications        String[]
+  languages           String[] @default(["English"])
+  
+  // Availability
+  isAcceptingNewPatients Boolean @default(true)
+  consultationTypes       ConsultationType[]
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  services     DoctorService[]
+  insurances   DoctorInsurance[]
+  schedules    DoctorSchedule[]
+  consultationFees ConsultationFee[]
+  
+  @@map("doctor_profiles")
+}
+
+// Services Offered
+model DoctorService {
+  id        String @id @default(cuid())
+  doctorId  String
+  doctor    User   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  profileId String
+  profile   DoctorProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  
+  // Service Details
+  name        String
+  description String?
+  category    ServiceCategory
+  duration    Int // Duration in minutes
+  price       Decimal? // Optional price override
+  
+  // Service Status
+  isActive    Boolean @default(true)
+  isVirtual   Boolean @default(false)
+  isInPerson  Boolean @default(true)
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("doctor_services")
+}
+
+// Accepted Insurance
+model DoctorInsurance {
+  id        String @id @default(cuid())
+  doctorId  String
+  doctor    User   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  profileId String
+  profile   DoctorProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  
+  // Insurance Details
+  insuranceName    String
+  insuranceType    InsuranceType
+  planName         String?
+  isActive         Boolean @default(true)
+  copayAmount      Decimal?
+  deductibleAmount Decimal?
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("doctor_insurances")
+}
+
+// Consultation Fees
+model ConsultationFee {
+  id        String @id @default(cuid())
+  doctorId  String
+  doctor    User   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  profileId String
+  profile   DoctorProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  
+  // Fee Structure
+  consultationType ConsultationType
+  baseFee          Decimal
+  followUpFee       Decimal?
+  cancellationFee  Decimal?
+  noShowFee         Decimal?
+  
+  // Fee Status
+  isActive Boolean @default(true)
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("consultation_fees")
+}
+
+// Doctor Schedule
+model DoctorSchedule {
+  id        String @id @default(cuid())
+  doctorId  String
+  doctor    User   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  profileId String
+  profile   DoctorProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  
+  // Schedule Details
+  dayOfWeek     DayOfWeek
+  startTime     String // HH:MM format
+  endTime       String // HH:MM format
+  isAvailable   Boolean @default(true)
+  
+  // Break Times
+  breakStartTime String?
+  breakEndTime   String?
+  
+  // Recurring Schedule
+  isRecurring    Boolean @default(true)
+  effectiveFrom  DateTime @default(now())
+  effectiveUntil DateTime?
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("doctor_schedules")
+}
+
+// Doctor Availability Override (for specific dates)
+model DoctorAvailability {
+  id        String @id @default(cuid())
+  doctorId  String
+  doctor    User   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  
+  // Override Details
+  date          DateTime
+  startTime     String // HH:MM format
+  endTime       String // HH:MM format
+  isAvailable   Boolean
+  reason        String? // Vacation, conference, etc.
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("doctor_availabilities")
+}
+
+// ===========================================
+// ENUMS
+// ===========================================
+
+enum PracticeType {
+  PRIVATE
+  GROUP
+  HOSPITAL
+  CLINIC
+  ACADEMIC
+  TELEMEDICINE
+}
+
+enum ServiceCategory {
+  CONSULTATION
+  FOLLOW_UP
+  PROCEDURE
+  DIAGNOSTIC
+  THERAPEUTIC
+  PREVENTIVE
+  EMERGENCY
+  SPECIALIST_REFERRAL
+}
+
+enum ConsultationType {
+  INITIAL_CONSULTATION
+  FOLLOW_UP
+  TELEMEDICINE
+  IN_PERSON
+  URGENT
+  ROUTINE
+}
+
+enum InsuranceType {
+  PRIVATE
+  MEDICARE
+  MEDICAID
+  WORKERS_COMPENSATION
+  SELF_PAY
+  OTHER
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+
+

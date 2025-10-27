@@ -1,0 +1,18 @@
+# Railway Configuration for iHosi Backend
+
+[build]
+builder = "nixpacks"
+buildCommand = "npm install && npx prisma generate && npm run build"
+
+[deploy]
+startCommand = "npm run start:prod"
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 10
+
+[env]
+NODE_ENV = "production"
+PORT = "${{PORT}}"
+DATABASE_URL = "${{DATABASE_URL}}"
+JWT_SECRET = "${{JWT_SECRET}}"
+JWT_REFRESH_SECRET = "${{JWT_REFRESH_SECRET}}"
+

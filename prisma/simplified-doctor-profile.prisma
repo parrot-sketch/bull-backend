@@ -1,0 +1,29 @@
+// Simplified Doctor Profile Schema
+// This extends the main schema with simplified fields for the mobile app
+
+model DoctorProfile {
+  id        String @id @default(cuid())
+  doctorId  String @unique
+  doctor    User   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  
+  // Simplified Profile Fields (matching mobile app)
+  specialization    String
+  bio              String?
+  experience       String?
+  education        String?
+  consultationFee  Decimal @db.Decimal(10, 2) // Store as decimal for precision
+  services         String? // JSON string or simple text
+  availability     String? // General availability description
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations to scheduling system
+  scheduleTemplates DoctorScheduleTemplate[]
+  schedules         DoctorSchedule[]
+  availabilities    DoctorAvailability[]
+  
+  @@map("doctor_profiles")
+}
+
