@@ -27,3 +27,4 @@ model DoctorProfile {
   @@map("doctor_profiles")
 }
 
+

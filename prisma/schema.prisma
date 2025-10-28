@@ -72,9 +72,13 @@ model User {
   doctorAvailabilities DoctorAvailability[]
   consultationFees  ConsultationFee[]
   scheduleTemplates DoctorScheduleTemplate[]
-  appointments      Appointment[]
+  appointments      Appointment[] @relation("DoctorAppointments")
   patientAppointments Appointment[] @relation("PatientAppointments")
   scheduleExceptions DoctorScheduleException[]
+  
+  // Patient-specific relations
+  patientProfile    PatientProfile?
+  bookings          PatientBooking[]
   
   @@map("users")
 }
@@ -623,6 +627,77 @@ model DoctorScheduleException {
   @@map("doctor_schedule_exceptions")
 }
 
+// ===========================================
+// PATIENT-SPECIFIC MODELS
+// ===========================================
+
+model PatientProfile {
+  id        String @id @default(cuid())
+  patientId String @unique
+  patient   User   @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  
+  // Medical History
+  bloodType          String?
+  allergies          String[]
+  currentMedications String[]
+  medicalConditions  String[]
+  pastSurgeries      String[]
+  familyHistory      String?
+  
+  // Emergency Contact
+  emergencyContactName       String?
+  emergencyContactPhone       String?
+  emergencyContactRelation    String?
+  
+  // Insurance Information
+  primaryInsurance       String?
+  primaryInsuranceId     String?
+  secondaryInsurance     String?
+  secondaryInsuranceId   String?
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("patient_profiles")
+}
+
+model PatientBooking {
+  id        String @id @default(cuid())
+  patientId String
+  patient   User   @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  
+  // Booking Details
+  doctorId     String
+  appointmentId String?
+  date         DateTime
+  time         String // HH:MM format
+  serviceType  String
+  
+  // Booking Status
+  status       BookingStatus @default(PENDING)
+  
+  // Booking Information
+  reasonForVisit String?
+  notes         String?
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([patientId, date])
+  @@index([status, date])
+  @@map("patient_bookings")
+}
+
+enum BookingStatus {
+  PENDING       // Awaiting doctor confirmation
+  CONFIRMED     // Doctor confirmed
+  REJECTED      // Doctor rejected
+  CANCELLED     // Patient or doctor cancelled
+  COMPLETED     // Appointment completed
+}
+
 model Appointment {
   id            String @id @default(cuid())
   doctorId      String
@@ -643,6 +718,7 @@ model Appointment {
   // Location & Service
   location        String?
   serviceType     String?
+  serviceId       String? // Reference to doctor service
   
   // Medical Information
   symptoms        String?
@@ -650,10 +726,29 @@ model Appointment {
   prescription    String?
   notes           String?
   
+  // Patient Booking Information
+  reasonForVisit  String? // Patient's reason for booking
+  insuranceId     String? // Patient's insurance
+  paymentStatus   PaymentStatus @default(PENDING)
+  
+  // Booking Workflow
+  bookingRequestedAt DateTime @default(now())
+  confirmedAt        DateTime?
+  cancelledAt        DateTime?
+  cancelledBy        String? // DOCTOR | PATIENT
+  cancellationReason  String?
+  
+  // Confirmation & Reminders
+  requiresConfirmation Boolean @default(false)
+  confirmationSent     Boolean @default(false)
+  
   // Follow-up
   followUpDate    DateTime?
   isRecurring     Boolean @default(false)
   recurringPattern String?
+  parentAppointmentId String? // For recurring appointments
+  parentAppointment   Appointment? @relation("RecurringAppointments", fields: [parentAppointmentId], references: [id])
+  childAppointments  Appointment[] @relation("RecurringAppointments")
   
   // Relations
   reminders      AppointmentReminder[]
@@ -662,6 +757,10 @@ model Appointment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
+  @@unique([doctorId, appointmentDate, startTime])
+  @@index([doctorId, appointmentDate])
+  @@index([patientId, appointmentDate])
+  @@index([status, appointmentDate])
   @@map("appointments")
 }
 
@@ -722,12 +821,21 @@ enum AppointmentType {
 }
 
 enum AppointmentStatus {
+  PENDING       // Patient requested, awaiting doctor confirmation
+  CONFIRMED     // Doctor confirmed the appointment
+  CANCELLED     // Appointment was cancelled
+  COMPLETED     // Appointment finished successfully
+  NO_SHOW       // Patient didn't show up
+  RESCHEDULED   // Appointment moved to different time
+  REJECTED      // Doctor rejected the booking request
+}
+
+enum PaymentStatus {
   PENDING
-  CONFIRMED
-  CANCELLED
-  COMPLETED
-  NO_SHOW
-  RESCHEDULED
+  PAID
+  PARTIAL
+  REFUNDED
+  WAIVED
 }
 
 enum ReminderType {
