@@ -10,7 +10,8 @@ export class DoctorProfileService {
   // ===========================================
 
   async createProfile(doctorId: string, profileData: {
-    specialization: string;
+    specialization?: string;
+    specialties?: string[];
     bio?: string;
     experience?: string;
     education?: string;
@@ -39,14 +40,11 @@ export class DoctorProfileService {
     const profile = await this.db.doctorProfile.create({
       data: {
         doctorId,
-        specialization: profileData.specialization,
-        bio: profileData.bio,
-        experience: profileData.experience,
-        education: profileData.education,
-        consultationFee: profileData.consultationFee,
-        services: profileData.services,
-        availability: profileData.availability,
-      } as any, // Temporary type assertion to bypass Prisma type issues
+        specialties: profileData.specialties ?? (profileData.specialization ? [profileData.specialization] : []),
+        professionalBio: profileData.bio ?? null,
+        education: profileData.education ?? null,
+        yearsExperience: profileData.experience ? Number(profileData.experience) : 0,
+      } as any,
     });
 
     return {
@@ -87,12 +85,14 @@ export class DoctorProfileService {
 
   async updateProfile(doctorId: string, updateData: {
     specialization?: string;
+    specialties?: string[];
     bio?: string;
     experience?: string;
     education?: string;
     consultationFee?: number;
     services?: string;
     availability?: string;
+    yearsOfExperience?: number;
   }) {
     const profile = await this.db.doctorProfile.findUnique({
       where: { doctorId }
@@ -102,9 +102,16 @@ export class DoctorProfileService {
       throw new NotFoundException('Doctor profile not found');
     }
 
+    const prismaData: any = {};
+    if (updateData.specialization) prismaData.specialties = { set: [updateData.specialization] };
+    if (updateData.specialties) prismaData.specialties = { set: updateData.specialties };
+    if (updateData.bio !== undefined) prismaData.professionalBio = updateData.bio;
+    if (updateData.education !== undefined) prismaData.education = updateData.education;
+    if (updateData.yearsOfExperience !== undefined) prismaData.yearsExperience = Number(updateData.yearsOfExperience);
+
     const updatedProfile = await this.db.doctorProfile.update({
       where: { doctorId },
-      data: updateData as any, // Temporary type assertion to bypass Prisma type issues
+      data: prismaData,
     });
 
     return {
