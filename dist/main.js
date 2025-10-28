@@ -564,7 +564,15 @@ let AuthService = class AuthService {
                 role: userData.role || 'PATIENT',
             },
         });
-        const tokens = await this.generateTokens(user.id);
+        const tokens = this.generateJwtPair(user.id);
+        await this.db.userSession.create({
+            data: {
+                userId: user.id,
+                refreshToken: tokens.refreshToken,
+                expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+                isActive: true,
+            },
+        });
         await this.auditService.log('REGISTER_SUCCESS', {
             userId: user.id,
             resource: 'USER',
@@ -652,7 +660,15 @@ let AuthService = class AuthService {
                 throw new common_1.UnauthorizedException('Invalid MFA code');
             }
         }
-        const tokens = await this.generateTokens(user.id);
+        const tokens = this.generateJwtPair(user.id);
+        await this.db.userSession.create({
+            data: {
+                userId: user.id,
+                refreshToken: tokens.refreshToken,
+                expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+                isActive: true,
+            },
+        });
         await this.auditService.log('LOGIN_SUCCESS', {
             userId: user.id,
             resource: 'USER',
@@ -704,7 +720,7 @@ let AuthService = class AuthService {
         if (!session || !session.isActive || session.expiresAt < new Date()) {
             throw new common_1.UnauthorizedException('Invalid refresh token');
         }
-        const tokens = await this.generateTokens(session.userId);
+        const tokens = this.generateJwtPair(session.userId);
         await this.db.userSession.update({
             where: { id: session.id },
             data: {
@@ -752,21 +768,10 @@ let AuthService = class AuthService {
             data: this.mapUserToResponse(user),
         };
     }
-    async generateTokens(userId) {
+    generateJwtPair(userId) {
         const accessToken = this.jwtService.sign({ userId, type: 'access' }, { expiresIn: this.jwtExpiresIn });
         const refreshToken = this.jwtService.sign({ userId, type: 'refresh' }, { expiresIn: this.refreshTokenExpiresIn });
-        await this.db.userSession.create({
-            data: {
-                userId,
-                refreshToken,
-                expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-            },
-        });
-        return {
-            accessToken,
-            refreshToken,
-            token: accessToken,
-        };
+        return { accessToken, refreshToken, token: accessToken };
     }
     mapUserToResponse(user) {
         return {
@@ -1040,6 +1045,38 @@ let DoctorProfileController = class DoctorProfileController {
         console.log('🔍 DEBUG: Update data =', updateData);
         return this.doctorProfileService.updateProfile(doctorId, updateData);
     }
+    async getServices(req) {
+        const doctorId = req.user.userId || req.user.id;
+        return this.doctorProfileService.getServices(doctorId);
+    }
+    async upsertServices(req, body) {
+        const doctorId = req.user.userId || req.user.id;
+        return this.doctorProfileService.upsertServices(doctorId, body.services || []);
+    }
+    async deleteService(req, serviceId) {
+        const doctorId = req.user.userId || req.user.id;
+        return this.doctorProfileService.deleteService(doctorId, serviceId);
+    }
+    async getInsurance(req) {
+        const doctorId = req.user.userId || req.user.id;
+        return this.doctorProfileService.getInsurance(doctorId);
+    }
+    async upsertInsurance(req, body) {
+        const doctorId = req.user.userId || req.user.id;
+        return this.doctorProfileService.upsertInsurance(doctorId, body.providers || []);
+    }
+    async deleteInsurance(req, id) {
+        const doctorId = req.user.userId || req.user.id;
+        return this.doctorProfileService.deleteInsurance(doctorId, id);
+    }
+    async getBilling(req) {
+        const doctorId = req.user.userId || req.user.id;
+        return this.doctorProfileService.getBilling(doctorId);
+    }
+    async updateBilling(req, body) {
+        const doctorId = req.user.userId || req.user.id;
+        return this.doctorProfileService.updateBilling(doctorId, body);
+    }
     async getPublicProfile(doctorId) {
         return this.doctorProfileService.getPublicProfile(doctorId);
     }
@@ -1078,6 +1115,75 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], DoctorProfileController.prototype, "updateProfile", null);
+__decorate([
+    (0, common_1.Get)('services'),
+    (0, swagger_1.ApiOperation)({ summary: 'List doctor services' }),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], DoctorProfileController.prototype, "getServices", null);
+__decorate([
+    (0, common_1.Post)('services'),
+    (0, swagger_1.ApiOperation)({ summary: 'Upsert doctor services (bulk)' }),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], DoctorProfileController.prototype, "upsertServices", null);
+__decorate([
+    (0, common_1.Post)('services/:serviceId/delete'),
+    (0, swagger_1.ApiOperation)({ summary: 'Delete a doctor service' }),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('serviceId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], DoctorProfileController.prototype, "deleteService", null);
+__decorate([
+    (0, common_1.Get)('insurance'),
+    (0, swagger_1.ApiOperation)({ summary: 'List supported insurance providers' }),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], DoctorProfileController.prototype, "getInsurance", null);
+__decorate([
+    (0, common_1.Post)('insurance'),
+    (0, swagger_1.ApiOperation)({ summary: 'Upsert insurance providers (bulk)' }),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], DoctorProfileController.prototype, "upsertInsurance", null);
+__decorate([
+    (0, common_1.Post)('insurance/:id/delete'),
+    (0, swagger_1.ApiOperation)({ summary: 'Delete an insurance provider' }),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], DoctorProfileController.prototype, "deleteInsurance", null);
+__decorate([
+    (0, common_1.Get)('billing'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get billing settings' }),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], DoctorProfileController.prototype, "getBilling", null);
+__decorate([
+    (0, common_1.Put)('billing'),
+    (0, swagger_1.ApiOperation)({ summary: 'Update billing settings' }),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], DoctorProfileController.prototype, "updateBilling", null);
 __decorate([
     (0, common_1.Get)('public/:doctorId'),
     (0, swagger_1.ApiOperation)({ summary: 'Get public doctor profile (for patients)' }),
@@ -1165,6 +1271,8 @@ let DoctorProfileService = class DoctorProfileService {
                         phoneNumber: true,
                     }
                 },
+                services: true,
+                insurances: true,
             }
         });
         if (!profile) {
@@ -1191,6 +1299,108 @@ let DoctorProfileService = class DoctorProfileService {
             data: updatedProfile,
             message: 'Doctor profile updated successfully'
         };
+    }
+    async getServices(doctorId) {
+        const profile = await this.db.doctorProfile.findUnique({ where: { doctorId } });
+        if (!profile)
+            throw new common_1.NotFoundException('Doctor profile not found');
+        const services = await this.db.doctorService.findMany({ where: { doctorId } });
+        return { success: true, data: services };
+    }
+    async upsertServices(doctorId, services) {
+        const profile = await this.db.doctorProfile.findUnique({ where: { doctorId } });
+        if (!profile)
+            throw new common_1.NotFoundException('Doctor profile not found');
+        const ops = services.map((s) => this.db.doctorService.upsert({
+            where: { id: s.id ?? '___nonexistent___' },
+            update: {
+                name: s.name,
+                description: s.description,
+                duration: s.duration ?? 30,
+                price: s.price ?? null,
+            },
+            create: {
+                doctorId,
+                profileId: profile.id,
+                name: s.name,
+                description: s.description,
+                duration: s.duration ?? 30,
+                price: s.price ?? null,
+                category: 'GENERAL',
+            },
+        }));
+        const result = await this.db.$transaction(ops);
+        return { success: true, data: result };
+    }
+    async deleteService(doctorId, serviceId) {
+        const service = await this.db.doctorService.findUnique({ where: { id: serviceId } });
+        if (!service || service.doctorId !== doctorId)
+            throw new common_1.NotFoundException('Service not found');
+        await this.db.doctorService.delete({ where: { id: serviceId } });
+        return { success: true };
+    }
+    async getInsurance(doctorId) {
+        const profile = await this.db.doctorProfile.findUnique({ where: { doctorId } });
+        if (!profile)
+            throw new common_1.NotFoundException('Doctor profile not found');
+        const providers = await this.db.doctorInsurance.findMany({ where: { doctorId } });
+        return { success: true, data: providers };
+    }
+    async upsertInsurance(doctorId, providers) {
+        const profile = await this.db.doctorProfile.findUnique({ where: { doctorId } });
+        if (!profile)
+            throw new common_1.NotFoundException('Doctor profile not found');
+        const ops = providers.map((p) => this.db.doctorInsurance.upsert({
+            where: { id: p.id ?? '___nonexistent___' },
+            update: {
+                insuranceName: p.insuranceName,
+                insuranceType: p.insuranceType ?? 'PRIVATE',
+                planName: p.planName ?? null,
+            },
+            create: {
+                doctorId,
+                profileId: profile.id,
+                insuranceName: p.insuranceName,
+                insuranceType: p.insuranceType ?? 'PRIVATE',
+                planName: p.planName ?? null,
+            },
+        }));
+        const result = await this.db.$transaction(ops);
+        return { success: true, data: result };
+    }
+    async deleteInsurance(doctorId, id) {
+        const rec = await this.db.doctorInsurance.findUnique({ where: { id } });
+        if (!rec || rec.doctorId !== doctorId)
+            throw new common_1.NotFoundException('Insurance not found');
+        await this.db.doctorInsurance.delete({ where: { id } });
+        return { success: true };
+    }
+    async getBilling(doctorId) {
+        const profile = await this.db.doctorProfile.findUnique({ where: { doctorId } });
+        if (!profile)
+            throw new common_1.NotFoundException('Doctor profile not found');
+        const fee = await this.db.consultationFee.findFirst({
+            where: { profileId: profile.id },
+            orderBy: { createdAt: 'desc' },
+        });
+        return { success: true, data: fee ? { consultationFee: fee.baseFee, currency: profile.currency ?? 'USD' } : { consultationFee: 0, currency: 'USD' } };
+    }
+    async updateBilling(doctorId, billing) {
+        const profile = await this.db.doctorProfile.findUnique({ where: { doctorId } });
+        if (!profile)
+            throw new common_1.NotFoundException('Doctor profile not found');
+        const fee = await this.db.consultationFee.create({
+            data: {
+                doctorId,
+                profileId: profile.id,
+                consultationType: 'IN_PERSON',
+                baseFee: billing.consultationFee,
+            },
+        });
+        if (billing.currency) {
+            await this.db.doctorProfile.update({ where: { doctorId }, data: { currency: billing.currency } });
+        }
+        return { success: true, data: { consultationFee: fee.baseFee, currency: billing.currency ?? profile.currency ?? 'USD' } };
     }
     async getPublicProfile(doctorId) {
         const profile = await this.db.doctorProfile.findUnique({

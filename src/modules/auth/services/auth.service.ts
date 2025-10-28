@@ -54,8 +54,16 @@ export class AuthService {
       },
     });
 
-    // Generate tokens
-    const tokens = await this.generateTokens(user.id);
+    // Generate tokens and create session explicitly
+    const tokens = this.generateJwtPair(user.id);
+    await this.db.userSession.create({
+      data: {
+        userId: user.id,
+        refreshToken: tokens.refreshToken,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        isActive: true,
+      },
+    });
 
     // Audit successful registration
     await this.auditService.log('REGISTER_SUCCESS', {
@@ -157,8 +165,16 @@ export class AuthService {
       }
     }
 
-    // Generate tokens
-    const tokens = await this.generateTokens(user.id);
+    // Generate tokens and create session explicitly
+    const tokens = this.generateJwtPair(user.id);
+    await this.db.userSession.create({
+      data: {
+        userId: user.id,
+        refreshToken: tokens.refreshToken,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        isActive: true,
+      },
+    });
 
     // Audit successful login
     await this.auditService.log('LOGIN_SUCCESS', {
@@ -221,8 +237,8 @@ export class AuthService {
       throw new UnauthorizedException('Invalid refresh token');
     }
 
-    // Generate new tokens
-    const tokens = await this.generateTokens(session.userId);
+    // Generate new token pair (no new session)
+    const tokens = this.generateJwtPair(session.userId);
 
     // Update session with new refresh token
     await this.db.userSession.update({
@@ -282,31 +298,16 @@ export class AuthService {
     };
   }
 
-  private async generateTokens(userId: string) {
+  private generateJwtPair(userId: string) {
     const accessToken = this.jwtService.sign(
       { userId, type: 'access' },
       { expiresIn: this.jwtExpiresIn }
     );
-
     const refreshToken = this.jwtService.sign(
       { userId, type: 'refresh' },
       { expiresIn: this.refreshTokenExpiresIn }
     );
-
-    // Store refresh token in database
-    await this.db.userSession.create({
-      data: {
-        userId,
-        refreshToken,
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
-      },
-    });
-
-    return {
-      accessToken,
-      refreshToken,
-      token: accessToken, // Alternative field name for compatibility
-    };
+    return { accessToken, refreshToken, token: accessToken };
   }
 
   private mapUserToResponse(user: any) {

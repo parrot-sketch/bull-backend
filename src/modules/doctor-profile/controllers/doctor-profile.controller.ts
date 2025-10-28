@@ -73,6 +73,71 @@ export class DoctorProfileController {
   }
 
   // ===========================================
+  // SERVICES
+  // ===========================================
+  @Get('services')
+  @ApiOperation({ summary: 'List doctor services' })
+  async getServices(@Request() req: any) {
+    const doctorId = req.user.userId || req.user.id;
+    return this.doctorProfileService.getServices(doctorId);
+  }
+
+  @Post('services')
+  @ApiOperation({ summary: 'Upsert doctor services (bulk)' })
+  async upsertServices(@Request() req: any, @Body() body: { services: Array<{ id?: string; name: string; description?: string; duration?: number; price?: any }>}) {
+    const doctorId = req.user.userId || req.user.id;
+    return this.doctorProfileService.upsertServices(doctorId, body.services || []);
+  }
+
+  @Post('services/:serviceId/delete')
+  @ApiOperation({ summary: 'Delete a doctor service' })
+  async deleteService(@Request() req: any, @Param('serviceId') serviceId: string) {
+    const doctorId = req.user.userId || req.user.id;
+    return this.doctorProfileService.deleteService(doctorId, serviceId);
+  }
+
+  // ===========================================
+  // INSURANCE
+  // ===========================================
+  @Get('insurance')
+  @ApiOperation({ summary: 'List supported insurance providers' })
+  async getInsurance(@Request() req: any) {
+    const doctorId = req.user.userId || req.user.id;
+    return this.doctorProfileService.getInsurance(doctorId);
+  }
+
+  @Post('insurance')
+  @ApiOperation({ summary: 'Upsert insurance providers (bulk)' })
+  async upsertInsurance(@Request() req: any, @Body() body: { providers: Array<{ id?: string; insuranceName: string; insuranceType?: string; planName?: string }>}) {
+    const doctorId = req.user.userId || req.user.id;
+    return this.doctorProfileService.upsertInsurance(doctorId, body.providers || []);
+  }
+
+  @Post('insurance/:id/delete')
+  @ApiOperation({ summary: 'Delete an insurance provider' })
+  async deleteInsurance(@Request() req: any, @Param('id') id: string) {
+    const doctorId = req.user.userId || req.user.id;
+    return this.doctorProfileService.deleteInsurance(doctorId, id);
+  }
+
+  // ===========================================
+  // BILLING
+  // ===========================================
+  @Get('billing')
+  @ApiOperation({ summary: 'Get billing settings' })
+  async getBilling(@Request() req: any) {
+    const doctorId = req.user.userId || req.user.id;
+    return this.doctorProfileService.getBilling(doctorId);
+  }
+
+  @Put('billing')
+  @ApiOperation({ summary: 'Update billing settings' })
+  async updateBilling(@Request() req: any, @Body() body: { consultationFee: number; currency?: string }) {
+    const doctorId = req.user.userId || req.user.id;
+    return this.doctorProfileService.updateBilling(doctorId, body);
+  }
+
+  // ===========================================
   // PUBLIC PROFILE (FOR PATIENTS)
   // ===========================================
 
