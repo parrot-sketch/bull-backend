@@ -224,12 +224,22 @@ export class DoctorProfileService {
       where: { profileId: profile.id },
       orderBy: { createdAt: 'desc' },
     });
-    return { success: true, data: fee ? { consultationFee: (fee as any).baseFee, currency: 'USD' } : { consultationFee: 0, currency: 'USD' } };
+    return { 
+      success: true, 
+      data: fee ? { 
+        consultationFee: (fee as any).baseFee, 
+        currency: (profile as any).currency || 'KES' 
+      } : { 
+        consultationFee: 0, 
+        currency: (profile as any).currency || 'KES' 
+      } 
+    };
   }
 
   async updateBilling(doctorId: string, billing: { consultationFee: number; currency?: string }) {
     const profile = await this.db.doctorProfile.findUnique({ where: { doctorId } });
     if (!profile) throw new NotFoundException('Doctor profile not found');
+    
     // Create a new fee record (simple history approach)
     const fee = await this.db.consultationFee.create({
       data: {
@@ -239,8 +249,22 @@ export class DoctorProfileService {
         baseFee: billing.consultationFee as any,
       },
     });
-    // Currency is not stored on profile; default to 'USD' for now
-    return { success: true, data: { consultationFee: (fee as any).baseFee, currency: 'USD' } };
+    
+    // Update currency preference on profile if provided
+    if (billing.currency) {
+      await this.db.doctorProfile.update({ 
+        where: { doctorId }, 
+        data: { currency: billing.currency } 
+      });
+    }
+    
+    return { 
+      success: true, 
+      data: { 
+        consultationFee: (fee as any).baseFee, 
+        currency: billing.currency || (profile as any).currency || 'KES' 
+      } 
+    };
   }
 
   // ===========================================

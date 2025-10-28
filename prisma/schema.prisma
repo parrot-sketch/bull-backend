@@ -451,6 +451,9 @@ model DoctorProfile {
   isAcceptingNewPatients Boolean @default(true)
   consultationTypes       ConsultationType[]
   
+  // Billing Preferences
+  currency String @default("KES") // KES, USD, EUR, GBP
+  
   // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
