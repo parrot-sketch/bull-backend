@@ -128,24 +128,32 @@ export class DoctorProfileService {
     const profile = await this.db.doctorProfile.findUnique({ where: { doctorId } });
     if (!profile) throw new NotFoundException('Doctor profile not found');
     const ops = services.map((s) =>
-      this.db.doctorService.upsert({
-        where: { id: s.id ?? '___nonexistent___' },
-        update: {
-          name: s.name,
-          description: s.description,
-          duration: s.duration ?? 30,
-          price: s.price ?? null,
-        },
-        create: {
-          doctorId,
-          profileId: profile.id,
-          name: s.name,
-          description: s.description,
-          duration: s.duration ?? 30,
-          price: s.price ?? null,
-          category: 'GENERAL' as any,
-        },
-      })
+      // Heuristic mapping of category from name; default to CONSULTATION
+      {
+        const lower = (s.name || '').toLowerCase();
+        const category: any = lower.match(/x-?ray|ultra\s?sound|ct|mri|lab|test|scan/)
+          ? 'DIAGNOSTIC'
+          : 'CONSULTATION';
+        return this.db.doctorService.upsert({
+          where: { id: s.id ?? '___nonexistent___' },
+          update: {
+            name: s.name,
+            description: s.description,
+            duration: s.duration ?? 30,
+            price: s.price ?? null,
+            category,
+          },
+          create: {
+            doctorId,
+            profileId: profile.id,
+            name: s.name,
+            description: s.description,
+            duration: s.duration ?? 30,
+            price: s.price ?? null,
+            category,
+          },
+        });
+      }
     );
     const result = await this.db.$transaction(ops);
     return { success: true, data: result };
