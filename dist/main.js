@@ -11,16 +11,22 @@ module.exports = require("@nestjs/common");
 /* 2 */
 /***/ ((module) => {
 
-module.exports = require("@nestjs/core");
+module.exports = require("helmet");
 
 /***/ }),
 /* 3 */
 /***/ ((module) => {
 
-module.exports = require("@nestjs/swagger");
+module.exports = require("@nestjs/core");
 
 /***/ }),
 /* 4 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/swagger");
+
+/***/ }),
+/* 5 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -33,11 +39,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppModule = void 0;
 const common_1 = __webpack_require__(1);
-const config_1 = __webpack_require__(5);
-const auth_module_1 = __webpack_require__(6);
-const doctor_profile_module_1 = __webpack_require__(18);
-const patient_booking_module_1 = __webpack_require__(21);
-const scheduling_module_1 = __webpack_require__(24);
+const core_1 = __webpack_require__(3);
+const throttler_1 = __webpack_require__(6);
+const config_1 = __webpack_require__(7);
+const auth_module_1 = __webpack_require__(8);
+const doctor_profile_module_1 = __webpack_require__(22);
+const patient_booking_module_1 = __webpack_require__(25);
+const scheduling_module_1 = __webpack_require__(28);
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -47,25 +55,37 @@ exports.AppModule = AppModule = __decorate([
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
             }),
+            throttler_1.ThrottlerModule.forRoot([{ ttl: parseInt(process.env.RATE_LIMIT_TTL || '60', 10), limit: parseInt(process.env.RATE_LIMIT_LIMIT || '100', 10) }]),
             auth_module_1.AuthModule,
             doctor_profile_module_1.DoctorProfileModule,
             scheduling_module_1.SchedulingModule,
             patient_booking_module_1.PatientBookingModule,
         ],
         controllers: [],
-        providers: [],
+        providers: [
+            {
+                provide: core_1.APP_GUARD,
+                useClass: throttler_1.ThrottlerGuard,
+            },
+        ],
     })
 ], AppModule);
 
 
 /***/ }),
-/* 5 */
+/* 6 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/throttler");
+
+/***/ }),
+/* 7 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/config");
 
 /***/ }),
-/* 6 */
+/* 8 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -78,14 +98,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AuthModule = void 0;
 const common_1 = __webpack_require__(1);
-const config_1 = __webpack_require__(5);
-const jwt_1 = __webpack_require__(7);
-const passport_1 = __webpack_require__(8);
-const appointments_controller_1 = __webpack_require__(9);
-const auth_controller_1 = __webpack_require__(11);
-const auth_service_1 = __webpack_require__(12);
-const database_service_1 = __webpack_require__(14);
-const jwt_strategy_1 = __webpack_require__(16);
+const config_1 = __webpack_require__(7);
+const jwt_1 = __webpack_require__(9);
+const passport_1 = __webpack_require__(10);
+const appointments_controller_1 = __webpack_require__(11);
+const auth_controller_1 = __webpack_require__(13);
+const auth_service_1 = __webpack_require__(15);
+const database_service_1 = __webpack_require__(18);
+const audit_service_1 = __webpack_require__(17);
+const jwt_strategy_1 = __webpack_require__(20);
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
@@ -96,15 +117,26 @@ exports.AuthModule = AuthModule = __decorate([
                 isGlobal: true,
             }),
             passport_1.PassportModule,
-            jwt_1.JwtModule.register({
-                secret: process.env.JWT_SECRET || 'your-secret-key',
-                signOptions: { expiresIn: process.env.JWT_EXPIRES_IN || '1h' },
+            jwt_1.JwtModule.registerAsync({
+                inject: [config_1.ConfigService],
+                useFactory: (config) => {
+                    const secret = config.get('JWT_SECRET');
+                    if (!secret) {
+                        throw new Error('JWT_SECRET must be set');
+                    }
+                    const expiresIn = config.get('JWT_EXPIRES_IN') || '15m';
+                    return {
+                        secret,
+                        signOptions: { expiresIn },
+                    };
+                },
             }),
         ],
         controllers: [auth_controller_1.AuthController, appointments_controller_1.AppointmentsController],
         providers: [
             auth_service_1.AuthService,
             database_service_1.DatabaseService,
+            audit_service_1.AuditService,
             jwt_strategy_1.JwtStrategy,
         ],
         exports: [auth_service_1.AuthService, database_service_1.DatabaseService],
@@ -113,19 +145,19 @@ exports.AuthModule = AuthModule = __decorate([
 
 
 /***/ }),
-/* 7 */
+/* 9 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/jwt");
 
 /***/ }),
-/* 8 */
+/* 10 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/passport");
 
 /***/ }),
-/* 9 */
+/* 11 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -144,8 +176,8 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppointmentsController = void 0;
 const common_1 = __webpack_require__(1);
-const swagger_1 = __webpack_require__(3);
-const jwt_auth_guard_1 = __webpack_require__(10);
+const swagger_1 = __webpack_require__(4);
+const jwt_auth_guard_1 = __webpack_require__(12);
 let AppointmentsController = class AppointmentsController {
     async getAppointments(req, startDate, endDate, status, limit) {
         try {
@@ -212,7 +244,7 @@ exports.AppointmentsController = AppointmentsController = __decorate([
 
 
 /***/ }),
-/* 10 */
+/* 12 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -229,8 +261,8 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.JwtAuthGuard = void 0;
 const common_1 = __webpack_require__(1);
-const passport_1 = __webpack_require__(8);
-const core_1 = __webpack_require__(2);
+const passport_1 = __webpack_require__(10);
+const core_1 = __webpack_require__(3);
 let JwtAuthGuard = class JwtAuthGuard extends (0, passport_1.AuthGuard)('jwt') {
     constructor(reflector) {
         super();
@@ -261,7 +293,7 @@ exports.JwtAuthGuard = JwtAuthGuard = __decorate([
 
 
 /***/ }),
-/* 11 */
+/* 13 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -279,26 +311,97 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AuthController = void 0;
+exports.AuthController = exports.RefreshDto = exports.RegisterDto = exports.LoginDto = void 0;
 const common_1 = __webpack_require__(1);
-const swagger_1 = __webpack_require__(3);
-const jwt_auth_guard_1 = __webpack_require__(10);
-const auth_service_1 = __webpack_require__(12);
+const swagger_1 = __webpack_require__(4);
+const throttler_1 = __webpack_require__(6);
+const class_validator_1 = __webpack_require__(14);
+const jwt_auth_guard_1 = __webpack_require__(12);
+const auth_service_1 = __webpack_require__(15);
+class LoginDto {
+}
+exports.LoginDto = LoginDto;
+__decorate([
+    (0, class_validator_1.IsEmail)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], LoginDto.prototype, "email", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.MinLength)(8),
+    __metadata("design:type", String)
+], LoginDto.prototype, "password", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], LoginDto.prototype, "mfaCode", void 0);
+class RegisterDto {
+}
+exports.RegisterDto = RegisterDto;
+__decorate([
+    (0, class_validator_1.IsEmail)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], RegisterDto.prototype, "email", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.MinLength)(8),
+    (0, class_validator_1.Matches)(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/, {
+        message: 'Password must contain uppercase, lowercase, number and special character'
+    }),
+    __metadata("design:type", String)
+], RegisterDto.prototype, "password", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], RegisterDto.prototype, "firstName", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], RegisterDto.prototype, "lastName", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], RegisterDto.prototype, "role", void 0);
+class RefreshDto {
+}
+exports.RefreshDto = RefreshDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], RefreshDto.prototype, "refreshToken", void 0);
 let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
     }
-    async login(credentials) {
-        return this.authService.login(credentials);
+    async login(credentials, req) {
+        const auditContext = {
+            ipAddress: req.ip || req.connection.remoteAddress,
+            userAgent: req.headers['user-agent'],
+        };
+        return this.authService.login(credentials, auditContext);
     }
-    async register(userData) {
-        return this.authService.register(userData);
+    async register(userData, req) {
+        const auditContext = {
+            ipAddress: req.ip || req.connection.remoteAddress,
+            userAgent: req.headers['user-agent'],
+        };
+        return this.authService.register(userData, auditContext);
     }
     async refreshToken(body) {
         return this.authService.refreshToken(body.refreshToken);
     }
     async logout(req) {
-        return this.authService.logout(req.user.userId);
+        const auditContext = {
+            ipAddress: req.ip || req.connection.remoteAddress,
+            userAgent: req.headers['user-agent'],
+        };
+        return this.authService.logout(req.user.userId, auditContext);
     }
     async getCurrentUser(req) {
         return this.authService.getCurrentUser(req.user.userId);
@@ -308,33 +411,38 @@ exports.AuthController = AuthController;
 __decorate([
     (0, common_1.Post)('login'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, throttler_1.Throttle)({ default: { limit: 5, ttl: 60 } }),
     (0, swagger_1.ApiOperation)({ summary: 'User login' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Login successful' }),
     (0, swagger_1.ApiResponse)({ status: 401, description: 'Invalid credentials' }),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [LoginDto, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
 __decorate([
     (0, common_1.Post)('register'),
     (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
+    (0, throttler_1.Throttle)({ default: { limit: 5, ttl: 60 } }),
     (0, swagger_1.ApiOperation)({ summary: 'User registration' }),
     (0, swagger_1.ApiResponse)({ status: 201, description: 'Registration successful' }),
     (0, swagger_1.ApiResponse)({ status: 400, description: 'Invalid input' }),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [RegisterDto, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "register", null);
 __decorate([
     (0, common_1.Post)('refresh'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, throttler_1.Throttle)({ default: { limit: 10, ttl: 60 } }),
     (0, swagger_1.ApiOperation)({ summary: 'Refresh authentication token' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Token refreshed successfully' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [RefreshDto]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "refreshToken", null);
 __decorate([
@@ -368,7 +476,13 @@ exports.AuthController = AuthController = __decorate([
 
 
 /***/ }),
-/* 12 */
+/* 14 */
+/***/ ((module) => {
+
+module.exports = require("class-validator");
+
+/***/ }),
+/* 15 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -381,26 +495,35 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a, _b;
+var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AuthService = void 0;
 const common_1 = __webpack_require__(1);
-const jwt_1 = __webpack_require__(7);
-const bcrypt = __webpack_require__(13);
-const database_service_1 = __webpack_require__(14);
+const jwt_1 = __webpack_require__(9);
+const bcrypt = __webpack_require__(16);
+const audit_service_1 = __webpack_require__(17);
+const database_service_1 = __webpack_require__(18);
 let AuthService = class AuthService {
-    constructor(db, jwtService) {
+    constructor(db, jwtService, auditService) {
         this.db = db;
         this.jwtService = jwtService;
-        this.jwtSecret = process.env.JWT_SECRET || 'your-secret-key';
-        this.jwtExpiresIn = process.env.JWT_EXPIRES_IN || '1h';
+        this.auditService = auditService;
+        this.jwtSecret = process.env.JWT_SECRET;
+        this.jwtExpiresIn = process.env.JWT_EXPIRES_IN || '15m';
         this.refreshTokenExpiresIn = process.env.REFRESH_TOKEN_EXPIRES_IN || '7d';
     }
-    async register(userData) {
+    async register(userData, auditContext) {
         const existingUser = await this.db.user.findUnique({
             where: { email: userData.email },
         });
         if (existingUser) {
+            await this.auditService.log('REGISTER_FAILED', {
+                resource: 'USER',
+                ipAddress: auditContext?.ipAddress,
+                userAgent: auditContext?.userAgent,
+                metadata: { email: userData.email, reason: 'EMAIL_EXISTS' },
+                severity: 'WARN',
+            });
             throw new common_1.ConflictException('User with this email already exists');
         }
         const hashedPassword = await bcrypt.hash(userData.password, 10);
@@ -414,6 +537,15 @@ let AuthService = class AuthService {
             },
         });
         const tokens = await this.generateTokens(user.id);
+        await this.auditService.log('REGISTER_SUCCESS', {
+            userId: user.id,
+            resource: 'USER',
+            resourceId: user.id,
+            ipAddress: auditContext?.ipAddress,
+            userAgent: auditContext?.userAgent,
+            metadata: { email: userData.email, role: user.role },
+            severity: 'INFO',
+        });
         return {
             success: true,
             message: 'User registered successfully',
@@ -421,7 +553,7 @@ let AuthService = class AuthService {
             ...tokens,
         };
     }
-    async login(credentials) {
+    async login(credentials, auditContext) {
         console.log('🔐 Login attempt for:', credentials.email);
         const user = await this.db.user.findUnique({
             where: { email: credentials.email },
@@ -431,6 +563,13 @@ let AuthService = class AuthService {
         console.log('👤 User verified:', user?.isVerified);
         if (!user || !user.isActive) {
             console.log('❌ User not found or not active');
+            await this.auditService.log('LOGIN_FAILED', {
+                resource: 'USER',
+                ipAddress: auditContext?.ipAddress,
+                userAgent: auditContext?.userAgent,
+                metadata: { email: credentials.email, reason: 'USER_NOT_FOUND_OR_INACTIVE' },
+                severity: 'WARN',
+            });
             throw new common_1.UnauthorizedException('Invalid credentials');
         }
         console.log('🔑 Comparing password...');
@@ -438,9 +577,27 @@ let AuthService = class AuthService {
         console.log('🔑 Password valid:', isPasswordValid);
         if (!isPasswordValid) {
             console.log('❌ Invalid password');
+            await this.auditService.log('LOGIN_FAILED', {
+                userId: user.id,
+                resource: 'USER',
+                resourceId: user.id,
+                ipAddress: auditContext?.ipAddress,
+                userAgent: auditContext?.userAgent,
+                metadata: { email: credentials.email, reason: 'INVALID_PASSWORD' },
+                severity: 'WARN',
+            });
             throw new common_1.UnauthorizedException('Invalid credentials');
         }
         const tokens = await this.generateTokens(user.id);
+        await this.auditService.log('LOGIN_SUCCESS', {
+            userId: user.id,
+            resource: 'USER',
+            resourceId: user.id,
+            ipAddress: auditContext?.ipAddress,
+            userAgent: auditContext?.userAgent,
+            metadata: { email: credentials.email, role: user.role },
+            severity: 'INFO',
+        });
         return {
             success: true,
             user: this.mapUserToResponse(user),
@@ -472,10 +629,19 @@ let AuthService = class AuthService {
             },
         };
     }
-    async logout(userId) {
+    async logout(userId, auditContext) {
         await this.db.userSession.updateMany({
             where: { userId },
             data: { isActive: false },
+        });
+        await this.auditService.log('LOGOUT_SUCCESS', {
+            userId,
+            resource: 'USER',
+            resourceId: userId,
+            ipAddress: auditContext?.ipAddress,
+            userAgent: auditContext?.userAgent,
+            metadata: { userId },
+            severity: 'INFO',
         });
         return {
             success: true,
@@ -527,18 +693,67 @@ let AuthService = class AuthService {
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof database_service_1.DatabaseService !== "undefined" && database_service_1.DatabaseService) === "function" ? _a : Object, typeof (_b = typeof jwt_1.JwtService !== "undefined" && jwt_1.JwtService) === "function" ? _b : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof database_service_1.DatabaseService !== "undefined" && database_service_1.DatabaseService) === "function" ? _a : Object, typeof (_b = typeof jwt_1.JwtService !== "undefined" && jwt_1.JwtService) === "function" ? _b : Object, typeof (_c = typeof audit_service_1.AuditService !== "undefined" && audit_service_1.AuditService) === "function" ? _c : Object])
 ], AuthService);
 
 
 /***/ }),
-/* 13 */
+/* 16 */
 /***/ ((module) => {
 
 module.exports = require("bcrypt");
 
 /***/ }),
-/* 14 */
+/* 17 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AuditService = void 0;
+const common_1 = __webpack_require__(1);
+const database_service_1 = __webpack_require__(18);
+let AuditService = class AuditService {
+    constructor(db) {
+        this.db = db;
+    }
+    async log(action, params = {}) {
+        try {
+            await this.db.auditLog.create({
+                data: {
+                    userId: params.userId ?? null,
+                    action,
+                    resource: params.resource,
+                    resourceId: params.resourceId,
+                    ipAddress: params.ipAddress,
+                    userAgent: params.userAgent,
+                    metadata: params.metadata ?? {},
+                    severity: params.severity || 'INFO',
+                },
+            });
+        }
+        catch (e) {
+        }
+    }
+};
+exports.AuditService = AuditService;
+exports.AuditService = AuditService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof database_service_1.DatabaseService !== "undefined" && database_service_1.DatabaseService) === "function" ? _a : Object])
+], AuditService);
+
+
+/***/ }),
+/* 18 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -551,7 +766,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DatabaseService = void 0;
 const common_1 = __webpack_require__(1);
-const client_1 = __webpack_require__(15);
+const client_1 = __webpack_require__(19);
 let DatabaseService = class DatabaseService extends client_1.PrismaClient {
     async onModuleInit() {
         await this.$connect();
@@ -569,13 +784,13 @@ exports.DatabaseService = DatabaseService = __decorate([
 
 
 /***/ }),
-/* 15 */
+/* 19 */
 /***/ ((module) => {
 
 module.exports = require("@prisma/client");
 
 /***/ }),
-/* 16 */
+/* 20 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -592,16 +807,22 @@ var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.JwtStrategy = void 0;
 const common_1 = __webpack_require__(1);
-const config_1 = __webpack_require__(5);
-const passport_1 = __webpack_require__(8);
-const passport_jwt_1 = __webpack_require__(17);
-const database_service_1 = __webpack_require__(14);
+const config_1 = __webpack_require__(7);
+const passport_1 = __webpack_require__(10);
+const passport_jwt_1 = __webpack_require__(21);
+const database_service_1 = __webpack_require__(18);
 let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy) {
     constructor(configService, db) {
         super({
             jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
-            secretOrKey: configService.get('JWT_SECRET') || 'your-secret-key',
+            secretOrKey: (() => {
+                const secret = configService.get('JWT_SECRET');
+                if (!secret) {
+                    throw new Error('JWT_SECRET must be set');
+                }
+                return secret;
+            })(),
         });
         this.configService = configService;
         this.db = db;
@@ -643,13 +864,13 @@ exports.JwtStrategy = JwtStrategy = __decorate([
 
 
 /***/ }),
-/* 17 */
+/* 21 */
 /***/ ((module) => {
 
 module.exports = require("passport-jwt");
 
 /***/ }),
-/* 18 */
+/* 22 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -662,9 +883,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DoctorProfileModule = void 0;
 const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(14);
-const doctor_profile_controller_1 = __webpack_require__(19);
-const doctor_profile_service_1 = __webpack_require__(20);
+const database_service_1 = __webpack_require__(18);
+const doctor_profile_controller_1 = __webpack_require__(23);
+const doctor_profile_service_1 = __webpack_require__(24);
 let DoctorProfileModule = class DoctorProfileModule {
 };
 exports.DoctorProfileModule = DoctorProfileModule;
@@ -678,7 +899,7 @@ exports.DoctorProfileModule = DoctorProfileModule = __decorate([
 
 
 /***/ }),
-/* 19 */
+/* 23 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -698,9 +919,9 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DoctorProfileController = void 0;
 const common_1 = __webpack_require__(1);
-const swagger_1 = __webpack_require__(3);
-const jwt_auth_guard_1 = __webpack_require__(10);
-const doctor_profile_service_1 = __webpack_require__(20);
+const swagger_1 = __webpack_require__(4);
+const jwt_auth_guard_1 = __webpack_require__(12);
+const doctor_profile_service_1 = __webpack_require__(24);
 let DoctorProfileController = class DoctorProfileController {
     constructor(doctorProfileService) {
         this.doctorProfileService = doctorProfileService;
@@ -779,7 +1000,7 @@ exports.DoctorProfileController = DoctorProfileController = __decorate([
 
 
 /***/ }),
-/* 20 */
+/* 24 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -796,7 +1017,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DoctorProfileService = void 0;
 const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(14);
+const database_service_1 = __webpack_require__(18);
 let DoctorProfileService = class DoctorProfileService {
     constructor(db) {
         this.db = db;
@@ -904,7 +1125,7 @@ exports.DoctorProfileService = DoctorProfileService = __decorate([
 
 
 /***/ }),
-/* 21 */
+/* 25 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -917,9 +1138,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PatientBookingModule = void 0;
 const common_1 = __webpack_require__(1);
-const auth_module_1 = __webpack_require__(6);
-const patient_booking_controller_1 = __webpack_require__(22);
-const patient_booking_service_1 = __webpack_require__(23);
+const auth_module_1 = __webpack_require__(8);
+const patient_booking_controller_1 = __webpack_require__(26);
+const patient_booking_service_1 = __webpack_require__(27);
 let PatientBookingModule = class PatientBookingModule {
 };
 exports.PatientBookingModule = PatientBookingModule;
@@ -934,7 +1155,7 @@ exports.PatientBookingModule = PatientBookingModule = __decorate([
 
 
 /***/ }),
-/* 22 */
+/* 26 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -954,9 +1175,9 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PatientBookingController = void 0;
 const common_1 = __webpack_require__(1);
-const swagger_1 = __webpack_require__(3);
-const jwt_auth_guard_1 = __webpack_require__(10);
-const patient_booking_service_1 = __webpack_require__(23);
+const swagger_1 = __webpack_require__(4);
+const jwt_auth_guard_1 = __webpack_require__(12);
+const patient_booking_service_1 = __webpack_require__(27);
 let PatientBookingController = class PatientBookingController {
     constructor(patientBookingService) {
         this.patientBookingService = patientBookingService;
@@ -1068,7 +1289,7 @@ exports.PatientBookingController = PatientBookingController = __decorate([
 
 
 /***/ }),
-/* 23 */
+/* 27 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1085,7 +1306,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PatientBookingService = void 0;
 const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(14);
+const database_service_1 = __webpack_require__(18);
 let PatientBookingService = class PatientBookingService {
     constructor(db) {
         this.db = db;
@@ -1405,7 +1626,7 @@ exports.PatientBookingService = PatientBookingService = __decorate([
 
 
 /***/ }),
-/* 24 */
+/* 28 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1418,13 +1639,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SchedulingModule = void 0;
 const common_1 = __webpack_require__(1);
-const schedule_1 = __webpack_require__(25);
-const database_service_1 = __webpack_require__(14);
-const scheduling_controller_1 = __webpack_require__(26);
-const appointment_management_service_1 = __webpack_require__(31);
-const doctor_availability_service_1 = __webpack_require__(33);
-const scheduling_service_1 = __webpack_require__(30);
-const slot_engine_service_1 = __webpack_require__(32);
+const schedule_1 = __webpack_require__(29);
+const database_service_1 = __webpack_require__(18);
+const scheduling_controller_1 = __webpack_require__(30);
+const appointment_management_service_1 = __webpack_require__(34);
+const doctor_availability_service_1 = __webpack_require__(36);
+const scheduling_service_1 = __webpack_require__(33);
+const slot_engine_service_1 = __webpack_require__(35);
 let SchedulingModule = class SchedulingModule {
 };
 exports.SchedulingModule = SchedulingModule;
@@ -1450,13 +1671,13 @@ exports.SchedulingModule = SchedulingModule = __decorate([
 
 
 /***/ }),
-/* 25 */
+/* 29 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/schedule");
 
 /***/ }),
-/* 26 */
+/* 30 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1476,10 +1697,10 @@ var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SchedulingController = void 0;
 const common_1 = __webpack_require__(1);
-const swagger_1 = __webpack_require__(3);
-const jwt_auth_guard_1 = __webpack_require__(10);
-const scheduling_dto_1 = __webpack_require__(27);
-const scheduling_service_1 = __webpack_require__(30);
+const swagger_1 = __webpack_require__(4);
+const jwt_auth_guard_1 = __webpack_require__(12);
+const scheduling_dto_1 = __webpack_require__(31);
+const scheduling_service_1 = __webpack_require__(33);
 let SchedulingController = class SchedulingController {
     constructor(schedulingService) {
         this.schedulingService = schedulingService;
@@ -1911,7 +2132,7 @@ exports.SchedulingController = SchedulingController = __decorate([
 
 
 /***/ }),
-/* 27 */
+/* 31 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1926,8 +2147,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ScheduleAnalyticsDto = exports.TimeSlotAvailabilityDto = exports.UpdateAvailabilityDto = exports.GetAvailabilityDto = exports.UpdateAppointmentDto = exports.BookAppointmentDto = exports.AppointmentStatus = exports.AppointmentType = exports.CreateExceptionDto = exports.ExceptionType = exports.UpdateTimeSlotDto = exports.CreateTimeSlotDto = exports.UpdateScheduleTemplateDto = exports.CreateScheduleTemplateDto = void 0;
-const class_validator_1 = __webpack_require__(28);
-const class_transformer_1 = __webpack_require__(29);
+const class_validator_1 = __webpack_require__(14);
+const class_transformer_1 = __webpack_require__(32);
 class CreateScheduleTemplateDto {
 }
 exports.CreateScheduleTemplateDto = CreateScheduleTemplateDto;
@@ -2257,19 +2478,13 @@ __decorate([
 
 
 /***/ }),
-/* 28 */
-/***/ ((module) => {
-
-module.exports = require("class-validator");
-
-/***/ }),
-/* 29 */
+/* 32 */
 /***/ ((module) => {
 
 module.exports = require("class-transformer");
 
 /***/ }),
-/* 30 */
+/* 33 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2286,10 +2501,10 @@ var _a, _b, _c, _d;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SchedulingService = void 0;
 const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(14);
-const appointment_management_service_1 = __webpack_require__(31);
-const doctor_availability_service_1 = __webpack_require__(33);
-const slot_engine_service_1 = __webpack_require__(32);
+const database_service_1 = __webpack_require__(18);
+const appointment_management_service_1 = __webpack_require__(34);
+const doctor_availability_service_1 = __webpack_require__(36);
+const slot_engine_service_1 = __webpack_require__(35);
 let SchedulingService = class SchedulingService {
     constructor(db, doctorAvailability, slotEngine, appointmentManagement) {
         this.db = db;
@@ -2753,7 +2968,7 @@ exports.SchedulingService = SchedulingService = __decorate([
 
 
 /***/ }),
-/* 31 */
+/* 34 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2770,8 +2985,8 @@ var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppointmentManagementService = void 0;
 const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(14);
-const slot_engine_service_1 = __webpack_require__(32);
+const database_service_1 = __webpack_require__(18);
+const slot_engine_service_1 = __webpack_require__(35);
 let AppointmentManagementService = class AppointmentManagementService {
     constructor(db, slotEngine) {
         this.db = db;
@@ -3098,7 +3313,7 @@ exports.AppointmentManagementService = AppointmentManagementService = __decorate
 
 
 /***/ }),
-/* 32 */
+/* 35 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3115,8 +3330,8 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SlotEngineService = void 0;
 const common_1 = __webpack_require__(1);
-const schedule_1 = __webpack_require__(25);
-const database_service_1 = __webpack_require__(14);
+const schedule_1 = __webpack_require__(29);
+const database_service_1 = __webpack_require__(18);
 let SlotEngineService = class SlotEngineService {
     constructor(db) {
         this.db = db;
@@ -3403,7 +3618,7 @@ exports.SlotEngineService = SlotEngineService = __decorate([
 
 
 /***/ }),
-/* 33 */
+/* 36 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3420,8 +3635,8 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DoctorAvailabilityService = void 0;
 const common_1 = __webpack_require__(1);
-const schedule_1 = __webpack_require__(25);
-const database_service_1 = __webpack_require__(14);
+const schedule_1 = __webpack_require__(29);
+const database_service_1 = __webpack_require__(18);
 let DoctorAvailabilityService = class DoctorAvailabilityService {
     constructor(db) {
         this.db = db;
@@ -3886,22 +4101,30 @@ var exports = __webpack_exports__;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const common_1 = __webpack_require__(1);
-const core_1 = __webpack_require__(2);
-const swagger_1 = __webpack_require__(3);
-const app_module_1 = __webpack_require__(4);
+const helmet_1 = __webpack_require__(2);
+const core_1 = __webpack_require__(3);
+const swagger_1 = __webpack_require__(4);
+const app_module_1 = __webpack_require__(5);
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
+    app.use((0, helmet_1.default)({
+        contentSecurityPolicy: process.env.HELMET_CSP_ENABLED === 'true' ? undefined : false,
+        hsts: process.env.HELMET_HSTS_ENABLED === 'true' ? undefined : false,
+    }));
+    const corsOrigins = (process.env.CORS_ORIGIN?.split(',') || [
+        'http://localhost:3000',
+        'http://localhost:8081',
+        'http://localhost:19006',
+        'http://192.168.100.110:3000',
+        'http://192.168.100.40:3000',
+        'http://10.0.2.2:3000',
+        'http://10.0.2.15:3000',
+    ]).map(o => o.trim());
     app.enableCors({
-        origin: [
-            'http://localhost:3000',
-            'http://localhost:8081',
-            'http://localhost:19006',
-            'http://192.168.100.110:3000',
-            'http://192.168.100.40:3000',
-            'http://10.0.2.2:3000',
-            'http://10.0.2.15:3000'
-        ],
-        credentials: true,
+        origin: corsOrigins,
+        credentials: process.env.CORS_CREDENTIALS === 'true',
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
     });
     app.useGlobalPipes(new common_1.ValidationPipe({
         transform: true,

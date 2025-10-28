@@ -60,6 +60,7 @@ model User {
   profile       UserProfile?
   sessions      UserSession[]
   mfaSettings   MfaSettings?
+  mfaAttempts   MfaAttempt[]
   auditLogs     AuditLog[]
   permissions   UserPermission[]
   consentRecords ConsentRecord[]
@@ -171,6 +172,53 @@ model MfaSettings {
   @@map("mfa_settings")
 }
 
+model MfaAttempt {
+  id        String @id @default(cuid())
+  userId    String
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Attempt Details
+  method    MfaMethod
+  code      String
+  isValid   Boolean
+  ipAddress String?
+  userAgent String?
+  
+  // Timestamps
+  attemptedAt DateTime @default(now())
+  
+  @@map("mfa_attempts")
+}
+
+// ===========================================
+// SECURITY EVENTS
+// ===========================================
+
+model SecurityEvent {
+  id        String @id @default(cuid())
+  userId    String?
+  
+  // Event Details
+  type      SecurityEventType
+  severity  SecuritySeverity
+  description String
+  
+  // Context
+  ipAddress String?
+  userAgent String?
+  metadata  Json?
+  
+  // Resolution
+  isResolved Boolean @default(false)
+  resolvedAt DateTime?
+  resolvedBy String?
+  
+  // Timestamps
+  occurredAt DateTime @default(now())
+  
+  @@map("security_events")
+}
+
 // ===========================================
 // AUDIT & COMPLIANCE
 // ===========================================
@@ -242,12 +290,44 @@ model Permission {
   
   // Relations
   userPermissions UserPermission[]
+  rolePermissions RolePermission[]
   
   // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
   @@map("permissions")
+}
+
+model Role {
+  id          String @id @default(cuid())
+  name        String @unique
+  description String
+  isSystem    Boolean @default(false) // System roles cannot be deleted
+  
+  // Relations
+  rolePermissions RolePermission[]
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("roles")
+}
+
+model RolePermission {
+  id           String @id @default(cuid())
+  roleId       String
+  role         Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permissionId String
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([roleId, permissionId])
+  @@map("role_permissions")
 }
 
 model UserPermission {
@@ -268,10 +348,6 @@ model UserPermission {
   @@unique([userId, permissionId, resourceId])
   @@map("user_permissions")
 }
-
-// ===========================================
-// ENUMS
-// ===========================================
 
 enum UserRole {
   DOCTOR
@@ -310,6 +386,22 @@ enum ConsentType {
   RESEARCH
   SHARING
   EMERGENCY_ACCESS
+}
+
+enum SecurityEventType {
+  LOGIN_FAILURE
+  PASSWORD_BREACH
+  SUSPICIOUS_ACTIVITY
+  UNAUTHORIZED_ACCESS
+  DATA_EXPORT
+  ACCOUNT_LOCKOUT
+}
+
+enum SecuritySeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
 }
 
 // ===========================================
@@ -701,7 +793,7 @@ enum BookingStatus {
 model Appointment {
   id            String @id @default(cuid())
   doctorId      String
-  doctor        User   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  doctor        User   @relation("DoctorAppointments", fields: [doctorId], references: [id], onDelete: Cascade)
   patientId     String
   patient       User   @relation("PatientAppointments", fields: [patientId], references: [id], onDelete: Cascade)
   scheduleId    String?

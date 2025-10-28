@@ -1,4 +1,5 @@
 import { ValidationPipe } from '@nestjs/common';
+import helmet from 'helmet';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
@@ -6,18 +7,28 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // Security headers
+  app.use(helmet({
+    contentSecurityPolicy: process.env.HELMET_CSP_ENABLED === 'true' ? undefined : false,
+    hsts: process.env.HELMET_HSTS_ENABLED === 'true' ? undefined : false,
+  }));
+
   // Enable CORS for mobile app (including Android emulator)
+  const corsOrigins = (process.env.CORS_ORIGIN?.split(',') || [
+    'http://localhost:3000',
+    'http://localhost:8081',
+    'http://localhost:19006',
+    'http://192.168.100.110:3000',
+    'http://192.168.100.40:3000',
+    'http://10.0.2.2:3000',
+    'http://10.0.2.15:3000',
+  ]).map(o => o.trim());
+
   app.enableCors({
-    origin: [
-      'http://localhost:3000', 
-      'http://localhost:8081', 
-      'http://localhost:19006',
-      'http://192.168.100.110:3000', // Your actual network IP
-      'http://192.168.100.40:3000',  // Keep for compatibility
-      'http://10.0.2.2:3000', // Android emulator localhost mapping
-      'http://10.0.2.15:3000' // Alternative Android emulator IP
-    ],
-    credentials: true,
+    origin: corsOrigins,
+    credentials: process.env.CORS_CREDENTIALS === 'true',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   });
 
   // Global validation pipe

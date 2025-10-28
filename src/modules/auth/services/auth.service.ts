@@ -1,17 +1,19 @@
 import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { AuditService } from './audit.service';
 import { DatabaseService } from './database.service';
 
 @Injectable()
 export class AuthService {
-  private readonly jwtSecret = process.env.JWT_SECRET || 'your-secret-key';
-  private readonly jwtExpiresIn = process.env.JWT_EXPIRES_IN || '1h';
+  private readonly jwtSecret = process.env.JWT_SECRET!; // required via module
+  private readonly jwtExpiresIn = process.env.JWT_EXPIRES_IN || '15m';
   private readonly refreshTokenExpiresIn = process.env.REFRESH_TOKEN_EXPIRES_IN || '7d';
 
   constructor(
     private readonly db: DatabaseService,
     private readonly jwtService: JwtService,
+    private readonly auditService: AuditService,
   ) {}
 
   async register(userData: {
@@ -20,13 +22,20 @@ export class AuthService {
     firstName: string;
     lastName: string;
     role?: string;
-  }) {
+  }, auditContext?: { ipAddress?: string; userAgent?: string }) {
     // Check if user already exists
     const existingUser = await this.db.user.findUnique({
       where: { email: userData.email },
     });
 
     if (existingUser) {
+      await this.auditService.log('REGISTER_FAILED', {
+        resource: 'USER',
+        ipAddress: auditContext?.ipAddress,
+        userAgent: auditContext?.userAgent,
+        metadata: { email: userData.email, reason: 'EMAIL_EXISTS' },
+        severity: 'WARN',
+      });
       throw new ConflictException('User with this email already exists');
     }
 
@@ -47,6 +56,17 @@ export class AuthService {
     // Generate tokens
     const tokens = await this.generateTokens(user.id);
 
+    // Audit successful registration
+    await this.auditService.log('REGISTER_SUCCESS', {
+      userId: user.id,
+      resource: 'USER',
+      resourceId: user.id,
+      ipAddress: auditContext?.ipAddress,
+      userAgent: auditContext?.userAgent,
+      metadata: { email: userData.email, role: user.role },
+      severity: 'INFO',
+    });
+
     return {
       success: true,
       message: 'User registered successfully',
@@ -55,7 +75,7 @@ export class AuthService {
     };
   }
 
-  async login(credentials: { email: string; password: string }) {
+  async login(credentials: { email: string; password: string }, auditContext?: { ipAddress?: string; userAgent?: string }) {
     console.log('🔐 Login attempt for:', credentials.email);
     
     // Find user
@@ -69,6 +89,13 @@ export class AuthService {
 
     if (!user || !user.isActive) {
       console.log('❌ User not found or not active');
+      await this.auditService.log('LOGIN_FAILED', {
+        resource: 'USER',
+        ipAddress: auditContext?.ipAddress,
+        userAgent: auditContext?.userAgent,
+        metadata: { email: credentials.email, reason: 'USER_NOT_FOUND_OR_INACTIVE' },
+        severity: 'WARN',
+      });
       throw new UnauthorizedException('Invalid credentials');
     }
 
@@ -79,11 +106,31 @@ export class AuthService {
     
     if (!isPasswordValid) {
       console.log('❌ Invalid password');
+      await this.auditService.log('LOGIN_FAILED', {
+        userId: user.id,
+        resource: 'USER',
+        resourceId: user.id,
+        ipAddress: auditContext?.ipAddress,
+        userAgent: auditContext?.userAgent,
+        metadata: { email: credentials.email, reason: 'INVALID_PASSWORD' },
+        severity: 'WARN',
+      });
       throw new UnauthorizedException('Invalid credentials');
     }
 
     // Generate tokens
     const tokens = await this.generateTokens(user.id);
+
+    // Audit successful login
+    await this.auditService.log('LOGIN_SUCCESS', {
+      userId: user.id,
+      resource: 'USER',
+      resourceId: user.id,
+      ipAddress: auditContext?.ipAddress,
+      userAgent: auditContext?.userAgent,
+      metadata: { email: credentials.email, role: user.role },
+      severity: 'INFO',
+    });
 
     return {
       success: true,
@@ -125,11 +172,22 @@ export class AuthService {
     };
   }
 
-  async logout(userId: string) {
+  async logout(userId: string, auditContext?: { ipAddress?: string; userAgent?: string }) {
     // Deactivate all user sessions
     await this.db.userSession.updateMany({
       where: { userId },
       data: { isActive: false },
+    });
+
+    // Audit logout
+    await this.auditService.log('LOGOUT_SUCCESS', {
+      userId,
+      resource: 'USER',
+      resourceId: userId,
+      ipAddress: auditContext?.ipAddress,
+      userAgent: auditContext?.userAgent,
+      metadata: { userId },
+      severity: 'INFO',
     });
 
     return {
