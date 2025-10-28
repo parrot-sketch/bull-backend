@@ -111,30 +111,45 @@ export class PatientProfileService {
    * Get patient profile
    */
   async getPatientProfile(patientId: string) {
-    const profile = await this.db.patientProfile.findUnique({
-      where: { patientId },
-      include: {
-        allergies: true,
-        currentMedications: true,
-        visits: {
-          include: {
-            doctor: {
-              select: {
-                id: true,
-                firstName: true,
-                lastName: true,
-                specialization: true,
-              },
+    const include = {
+      allergies: true,
+      currentMedications: true,
+      visits: {
+        include: {
+          doctor: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              specialization: true,
             },
           },
-          orderBy: { visitDate: 'desc' },
-          take: 10,
         },
+        orderBy: { visitDate: 'desc' },
+        take: 10,
       },
+    } as const;
+
+    let profile = await this.db.patientProfile.findUnique({
+      where: { patientId },
+      include,
     });
 
     if (!profile) {
-      throw new NotFoundException('Patient profile not found');
+      // Initialize a minimal patient profile so the app can function without 404s
+      profile = await this.db.patientProfile.create({
+        data: {
+          patientId,
+          preferredLanguage: 'English',
+          communicationPref: 'EMAIL' as any,
+        },
+        include,
+      });
+      return {
+        success: true,
+        data: profile,
+        message: 'Patient profile initialized',
+      };
     }
 
     return {

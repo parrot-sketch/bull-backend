@@ -180,3 +180,4 @@ export class VisitController {
     return this.visitService.getVisitStatistics(doctorId, startDate, endDate);
   }
 }
+

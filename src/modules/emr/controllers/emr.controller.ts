@@ -74,3 +74,4 @@ export class EmrController {
     return this.emrService.generatePatientSummary(patientId);
   }
 }
+

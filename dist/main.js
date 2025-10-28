@@ -1,11 +1,32 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
-/******/ 	var __webpack_modules__ = ({
+/******/ 	var __webpack_modules__ = ([
+/* 0 */,
+/* 1 */
+/***/ ((module) => {
 
-/***/ "./src/app.module.ts":
-/*!***************************!*\
-  !*** ./src/app.module.ts ***!
-  \***************************/
+module.exports = require("@nestjs/common");
+
+/***/ }),
+/* 2 */
+/***/ ((module) => {
+
+module.exports = require("helmet");
+
+/***/ }),
+/* 3 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/core");
+
+/***/ }),
+/* 4 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/swagger");
+
+/***/ }),
+/* 5 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17,15 +38,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppModule = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
-const core_1 = __webpack_require__(/*! @nestjs/core */ "@nestjs/core");
-const throttler_1 = __webpack_require__(/*! @nestjs/throttler */ "@nestjs/throttler");
-const auth_module_1 = __webpack_require__(/*! ./modules/auth/auth.module */ "./src/modules/auth/auth.module.ts");
-const doctor_profile_module_1 = __webpack_require__(/*! ./modules/doctor-profile/doctor-profile.module */ "./src/modules/doctor-profile/doctor-profile.module.ts");
-const emr_module_1 = __webpack_require__(/*! ./modules/emr/emr.module */ "./src/modules/emr/emr.module.ts");
-const patient_booking_module_1 = __webpack_require__(/*! ./modules/patient-booking/patient-booking.module */ "./src/modules/patient-booking/patient-booking.module.ts");
-const scheduling_module_1 = __webpack_require__(/*! ./modules/scheduling/scheduling.module */ "./src/modules/scheduling/scheduling.module.ts");
+const common_1 = __webpack_require__(1);
+const config_1 = __webpack_require__(6);
+const core_1 = __webpack_require__(3);
+const throttler_1 = __webpack_require__(7);
+const auth_module_1 = __webpack_require__(8);
+const doctor_profile_module_1 = __webpack_require__(23);
+const emr_module_1 = __webpack_require__(26);
+const patient_booking_module_1 = __webpack_require__(41);
+const scheduling_module_1 = __webpack_require__(44);
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -54,11 +75,19 @@ exports.AppModule = AppModule = __decorate([
 
 
 /***/ }),
+/* 6 */
+/***/ ((module) => {
 
-/***/ "./src/modules/auth/auth.module.ts":
-/*!*****************************************!*\
-  !*** ./src/modules/auth/auth.module.ts ***!
-  \*****************************************/
+module.exports = require("@nestjs/config");
+
+/***/ }),
+/* 7 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/throttler");
+
+/***/ }),
+/* 8 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -70,16 +99,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AuthModule = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
-const jwt_1 = __webpack_require__(/*! @nestjs/jwt */ "@nestjs/jwt");
-const passport_1 = __webpack_require__(/*! @nestjs/passport */ "@nestjs/passport");
-const appointments_controller_1 = __webpack_require__(/*! ./controllers/appointments.controller */ "./src/modules/auth/controllers/appointments.controller.ts");
-const auth_controller_1 = __webpack_require__(/*! ./controllers/auth.controller */ "./src/modules/auth/controllers/auth.controller.ts");
-const auth_service_1 = __webpack_require__(/*! ./services/auth.service */ "./src/modules/auth/services/auth.service.ts");
-const database_service_1 = __webpack_require__(/*! ./services/database.service */ "./src/modules/auth/services/database.service.ts");
-const audit_service_1 = __webpack_require__(/*! ./services/audit.service */ "./src/modules/auth/services/audit.service.ts");
-const jwt_strategy_1 = __webpack_require__(/*! ./strategies/jwt.strategy */ "./src/modules/auth/strategies/jwt.strategy.ts");
+const common_1 = __webpack_require__(1);
+const config_1 = __webpack_require__(6);
+const jwt_1 = __webpack_require__(9);
+const passport_1 = __webpack_require__(10);
+const appointments_controller_1 = __webpack_require__(11);
+const auth_controller_1 = __webpack_require__(13);
+const auth_service_1 = __webpack_require__(15);
+const database_service_1 = __webpack_require__(19);
+const audit_service_1 = __webpack_require__(18);
+const jwt_strategy_1 = __webpack_require__(21);
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
@@ -118,11 +147,19 @@ exports.AuthModule = AuthModule = __decorate([
 
 
 /***/ }),
+/* 9 */
+/***/ ((module) => {
 
-/***/ "./src/modules/auth/controllers/appointments.controller.ts":
-/*!*****************************************************************!*\
-  !*** ./src/modules/auth/controllers/appointments.controller.ts ***!
-  \*****************************************************************/
+module.exports = require("@nestjs/jwt");
+
+/***/ }),
+/* 10 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/passport");
+
+/***/ }),
+/* 11 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -140,9 +177,9 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppointmentsController = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const jwt_auth_guard_1 = __webpack_require__(/*! ../guards/jwt-auth.guard */ "./src/modules/auth/guards/jwt-auth.guard.ts");
+const common_1 = __webpack_require__(1);
+const swagger_1 = __webpack_require__(4);
+const jwt_auth_guard_1 = __webpack_require__(12);
 let AppointmentsController = class AppointmentsController {
     async getAppointments(req, startDate, endDate, status, limit) {
         try {
@@ -209,11 +246,56 @@ exports.AppointmentsController = AppointmentsController = __decorate([
 
 
 /***/ }),
+/* 12 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-/***/ "./src/modules/auth/controllers/auth.controller.ts":
-/*!*********************************************************!*\
-  !*** ./src/modules/auth/controllers/auth.controller.ts ***!
-  \*********************************************************/
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.JwtAuthGuard = void 0;
+const common_1 = __webpack_require__(1);
+const passport_1 = __webpack_require__(10);
+const core_1 = __webpack_require__(3);
+let JwtAuthGuard = class JwtAuthGuard extends (0, passport_1.AuthGuard)('jwt') {
+    constructor(reflector) {
+        super();
+        this.reflector = reflector;
+    }
+    canActivate(context) {
+        const isPublic = this.reflector.getAllAndOverride('isPublic', [
+            context.getHandler(),
+            context.getClass(),
+        ]);
+        if (isPublic) {
+            return true;
+        }
+        return super.canActivate(context);
+    }
+    handleRequest(err, user, info, context) {
+        if (err || !user) {
+            throw err || new common_1.UnauthorizedException('Invalid or expired token');
+        }
+        return user;
+    }
+};
+exports.JwtAuthGuard = JwtAuthGuard;
+exports.JwtAuthGuard = JwtAuthGuard = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof core_1.Reflector !== "undefined" && core_1.Reflector) === "function" ? _a : Object])
+], JwtAuthGuard);
+
+
+/***/ }),
+/* 13 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -232,12 +314,12 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AuthController = exports.RefreshDto = exports.RegisterDto = exports.LoginDto = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const throttler_1 = __webpack_require__(/*! @nestjs/throttler */ "@nestjs/throttler");
-const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
-const jwt_auth_guard_1 = __webpack_require__(/*! ../guards/jwt-auth.guard */ "./src/modules/auth/guards/jwt-auth.guard.ts");
-const auth_service_1 = __webpack_require__(/*! ../services/auth.service */ "./src/modules/auth/services/auth.service.ts");
+const common_1 = __webpack_require__(1);
+const swagger_1 = __webpack_require__(4);
+const throttler_1 = __webpack_require__(7);
+const class_validator_1 = __webpack_require__(14);
+const jwt_auth_guard_1 = __webpack_require__(12);
+const auth_service_1 = __webpack_require__(15);
 class LoginDto {
 }
 exports.LoginDto = LoginDto;
@@ -469,117 +551,13 @@ exports.AuthController = AuthController = __decorate([
 
 
 /***/ }),
+/* 14 */
+/***/ ((module) => {
 
-/***/ "./src/modules/auth/guards/jwt-auth.guard.ts":
-/*!***************************************************!*\
-  !*** ./src/modules/auth/guards/jwt-auth.guard.ts ***!
-  \***************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.JwtAuthGuard = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const passport_1 = __webpack_require__(/*! @nestjs/passport */ "@nestjs/passport");
-const core_1 = __webpack_require__(/*! @nestjs/core */ "@nestjs/core");
-let JwtAuthGuard = class JwtAuthGuard extends (0, passport_1.AuthGuard)('jwt') {
-    constructor(reflector) {
-        super();
-        this.reflector = reflector;
-    }
-    canActivate(context) {
-        const isPublic = this.reflector.getAllAndOverride('isPublic', [
-            context.getHandler(),
-            context.getClass(),
-        ]);
-        if (isPublic) {
-            return true;
-        }
-        return super.canActivate(context);
-    }
-    handleRequest(err, user, info, context) {
-        if (err || !user) {
-            throw err || new common_1.UnauthorizedException('Invalid or expired token');
-        }
-        return user;
-    }
-};
-exports.JwtAuthGuard = JwtAuthGuard;
-exports.JwtAuthGuard = JwtAuthGuard = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof core_1.Reflector !== "undefined" && core_1.Reflector) === "function" ? _a : Object])
-], JwtAuthGuard);
-
+module.exports = require("class-validator");
 
 /***/ }),
-
-/***/ "./src/modules/auth/services/audit.service.ts":
-/*!****************************************************!*\
-  !*** ./src/modules/auth/services/audit.service.ts ***!
-  \****************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AuditService = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const database_service_1 = __webpack_require__(/*! ./database.service */ "./src/modules/auth/services/database.service.ts");
-let AuditService = class AuditService {
-    constructor(db) {
-        this.db = db;
-    }
-    async log(action, params = {}) {
-        try {
-            await this.db.auditLog.create({
-                data: {
-                    userId: params.userId ?? null,
-                    action,
-                    resource: params.resource,
-                    resourceId: params.resourceId,
-                    ipAddress: params.ipAddress,
-                    userAgent: params.userAgent,
-                    metadata: params.metadata ?? {},
-                    severity: params.severity || 'INFO',
-                },
-            });
-        }
-        catch (e) {
-        }
-    }
-};
-exports.AuditService = AuditService;
-exports.AuditService = AuditService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof database_service_1.DatabaseService !== "undefined" && database_service_1.DatabaseService) === "function" ? _a : Object])
-], AuditService);
-
-
-/***/ }),
-
-/***/ "./src/modules/auth/services/auth.service.ts":
-/*!***************************************************!*\
-  !*** ./src/modules/auth/services/auth.service.ts ***!
-  \***************************************************/
+/* 15 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -595,12 +573,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AuthService = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const jwt_1 = __webpack_require__(/*! @nestjs/jwt */ "@nestjs/jwt");
-const bcrypt = __webpack_require__(/*! bcrypt */ "bcrypt");
-const speakeasy = __webpack_require__(/*! speakeasy */ "speakeasy");
-const audit_service_1 = __webpack_require__(/*! ./audit.service */ "./src/modules/auth/services/audit.service.ts");
-const database_service_1 = __webpack_require__(/*! ./database.service */ "./src/modules/auth/services/database.service.ts");
+const common_1 = __webpack_require__(1);
+const jwt_1 = __webpack_require__(9);
+const bcrypt = __webpack_require__(16);
+const speakeasy = __webpack_require__(17);
+const audit_service_1 = __webpack_require__(18);
+const database_service_1 = __webpack_require__(19);
 let AuthService = class AuthService {
     constructor(db, jwtService, auditService) {
         this.db = db;
@@ -865,11 +843,68 @@ exports.AuthService = AuthService = __decorate([
 
 
 /***/ }),
+/* 16 */
+/***/ ((module) => {
 
-/***/ "./src/modules/auth/services/database.service.ts":
-/*!*******************************************************!*\
-  !*** ./src/modules/auth/services/database.service.ts ***!
-  \*******************************************************/
+module.exports = require("bcrypt");
+
+/***/ }),
+/* 17 */
+/***/ ((module) => {
+
+module.exports = require("speakeasy");
+
+/***/ }),
+/* 18 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AuditService = void 0;
+const common_1 = __webpack_require__(1);
+const database_service_1 = __webpack_require__(19);
+let AuditService = class AuditService {
+    constructor(db) {
+        this.db = db;
+    }
+    async log(action, params = {}) {
+        try {
+            await this.db.auditLog.create({
+                data: {
+                    userId: params.userId ?? null,
+                    action,
+                    resource: params.resource,
+                    resourceId: params.resourceId,
+                    ipAddress: params.ipAddress,
+                    userAgent: params.userAgent,
+                    metadata: params.metadata ?? {},
+                    severity: params.severity || 'INFO',
+                },
+            });
+        }
+        catch (e) {
+        }
+    }
+};
+exports.AuditService = AuditService;
+exports.AuditService = AuditService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof database_service_1.DatabaseService !== "undefined" && database_service_1.DatabaseService) === "function" ? _a : Object])
+], AuditService);
+
+
+/***/ }),
+/* 19 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -881,8 +916,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DatabaseService = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const client_1 = __webpack_require__(/*! @prisma/client */ "@prisma/client");
+const common_1 = __webpack_require__(1);
+const client_1 = __webpack_require__(20);
 let DatabaseService = class DatabaseService extends client_1.PrismaClient {
     async onModuleInit() {
         await this.$connect();
@@ -900,11 +935,13 @@ exports.DatabaseService = DatabaseService = __decorate([
 
 
 /***/ }),
+/* 20 */
+/***/ ((module) => {
 
-/***/ "./src/modules/auth/strategies/jwt.strategy.ts":
-/*!*****************************************************!*\
-  !*** ./src/modules/auth/strategies/jwt.strategy.ts ***!
-  \*****************************************************/
+module.exports = require("@prisma/client");
+
+/***/ }),
+/* 21 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -920,11 +957,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.JwtStrategy = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
-const passport_1 = __webpack_require__(/*! @nestjs/passport */ "@nestjs/passport");
-const passport_jwt_1 = __webpack_require__(/*! passport-jwt */ "passport-jwt");
-const database_service_1 = __webpack_require__(/*! ../services/database.service */ "./src/modules/auth/services/database.service.ts");
+const common_1 = __webpack_require__(1);
+const config_1 = __webpack_require__(6);
+const passport_1 = __webpack_require__(10);
+const passport_jwt_1 = __webpack_require__(22);
+const database_service_1 = __webpack_require__(19);
 let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy) {
     constructor(configService, db) {
         super({
@@ -978,11 +1015,42 @@ exports.JwtStrategy = JwtStrategy = __decorate([
 
 
 /***/ }),
+/* 22 */
+/***/ ((module) => {
 
-/***/ "./src/modules/doctor-profile/controllers/doctor-profile.controller.ts":
-/*!*****************************************************************************!*\
-  !*** ./src/modules/doctor-profile/controllers/doctor-profile.controller.ts ***!
-  \*****************************************************************************/
+module.exports = require("passport-jwt");
+
+/***/ }),
+/* 23 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DoctorProfileModule = void 0;
+const common_1 = __webpack_require__(1);
+const database_service_1 = __webpack_require__(19);
+const doctor_profile_controller_1 = __webpack_require__(24);
+const doctor_profile_service_1 = __webpack_require__(25);
+let DoctorProfileModule = class DoctorProfileModule {
+};
+exports.DoctorProfileModule = DoctorProfileModule;
+exports.DoctorProfileModule = DoctorProfileModule = __decorate([
+    (0, common_1.Module)({
+        controllers: [doctor_profile_controller_1.DoctorProfileController],
+        providers: [doctor_profile_service_1.DoctorProfileService, database_service_1.DatabaseService],
+        exports: [doctor_profile_service_1.DoctorProfileService],
+    })
+], DoctorProfileModule);
+
+
+/***/ }),
+/* 24 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1001,10 +1069,10 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DoctorProfileController = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const jwt_auth_guard_1 = __webpack_require__(/*! ../../auth/guards/jwt-auth.guard */ "./src/modules/auth/guards/jwt-auth.guard.ts");
-const doctor_profile_service_1 = __webpack_require__(/*! ../services/doctor-profile.service */ "./src/modules/doctor-profile/services/doctor-profile.service.ts");
+const common_1 = __webpack_require__(1);
+const swagger_1 = __webpack_require__(4);
+const jwt_auth_guard_1 = __webpack_require__(12);
+const doctor_profile_service_1 = __webpack_require__(25);
 let DoctorProfileController = class DoctorProfileController {
     constructor(doctorProfileService) {
         this.doctorProfileService = doctorProfileService;
@@ -1184,44 +1252,7 @@ exports.DoctorProfileController = DoctorProfileController = __decorate([
 
 
 /***/ }),
-
-/***/ "./src/modules/doctor-profile/doctor-profile.module.ts":
-/*!*************************************************************!*\
-  !*** ./src/modules/doctor-profile/doctor-profile.module.ts ***!
-  \*************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DoctorProfileModule = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const database_service_1 = __webpack_require__(/*! ../auth/services/database.service */ "./src/modules/auth/services/database.service.ts");
-const doctor_profile_controller_1 = __webpack_require__(/*! ./controllers/doctor-profile.controller */ "./src/modules/doctor-profile/controllers/doctor-profile.controller.ts");
-const doctor_profile_service_1 = __webpack_require__(/*! ./services/doctor-profile.service */ "./src/modules/doctor-profile/services/doctor-profile.service.ts");
-let DoctorProfileModule = class DoctorProfileModule {
-};
-exports.DoctorProfileModule = DoctorProfileModule;
-exports.DoctorProfileModule = DoctorProfileModule = __decorate([
-    (0, common_1.Module)({
-        controllers: [doctor_profile_controller_1.DoctorProfileController],
-        providers: [doctor_profile_service_1.DoctorProfileService, database_service_1.DatabaseService],
-        exports: [doctor_profile_service_1.DoctorProfileService],
-    })
-], DoctorProfileModule);
-
-
-/***/ }),
-
-/***/ "./src/modules/doctor-profile/services/doctor-profile.service.ts":
-/*!***********************************************************************!*\
-  !*** ./src/modules/doctor-profile/services/doctor-profile.service.ts ***!
-  \***********************************************************************/
+/* 25 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1237,8 +1268,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DoctorProfileService = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const database_service_1 = __webpack_require__(/*! ../../auth/services/database.service */ "./src/modules/auth/services/database.service.ts");
+const common_1 = __webpack_require__(1);
+const database_service_1 = __webpack_require__(19);
 let DoctorProfileService = class DoctorProfileService {
     constructor(db) {
         this.db = db;
@@ -1483,11 +1514,74 @@ exports.DoctorProfileService = DoctorProfileService = __decorate([
 
 
 /***/ }),
+/* 26 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-/***/ "./src/modules/emr/controllers/emr.controller.ts":
-/*!*******************************************************!*\
-  !*** ./src/modules/emr/controllers/emr.controller.ts ***!
-  \*******************************************************/
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EmrModule = void 0;
+const common_1 = __webpack_require__(1);
+const auth_module_1 = __webpack_require__(8);
+const emr_controller_1 = __webpack_require__(27);
+const imaging_controller_1 = __webpack_require__(29);
+const lab_controller_1 = __webpack_require__(31);
+const patient_profile_controller_1 = __webpack_require__(33);
+const prescription_controller_1 = __webpack_require__(35);
+const visit_controller_1 = __webpack_require__(37);
+const clinical_template_service_1 = __webpack_require__(39);
+const drug_interaction_service_1 = __webpack_require__(40);
+const emr_service_1 = __webpack_require__(28);
+const imaging_service_1 = __webpack_require__(30);
+const lab_service_1 = __webpack_require__(32);
+const patient_profile_service_1 = __webpack_require__(34);
+const prescription_service_1 = __webpack_require__(36);
+const visit_service_1 = __webpack_require__(38);
+let EmrModule = class EmrModule {
+};
+exports.EmrModule = EmrModule;
+exports.EmrModule = EmrModule = __decorate([
+    (0, common_1.Module)({
+        imports: [auth_module_1.AuthModule],
+        controllers: [
+            emr_controller_1.EmrController,
+            patient_profile_controller_1.PatientProfileController,
+            visit_controller_1.VisitController,
+            prescription_controller_1.PrescriptionController,
+            lab_controller_1.LabController,
+            imaging_controller_1.ImagingController,
+        ],
+        providers: [
+            emr_service_1.EmrService,
+            patient_profile_service_1.PatientProfileService,
+            visit_service_1.VisitService,
+            prescription_service_1.PrescriptionService,
+            lab_service_1.LabService,
+            imaging_service_1.ImagingService,
+            clinical_template_service_1.ClinicalTemplateService,
+            drug_interaction_service_1.DrugInteractionService,
+        ],
+        exports: [
+            emr_service_1.EmrService,
+            patient_profile_service_1.PatientProfileService,
+            visit_service_1.VisitService,
+            prescription_service_1.PrescriptionService,
+            lab_service_1.LabService,
+            imaging_service_1.ImagingService,
+            clinical_template_service_1.ClinicalTemplateService,
+            drug_interaction_service_1.DrugInteractionService,
+        ],
+    })
+], EmrModule);
+
+
+/***/ }),
+/* 27 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1506,10 +1600,10 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.EmrController = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const jwt_auth_guard_1 = __webpack_require__(/*! ../../auth/guards/jwt-auth.guard */ "./src/modules/auth/guards/jwt-auth.guard.ts");
-const emr_service_1 = __webpack_require__(/*! ../services/emr.service */ "./src/modules/emr/services/emr.service.ts");
+const common_1 = __webpack_require__(1);
+const swagger_1 = __webpack_require__(4);
+const jwt_auth_guard_1 = __webpack_require__(12);
+const emr_service_1 = __webpack_require__(28);
 let EmrController = class EmrController {
     constructor(emrService) {
         this.emrService = emrService;
@@ -1609,1850 +1703,7 @@ exports.EmrController = EmrController = __decorate([
 
 
 /***/ }),
-
-/***/ "./src/modules/emr/controllers/imaging.controller.ts":
-/*!***********************************************************!*\
-  !*** ./src/modules/emr/controllers/imaging.controller.ts ***!
-  \***********************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ImagingController = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const jwt_auth_guard_1 = __webpack_require__(/*! ../../auth/guards/jwt-auth.guard */ "./src/modules/auth/guards/jwt-auth.guard.ts");
-const imaging_service_1 = __webpack_require__(/*! ../services/imaging.service */ "./src/modules/emr/services/imaging.service.ts");
-let ImagingController = class ImagingController {
-    constructor(imagingService) {
-        this.imagingService = imagingService;
-    }
-    async createImagingOrder(req, orderData) {
-        return this.imagingService.createImagingOrder(orderData);
-    }
-    async uploadImagingResult(req, resultData) {
-        return this.imagingService.uploadImagingResult(resultData);
-    }
-    async getPatientImagingResults(patientId, studyType, bodyPart, startDate, endDate, status, limit) {
-        return this.imagingService.getPatientImagingResults(patientId, {
-            studyType,
-            bodyPart,
-            startDate,
-            endDate,
-            status,
-            limit,
-        });
-    }
-    async getImagingResult(resultId) {
-        return this.imagingService.getImagingResult(resultId);
-    }
-    async reviewImagingResult(resultId, req, reviewData) {
-        return this.imagingService.reviewImagingResult(resultId, req.user.userId, reviewData.reviewNotes);
-    }
-    async flagImagingResult(resultId, req, flagData) {
-        return this.imagingService.flagImagingResult(resultId, req.user.userId, flagData.flagReason);
-    }
-    async getCriticalImagingResults(doctorId) {
-        return this.imagingService.getCriticalImagingResults(doctorId);
-    }
-    async getImagingStatistics(doctorId, startDate, endDate) {
-        return this.imagingService.getImagingStatistics(doctorId, startDate, endDate);
-    }
-    async getPatientImagingOrders(patientId, status, studyType, startDate, endDate, doctorId, limit) {
-        return this.imagingService.getPatientImagingOrders(patientId, {
-            status,
-            studyType,
-            startDate,
-            endDate,
-            doctorId,
-            limit,
-        });
-    }
-    async updateImagingOrderStatus(orderId, statusData) {
-        return this.imagingService.updateImagingOrderStatus(orderId, statusData.status, statusData.notes);
-    }
-};
-exports.ImagingController = ImagingController;
-__decorate([
-    (0, common_1.Post)('orders'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Create imaging order' }),
-    (0, swagger_1.ApiResponse)({ status: 201, description: 'Imaging order created successfully' }),
-    __param(0, (0, common_1.Request)()),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], ImagingController.prototype, "createImagingOrder", null);
-__decorate([
-    (0, common_1.Post)('results'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Upload imaging result with OCR processing' }),
-    (0, swagger_1.ApiResponse)({ status: 201, description: 'Imaging result uploaded successfully' }),
-    __param(0, (0, common_1.Request)()),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], ImagingController.prototype, "uploadImagingResult", null);
-__decorate([
-    (0, common_1.Get)('results/patient/:patientId'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Get imaging results for patient' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Imaging results retrieved successfully' }),
-    __param(0, (0, common_1.Param)('patientId')),
-    __param(1, (0, common_1.Query)('studyType')),
-    __param(2, (0, common_1.Query)('bodyPart')),
-    __param(3, (0, common_1.Query)('startDate')),
-    __param(4, (0, common_1.Query)('endDate')),
-    __param(5, (0, common_1.Query)('status')),
-    __param(6, (0, common_1.Query)('limit')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String, String, String, String, Number]),
-    __metadata("design:returntype", Promise)
-], ImagingController.prototype, "getPatientImagingResults", null);
-__decorate([
-    (0, common_1.Get)('results/:resultId'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Get imaging result details' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Imaging result retrieved successfully' }),
-    __param(0, (0, common_1.Param)('resultId')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], ImagingController.prototype, "getImagingResult", null);
-__decorate([
-    (0, common_1.Put)('results/:resultId/review'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Review imaging result' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Imaging result reviewed successfully' }),
-    __param(0, (0, common_1.Param)('resultId')),
-    __param(1, (0, common_1.Request)()),
-    __param(2, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object, Object]),
-    __metadata("design:returntype", Promise)
-], ImagingController.prototype, "reviewImagingResult", null);
-__decorate([
-    (0, common_1.Put)('results/:resultId/flag'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Flag imaging result for follow-up' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Imaging result flagged for follow-up' }),
-    __param(0, (0, common_1.Param)('resultId')),
-    __param(1, (0, common_1.Request)()),
-    __param(2, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object, Object]),
-    __metadata("design:returntype", Promise)
-], ImagingController.prototype, "flagImagingResult", null);
-__decorate([
-    (0, common_1.Get)('results/critical'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Get critical imaging results requiring immediate attention' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Critical imaging results retrieved successfully' }),
-    __param(0, (0, common_1.Query)('doctorId')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], ImagingController.prototype, "getCriticalImagingResults", null);
-__decorate([
-    (0, common_1.Get)('statistics'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Get imaging statistics for dashboard' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Imaging statistics retrieved successfully' }),
-    __param(0, (0, common_1.Query)('doctorId')),
-    __param(1, (0, common_1.Query)('startDate')),
-    __param(2, (0, common_1.Query)('endDate')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String]),
-    __metadata("design:returntype", Promise)
-], ImagingController.prototype, "getImagingStatistics", null);
-__decorate([
-    (0, common_1.Get)('orders/patient/:patientId'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Get imaging orders for patient' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Imaging orders retrieved successfully' }),
-    __param(0, (0, common_1.Param)('patientId')),
-    __param(1, (0, common_1.Query)('status')),
-    __param(2, (0, common_1.Query)('studyType')),
-    __param(3, (0, common_1.Query)('startDate')),
-    __param(4, (0, common_1.Query)('endDate')),
-    __param(5, (0, common_1.Query)('doctorId')),
-    __param(6, (0, common_1.Query)('limit')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String, String, String, String, Number]),
-    __metadata("design:returntype", Promise)
-], ImagingController.prototype, "getPatientImagingOrders", null);
-__decorate([
-    (0, common_1.Put)('orders/:orderId/status'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Update imaging order status' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Imaging order status updated successfully' }),
-    __param(0, (0, common_1.Param)('orderId')),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
-    __metadata("design:returntype", Promise)
-], ImagingController.prototype, "updateImagingOrderStatus", null);
-exports.ImagingController = ImagingController = __decorate([
-    (0, swagger_1.ApiTags)('Imaging Results'),
-    (0, common_1.Controller)('imaging'),
-    __metadata("design:paramtypes", [typeof (_a = typeof imaging_service_1.ImagingService !== "undefined" && imaging_service_1.ImagingService) === "function" ? _a : Object])
-], ImagingController);
-
-
-/***/ }),
-
-/***/ "./src/modules/emr/controllers/lab.controller.ts":
-/*!*******************************************************!*\
-  !*** ./src/modules/emr/controllers/lab.controller.ts ***!
-  \*******************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.LabController = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const jwt_auth_guard_1 = __webpack_require__(/*! ../../auth/guards/jwt-auth.guard */ "./src/modules/auth/guards/jwt-auth.guard.ts");
-const lab_service_1 = __webpack_require__(/*! ../services/lab.service */ "./src/modules/emr/services/lab.service.ts");
-let LabController = class LabController {
-    constructor(labService) {
-        this.labService = labService;
-    }
-    async createLabOrder(req, orderData) {
-        return this.labService.createLabOrder(orderData);
-    }
-    async uploadLabResult(req, resultData) {
-        return this.labService.uploadLabResult(resultData);
-    }
-    async getPatientLabResults(patientId, testCategory, startDate, endDate, isAbnormal, criticalValue, status, limit) {
-        return this.labService.getPatientLabResults(patientId, {
-            testCategory,
-            startDate,
-            endDate,
-            isAbnormal,
-            criticalValue,
-            status,
-            limit,
-        });
-    }
-    async getLabResult(resultId) {
-        return this.labService.getLabResult(resultId);
-    }
-    async reviewLabResult(resultId, req, reviewData) {
-        return this.labService.reviewLabResult(resultId, req.user.userId, reviewData.reviewNotes);
-    }
-    async flagLabResult(resultId, req, flagData) {
-        return this.labService.flagLabResult(resultId, req.user.userId, flagData.flagReason);
-    }
-    async getCriticalLabResults(doctorId) {
-        return this.labService.getCriticalLabResults(doctorId);
-    }
-    async getLabStatistics(doctorId, startDate, endDate) {
-        return this.labService.getLabStatistics(doctorId, startDate, endDate);
-    }
-    async getPatientLabOrders(patientId, status, startDate, endDate, doctorId, limit) {
-        return this.labService.getPatientLabOrders(patientId, {
-            status,
-            startDate,
-            endDate,
-            doctorId,
-            limit,
-        });
-    }
-};
-exports.LabController = LabController;
-__decorate([
-    (0, common_1.Post)('orders'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Create lab order' }),
-    (0, swagger_1.ApiResponse)({ status: 201, description: 'Lab order created successfully' }),
-    __param(0, (0, common_1.Request)()),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], LabController.prototype, "createLabOrder", null);
-__decorate([
-    (0, common_1.Post)('results'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Upload lab result with OCR processing' }),
-    (0, swagger_1.ApiResponse)({ status: 201, description: 'Lab result uploaded successfully' }),
-    __param(0, (0, common_1.Request)()),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], LabController.prototype, "uploadLabResult", null);
-__decorate([
-    (0, common_1.Get)('results/patient/:patientId'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Get lab results for patient' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Lab results retrieved successfully' }),
-    __param(0, (0, common_1.Param)('patientId')),
-    __param(1, (0, common_1.Query)('testCategory')),
-    __param(2, (0, common_1.Query)('startDate')),
-    __param(3, (0, common_1.Query)('endDate')),
-    __param(4, (0, common_1.Query)('isAbnormal')),
-    __param(5, (0, common_1.Query)('criticalValue')),
-    __param(6, (0, common_1.Query)('status')),
-    __param(7, (0, common_1.Query)('limit')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String, String, Boolean, Boolean, String, Number]),
-    __metadata("design:returntype", Promise)
-], LabController.prototype, "getPatientLabResults", null);
-__decorate([
-    (0, common_1.Get)('results/:resultId'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Get lab result details' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Lab result retrieved successfully' }),
-    __param(0, (0, common_1.Param)('resultId')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], LabController.prototype, "getLabResult", null);
-__decorate([
-    (0, common_1.Put)('results/:resultId/review'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Review lab result' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Lab result reviewed successfully' }),
-    __param(0, (0, common_1.Param)('resultId')),
-    __param(1, (0, common_1.Request)()),
-    __param(2, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object, Object]),
-    __metadata("design:returntype", Promise)
-], LabController.prototype, "reviewLabResult", null);
-__decorate([
-    (0, common_1.Put)('results/:resultId/flag'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Flag lab result for follow-up' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Lab result flagged for follow-up' }),
-    __param(0, (0, common_1.Param)('resultId')),
-    __param(1, (0, common_1.Request)()),
-    __param(2, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object, Object]),
-    __metadata("design:returntype", Promise)
-], LabController.prototype, "flagLabResult", null);
-__decorate([
-    (0, common_1.Get)('results/critical'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Get critical lab results requiring immediate attention' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Critical lab results retrieved successfully' }),
-    __param(0, (0, common_1.Query)('doctorId')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], LabController.prototype, "getCriticalLabResults", null);
-__decorate([
-    (0, common_1.Get)('statistics'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Get lab statistics for dashboard' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Lab statistics retrieved successfully' }),
-    __param(0, (0, common_1.Query)('doctorId')),
-    __param(1, (0, common_1.Query)('startDate')),
-    __param(2, (0, common_1.Query)('endDate')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String]),
-    __metadata("design:returntype", Promise)
-], LabController.prototype, "getLabStatistics", null);
-__decorate([
-    (0, common_1.Get)('orders/patient/:patientId'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Get lab orders for patient' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Lab orders retrieved successfully' }),
-    __param(0, (0, common_1.Param)('patientId')),
-    __param(1, (0, common_1.Query)('status')),
-    __param(2, (0, common_1.Query)('startDate')),
-    __param(3, (0, common_1.Query)('endDate')),
-    __param(4, (0, common_1.Query)('doctorId')),
-    __param(5, (0, common_1.Query)('limit')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String, String, String, Number]),
-    __metadata("design:returntype", Promise)
-], LabController.prototype, "getPatientLabOrders", null);
-exports.LabController = LabController = __decorate([
-    (0, swagger_1.ApiTags)('Lab Results'),
-    (0, common_1.Controller)('lab'),
-    __metadata("design:paramtypes", [typeof (_a = typeof lab_service_1.LabService !== "undefined" && lab_service_1.LabService) === "function" ? _a : Object])
-], LabController);
-
-
-/***/ }),
-
-/***/ "./src/modules/emr/controllers/patient-profile.controller.ts":
-/*!*******************************************************************!*\
-  !*** ./src/modules/emr/controllers/patient-profile.controller.ts ***!
-  \*******************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.PatientProfileController = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const jwt_auth_guard_1 = __webpack_require__(/*! ../../auth/guards/jwt-auth.guard */ "./src/modules/auth/guards/jwt-auth.guard.ts");
-const patient_profile_service_1 = __webpack_require__(/*! ../services/patient-profile.service */ "./src/modules/emr/services/patient-profile.service.ts");
-let PatientProfileController = class PatientProfileController {
-    constructor(patientProfileService) {
-        this.patientProfileService = patientProfileService;
-    }
-    async upsertPatientProfile(req, profileData) {
-        return this.patientProfileService.upsertPatientProfile(req.user.userId, profileData);
-    }
-    async getPatientProfile(req) {
-        return this.patientProfileService.getPatientProfile(req.user.userId);
-    }
-    async addAllergy(req, allergyData) {
-        return this.patientProfileService.addAllergy(req.user.userId, allergyData);
-    }
-    async updateAllergy(allergyId, allergyData) {
-        return this.patientProfileService.updateAllergy(allergyId, allergyData);
-    }
-    async removeAllergy(allergyId) {
-        return this.patientProfileService.removeAllergy(allergyId);
-    }
-    async getPatientAllergies(req) {
-        return this.patientProfileService.getPatientAllergies(req.user.userId);
-    }
-    async addCurrentMedication(req, medicationData) {
-        return this.patientProfileService.addCurrentMedication(req.user.userId, medicationData);
-    }
-    async updateCurrentMedication(medicationId, medicationData) {
-        return this.patientProfileService.updateCurrentMedication(medicationId, medicationData);
-    }
-    async removeCurrentMedication(medicationId) {
-        return this.patientProfileService.removeCurrentMedication(medicationId);
-    }
-    async getPatientMedications(req) {
-        return this.patientProfileService.getPatientMedications(req.user.userId);
-    }
-};
-exports.PatientProfileController = PatientProfileController;
-__decorate([
-    (0, common_1.Post)('upsert'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Create or update patient profile' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Patient profile updated successfully' }),
-    __param(0, (0, common_1.Request)()),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], PatientProfileController.prototype, "upsertPatientProfile", null);
-__decorate([
-    (0, common_1.Get)('me'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Get current patient profile' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Patient profile retrieved successfully' }),
-    __param(0, (0, common_1.Request)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], PatientProfileController.prototype, "getPatientProfile", null);
-__decorate([
-    (0, common_1.Post)('allergies'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Add allergy to patient profile' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Allergy added successfully' }),
-    __param(0, (0, common_1.Request)()),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], PatientProfileController.prototype, "addAllergy", null);
-__decorate([
-    (0, common_1.Put)('allergies/:allergyId'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Update allergy' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Allergy updated successfully' }),
-    __param(0, (0, common_1.Param)('allergyId')),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
-    __metadata("design:returntype", Promise)
-], PatientProfileController.prototype, "updateAllergy", null);
-__decorate([
-    (0, common_1.Delete)('allergies/:allergyId'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Remove allergy' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Allergy removed successfully' }),
-    __param(0, (0, common_1.Param)('allergyId')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], PatientProfileController.prototype, "removeAllergy", null);
-__decorate([
-    (0, common_1.Get)('allergies'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Get patient allergies' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Allergies retrieved successfully' }),
-    __param(0, (0, common_1.Request)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], PatientProfileController.prototype, "getPatientAllergies", null);
-__decorate([
-    (0, common_1.Post)('medications'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Add current medication' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Medication added successfully' }),
-    __param(0, (0, common_1.Request)()),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], PatientProfileController.prototype, "addCurrentMedication", null);
-__decorate([
-    (0, common_1.Put)('medications/:medicationId'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Update current medication' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Medication updated successfully' }),
-    __param(0, (0, common_1.Param)('medicationId')),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
-    __metadata("design:returntype", Promise)
-], PatientProfileController.prototype, "updateCurrentMedication", null);
-__decorate([
-    (0, common_1.Delete)('medications/:medicationId'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Remove current medication' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Medication removed successfully' }),
-    __param(0, (0, common_1.Param)('medicationId')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], PatientProfileController.prototype, "removeCurrentMedication", null);
-__decorate([
-    (0, common_1.Get)('medications'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Get patient current medications' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Current medications retrieved successfully' }),
-    __param(0, (0, common_1.Request)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], PatientProfileController.prototype, "getPatientMedications", null);
-exports.PatientProfileController = PatientProfileController = __decorate([
-    (0, swagger_1.ApiTags)('Patient Profile'),
-    (0, common_1.Controller)('patient-profile'),
-    __metadata("design:paramtypes", [typeof (_a = typeof patient_profile_service_1.PatientProfileService !== "undefined" && patient_profile_service_1.PatientProfileService) === "function" ? _a : Object])
-], PatientProfileController);
-
-
-/***/ }),
-
-/***/ "./src/modules/emr/controllers/prescription.controller.ts":
-/*!****************************************************************!*\
-  !*** ./src/modules/emr/controllers/prescription.controller.ts ***!
-  \****************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.PrescriptionController = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const jwt_auth_guard_1 = __webpack_require__(/*! ../../auth/guards/jwt-auth.guard */ "./src/modules/auth/guards/jwt-auth.guard.ts");
-const prescription_service_1 = __webpack_require__(/*! ../services/prescription.service */ "./src/modules/emr/services/prescription.service.ts");
-let PrescriptionController = class PrescriptionController {
-    constructor(prescriptionService) {
-        this.prescriptionService = prescriptionService;
-    }
-    async createPrescription(req, prescriptionData) {
-        return this.prescriptionService.createPrescription(prescriptionData);
-    }
-    async updatePrescription(prescriptionId, updateData) {
-        return this.prescriptionService.updatePrescription(prescriptionId, updateData);
-    }
-    async getPrescription(prescriptionId) {
-        return this.prescriptionService.getPrescription(prescriptionId);
-    }
-    async getPatientPrescriptions(patientId, status, startDate, endDate, doctorId, limit) {
-        return this.prescriptionService.getPatientPrescriptions(patientId, {
-            status,
-            startDate,
-            endDate,
-            doctorId,
-            limit,
-        });
-    }
-    async updatePrescriptionStatus(prescriptionId, statusData) {
-        return this.prescriptionService.updatePrescriptionStatus(prescriptionId, statusData.status, statusData.notes);
-    }
-    async cancelPrescription(prescriptionId, cancelData) {
-        return this.prescriptionService.cancelPrescription(prescriptionId, cancelData.reason);
-    }
-    async getPrescriptionStatistics(doctorId, startDate, endDate) {
-        return this.prescriptionService.getPrescriptionStatistics(doctorId, startDate, endDate);
-    }
-    async searchMedications(query) {
-        return this.prescriptionService.searchMedications(query);
-    }
-    async checkDrugInteractions(interactionData) {
-        const newMedication = interactionData.medications?.[0] || '';
-        return this.prescriptionService.checkDrugInteractions(interactionData.patientId, newMedication);
-    }
-    async checkNewMedicationInteractions(interactionData) {
-        return this.prescriptionService.checkDrugInteractions(interactionData.patientId, interactionData.newMedication);
-    }
-};
-exports.PrescriptionController = PrescriptionController;
-__decorate([
-    (0, common_1.Post)(),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Create a new prescription with drug interaction checking' }),
-    (0, swagger_1.ApiResponse)({ status: 201, description: 'Prescription created successfully' }),
-    __param(0, (0, common_1.Request)()),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], PrescriptionController.prototype, "createPrescription", null);
-__decorate([
-    (0, common_1.Put)(':prescriptionId'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Update prescription' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Prescription updated successfully' }),
-    __param(0, (0, common_1.Param)('prescriptionId')),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
-    __metadata("design:returntype", Promise)
-], PrescriptionController.prototype, "updatePrescription", null);
-__decorate([
-    (0, common_1.Get)(':prescriptionId'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Get prescription details' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Prescription retrieved successfully' }),
-    __param(0, (0, common_1.Param)('prescriptionId')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], PrescriptionController.prototype, "getPrescription", null);
-__decorate([
-    (0, common_1.Get)('patient/:patientId'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Get patient prescriptions' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Patient prescriptions retrieved successfully' }),
-    __param(0, (0, common_1.Param)('patientId')),
-    __param(1, (0, common_1.Query)('status')),
-    __param(2, (0, common_1.Query)('startDate')),
-    __param(3, (0, common_1.Query)('endDate')),
-    __param(4, (0, common_1.Query)('doctorId')),
-    __param(5, (0, common_1.Query)('limit')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String, String, String, Number]),
-    __metadata("design:returntype", Promise)
-], PrescriptionController.prototype, "getPatientPrescriptions", null);
-__decorate([
-    (0, common_1.Put)(':prescriptionId/status'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Update prescription status' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Prescription status updated successfully' }),
-    __param(0, (0, common_1.Param)('prescriptionId')),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
-    __metadata("design:returntype", Promise)
-], PrescriptionController.prototype, "updatePrescriptionStatus", null);
-__decorate([
-    (0, common_1.Put)(':prescriptionId/cancel'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Cancel prescription' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Prescription cancelled successfully' }),
-    __param(0, (0, common_1.Param)('prescriptionId')),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
-    __metadata("design:returntype", Promise)
-], PrescriptionController.prototype, "cancelPrescription", null);
-__decorate([
-    (0, common_1.Get)('doctor/:doctorId/statistics'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Get prescription statistics for a doctor' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Prescription statistics retrieved successfully' }),
-    __param(0, (0, common_1.Param)('doctorId')),
-    __param(1, (0, common_1.Query)('startDate')),
-    __param(2, (0, common_1.Query)('endDate')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String]),
-    __metadata("design:returntype", Promise)
-], PrescriptionController.prototype, "getPrescriptionStatistics", null);
-__decorate([
-    (0, common_1.Get)('medications/search'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Search for medications in drug database' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Medications retrieved successfully' }),
-    __param(0, (0, common_1.Query)('query')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], PrescriptionController.prototype, "searchMedications", null);
-__decorate([
-    (0, common_1.Post)('interactions/check'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Check drug interactions for medication list' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Drug interaction check completed' }),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], PrescriptionController.prototype, "checkDrugInteractions", null);
-__decorate([
-    (0, common_1.Post)('interactions/check-new'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Check interactions for new medication with existing medications' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Drug interaction check completed' }),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], PrescriptionController.prototype, "checkNewMedicationInteractions", null);
-exports.PrescriptionController = PrescriptionController = __decorate([
-    (0, swagger_1.ApiTags)('Prescriptions'),
-    (0, common_1.Controller)('prescriptions'),
-    __metadata("design:paramtypes", [typeof (_a = typeof prescription_service_1.PrescriptionService !== "undefined" && prescription_service_1.PrescriptionService) === "function" ? _a : Object])
-], PrescriptionController);
-
-
-/***/ }),
-
-/***/ "./src/modules/emr/controllers/visit.controller.ts":
-/*!*********************************************************!*\
-  !*** ./src/modules/emr/controllers/visit.controller.ts ***!
-  \*********************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.VisitController = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const jwt_auth_guard_1 = __webpack_require__(/*! ../../auth/guards/jwt-auth.guard */ "./src/modules/auth/guards/jwt-auth.guard.ts");
-const visit_service_1 = __webpack_require__(/*! ../services/visit.service */ "./src/modules/emr/services/visit.service.ts");
-let VisitController = class VisitController {
-    constructor(visitService) {
-        this.visitService = visitService;
-    }
-    async createVisit(req, visitData) {
-        return this.visitService.createVisit(visitData);
-    }
-    async updateVisit(visitId, updateData) {
-        return this.visitService.updateVisit(visitId, updateData);
-    }
-    async getVisit(visitId) {
-        return this.visitService.getVisit(visitId);
-    }
-    async getPatientVisits(patientId, startDate, endDate, visitType, doctorId, limit) {
-        return this.visitService.getPatientVisits(patientId, {
-            startDate,
-            endDate,
-            visitType,
-            doctorId,
-            limit,
-        });
-    }
-    async addDiagnosis(visitId, diagnosisData) {
-        return this.visitService.addDiagnosis(visitId, diagnosisData);
-    }
-    async updateDiagnosis(diagnosisId, diagnosisData) {
-        return this.visitService.updateDiagnosis(diagnosisId, diagnosisData);
-    }
-    async removeDiagnosis(diagnosisId) {
-        return this.visitService.removeDiagnosis(diagnosisId);
-    }
-    async processVoiceTranscription(visitId, transcriptionData) {
-        return this.visitService.processVoiceTranscription(visitId, transcriptionData.voiceFileUrl, transcriptionData.transcribedText);
-    }
-    async getIcd10Suggestions(symptoms) {
-        return this.visitService.getIcd10Suggestions(symptoms);
-    }
-    async getVisitStatistics(doctorId, startDate, endDate) {
-        return this.visitService.getVisitStatistics(doctorId, startDate, endDate);
-    }
-};
-exports.VisitController = VisitController;
-__decorate([
-    (0, common_1.Post)(),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Create a new patient visit (SOAP note)' }),
-    (0, swagger_1.ApiResponse)({ status: 201, description: 'Visit created successfully' }),
-    __param(0, (0, common_1.Request)()),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], VisitController.prototype, "createVisit", null);
-__decorate([
-    (0, common_1.Put)(':visitId'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Update visit (SOAP note)' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Visit updated successfully' }),
-    __param(0, (0, common_1.Param)('visitId')),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
-    __metadata("design:returntype", Promise)
-], VisitController.prototype, "updateVisit", null);
-__decorate([
-    (0, common_1.Get)(':visitId'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Get visit details' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Visit retrieved successfully' }),
-    __param(0, (0, common_1.Param)('visitId')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], VisitController.prototype, "getVisit", null);
-__decorate([
-    (0, common_1.Get)('patient/:patientId'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Get patient visit history' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Patient visits retrieved successfully' }),
-    __param(0, (0, common_1.Param)('patientId')),
-    __param(1, (0, common_1.Query)('startDate')),
-    __param(2, (0, common_1.Query)('endDate')),
-    __param(3, (0, common_1.Query)('visitType')),
-    __param(4, (0, common_1.Query)('doctorId')),
-    __param(5, (0, common_1.Query)('limit')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String, String, String, Number]),
-    __metadata("design:returntype", Promise)
-], VisitController.prototype, "getPatientVisits", null);
-__decorate([
-    (0, common_1.Post)(':visitId/diagnoses'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Add diagnosis to visit' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Diagnosis added successfully' }),
-    __param(0, (0, common_1.Param)('visitId')),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
-    __metadata("design:returntype", Promise)
-], VisitController.prototype, "addDiagnosis", null);
-__decorate([
-    (0, common_1.Put)('diagnoses/:diagnosisId'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Update diagnosis' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Diagnosis updated successfully' }),
-    __param(0, (0, common_1.Param)('diagnosisId')),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
-    __metadata("design:returntype", Promise)
-], VisitController.prototype, "updateDiagnosis", null);
-__decorate([
-    (0, common_1.Delete)('diagnoses/:diagnosisId'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Remove diagnosis' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Diagnosis removed successfully' }),
-    __param(0, (0, common_1.Param)('diagnosisId')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], VisitController.prototype, "removeDiagnosis", null);
-__decorate([
-    (0, common_1.Post)(':visitId/voice-transcription'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Process voice-to-text transcription' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Voice transcription processed successfully' }),
-    __param(0, (0, common_1.Param)('visitId')),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
-    __metadata("design:returntype", Promise)
-], VisitController.prototype, "processVoiceTranscription", null);
-__decorate([
-    (0, common_1.Get)('icd10/suggestions'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Get ICD-10 code suggestions based on symptoms' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'ICD-10 suggestions retrieved successfully' }),
-    __param(0, (0, common_1.Query)('symptoms')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], VisitController.prototype, "getIcd10Suggestions", null);
-__decorate([
-    (0, common_1.Get)('doctor/:doctorId/statistics'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Get visit statistics for a doctor' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Visit statistics retrieved successfully' }),
-    __param(0, (0, common_1.Param)('doctorId')),
-    __param(1, (0, common_1.Query)('startDate')),
-    __param(2, (0, common_1.Query)('endDate')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String]),
-    __metadata("design:returntype", Promise)
-], VisitController.prototype, "getVisitStatistics", null);
-exports.VisitController = VisitController = __decorate([
-    (0, swagger_1.ApiTags)('Patient Visits'),
-    (0, common_1.Controller)('visits'),
-    __metadata("design:paramtypes", [typeof (_a = typeof visit_service_1.VisitService !== "undefined" && visit_service_1.VisitService) === "function" ? _a : Object])
-], VisitController);
-
-
-/***/ }),
-
-/***/ "./src/modules/emr/emr.module.ts":
-/*!***************************************!*\
-  !*** ./src/modules/emr/emr.module.ts ***!
-  \***************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.EmrModule = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const auth_module_1 = __webpack_require__(/*! ../auth/auth.module */ "./src/modules/auth/auth.module.ts");
-const emr_controller_1 = __webpack_require__(/*! ./controllers/emr.controller */ "./src/modules/emr/controllers/emr.controller.ts");
-const imaging_controller_1 = __webpack_require__(/*! ./controllers/imaging.controller */ "./src/modules/emr/controllers/imaging.controller.ts");
-const lab_controller_1 = __webpack_require__(/*! ./controllers/lab.controller */ "./src/modules/emr/controllers/lab.controller.ts");
-const patient_profile_controller_1 = __webpack_require__(/*! ./controllers/patient-profile.controller */ "./src/modules/emr/controllers/patient-profile.controller.ts");
-const prescription_controller_1 = __webpack_require__(/*! ./controllers/prescription.controller */ "./src/modules/emr/controllers/prescription.controller.ts");
-const visit_controller_1 = __webpack_require__(/*! ./controllers/visit.controller */ "./src/modules/emr/controllers/visit.controller.ts");
-const clinical_template_service_1 = __webpack_require__(/*! ./services/clinical-template.service */ "./src/modules/emr/services/clinical-template.service.ts");
-const drug_interaction_service_1 = __webpack_require__(/*! ./services/drug-interaction.service */ "./src/modules/emr/services/drug-interaction.service.ts");
-const emr_service_1 = __webpack_require__(/*! ./services/emr.service */ "./src/modules/emr/services/emr.service.ts");
-const imaging_service_1 = __webpack_require__(/*! ./services/imaging.service */ "./src/modules/emr/services/imaging.service.ts");
-const lab_service_1 = __webpack_require__(/*! ./services/lab.service */ "./src/modules/emr/services/lab.service.ts");
-const patient_profile_service_1 = __webpack_require__(/*! ./services/patient-profile.service */ "./src/modules/emr/services/patient-profile.service.ts");
-const prescription_service_1 = __webpack_require__(/*! ./services/prescription.service */ "./src/modules/emr/services/prescription.service.ts");
-const visit_service_1 = __webpack_require__(/*! ./services/visit.service */ "./src/modules/emr/services/visit.service.ts");
-let EmrModule = class EmrModule {
-};
-exports.EmrModule = EmrModule;
-exports.EmrModule = EmrModule = __decorate([
-    (0, common_1.Module)({
-        imports: [auth_module_1.AuthModule],
-        controllers: [
-            emr_controller_1.EmrController,
-            patient_profile_controller_1.PatientProfileController,
-            visit_controller_1.VisitController,
-            prescription_controller_1.PrescriptionController,
-            lab_controller_1.LabController,
-            imaging_controller_1.ImagingController,
-        ],
-        providers: [
-            emr_service_1.EmrService,
-            patient_profile_service_1.PatientProfileService,
-            visit_service_1.VisitService,
-            prescription_service_1.PrescriptionService,
-            lab_service_1.LabService,
-            imaging_service_1.ImagingService,
-            clinical_template_service_1.ClinicalTemplateService,
-            drug_interaction_service_1.DrugInteractionService,
-        ],
-        exports: [
-            emr_service_1.EmrService,
-            patient_profile_service_1.PatientProfileService,
-            visit_service_1.VisitService,
-            prescription_service_1.PrescriptionService,
-            lab_service_1.LabService,
-            imaging_service_1.ImagingService,
-            clinical_template_service_1.ClinicalTemplateService,
-            drug_interaction_service_1.DrugInteractionService,
-        ],
-    })
-], EmrModule);
-
-
-/***/ }),
-
-/***/ "./src/modules/emr/services/clinical-template.service.ts":
-/*!***************************************************************!*\
-  !*** ./src/modules/emr/services/clinical-template.service.ts ***!
-  \***************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ClinicalTemplateService = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const database_service_1 = __webpack_require__(/*! ../../auth/services/database.service */ "./src/modules/auth/services/database.service.ts");
-let ClinicalTemplateService = class ClinicalTemplateService {
-    constructor(db) {
-        this.db = db;
-    }
-    async createTemplate(templateData) {
-        const template = await this.db.clinicalTemplate.create({
-            data: {
-                doctorId: templateData.doctorId,
-                name: templateData.name,
-                category: templateData.category,
-                specialty: templateData.specialty,
-                isPublic: templateData.isPublic || false,
-                subjectiveTemplate: templateData.subjectiveTemplate,
-                objectiveTemplate: templateData.objectiveTemplate,
-                assessmentTemplate: templateData.assessmentTemplate,
-                planTemplate: templateData.planTemplate,
-            },
-            include: {
-                doctor: {
-                    select: {
-                        id: true,
-                        firstName: true,
-                        lastName: true,
-                        specialization: true,
-                    },
-                },
-            },
-        });
-        return {
-            success: true,
-            data: template,
-            message: 'Clinical template created successfully',
-        };
-    }
-    async getDoctorTemplates(doctorId, filters) {
-        const where = {
-            OR: [
-                { doctorId },
-                { isPublic: true },
-            ],
-        };
-        if (filters?.category) {
-            where.category = filters.category;
-        }
-        if (filters?.specialty) {
-            where.specialty = filters.specialty;
-        }
-        if (filters?.isPublic !== undefined) {
-            where.isPublic = filters.isPublic;
-        }
-        const templates = await this.db.clinicalTemplate.findMany({
-            where,
-            include: {
-                doctor: {
-                    select: {
-                        id: true,
-                        firstName: true,
-                        lastName: true,
-                        specialization: true,
-                    },
-                },
-            },
-            orderBy: [
-                { isPublic: 'asc' },
-                { usageCount: 'desc' },
-                { name: 'asc' },
-            ],
-        });
-        return {
-            success: true,
-            data: templates,
-            message: 'Clinical templates retrieved successfully',
-        };
-    }
-    async getTemplate(templateId) {
-        const template = await this.db.clinicalTemplate.findUnique({
-            where: { id: templateId },
-            include: {
-                doctor: {
-                    select: {
-                        id: true,
-                        firstName: true,
-                        lastName: true,
-                        specialization: true,
-                    },
-                },
-            },
-        });
-        if (!template) {
-            throw new common_1.NotFoundException('Clinical template not found');
-        }
-        return {
-            success: true,
-            data: template,
-            message: 'Clinical template retrieved successfully',
-        };
-    }
-    async updateTemplate(templateId, updateData) {
-        const template = await this.db.clinicalTemplate.findUnique({
-            where: { id: templateId },
-        });
-        if (!template) {
-            throw new common_1.NotFoundException('Clinical template not found');
-        }
-        const updatedTemplate = await this.db.clinicalTemplate.update({
-            where: { id: templateId },
-            data: {
-                name: updateData.name,
-                category: updateData.category,
-                specialty: updateData.specialty,
-                isPublic: updateData.isPublic,
-                subjectiveTemplate: updateData.subjectiveTemplate,
-                objectiveTemplate: updateData.objectiveTemplate,
-                assessmentTemplate: updateData.assessmentTemplate,
-                planTemplate: updateData.planTemplate,
-            },
-            include: {
-                doctor: {
-                    select: {
-                        id: true,
-                        firstName: true,
-                        lastName: true,
-                        specialization: true,
-                    },
-                },
-            },
-        });
-        return {
-            success: true,
-            data: updatedTemplate,
-            message: 'Clinical template updated successfully',
-        };
-    }
-    async deleteTemplate(templateId) {
-        const template = await this.db.clinicalTemplate.findUnique({
-            where: { id: templateId },
-        });
-        if (!template) {
-            throw new common_1.NotFoundException('Clinical template not found');
-        }
-        await this.db.clinicalTemplate.delete({
-            where: { id: templateId },
-        });
-        return {
-            success: true,
-            message: 'Clinical template deleted successfully',
-        };
-    }
-    async useTemplate(templateId) {
-        const template = await this.db.clinicalTemplate.findUnique({
-            where: { id: templateId },
-        });
-        if (!template) {
-            throw new common_1.NotFoundException('Clinical template not found');
-        }
-        const updatedTemplate = await this.db.clinicalTemplate.update({
-            where: { id: templateId },
-            data: {
-                usageCount: template.usageCount + 1,
-            },
-        });
-        return {
-            success: true,
-            data: updatedTemplate,
-            message: 'Template usage recorded',
-        };
-    }
-    async getPopularTemplates(limit = 10) {
-        const templates = await this.db.clinicalTemplate.findMany({
-            where: { isPublic: true },
-            orderBy: { usageCount: 'desc' },
-            take: limit,
-            include: {
-                doctor: {
-                    select: {
-                        id: true,
-                        firstName: true,
-                        lastName: true,
-                        specialization: true,
-                    },
-                },
-            },
-        });
-        return {
-            success: true,
-            data: templates,
-            message: 'Popular templates retrieved successfully',
-        };
-    }
-    async getTemplateCategories() {
-        const categories = await this.db.clinicalTemplate.groupBy({
-            by: ['category'],
-            _count: { category: true },
-            orderBy: { _count: { category: 'desc' } },
-        });
-        return {
-            success: true,
-            data: categories.map(cat => ({
-                category: cat.category,
-                count: cat._count.category,
-            })),
-            message: 'Template categories retrieved successfully',
-        };
-    }
-    async getDefaultSOAPTemplates() {
-        const defaultTemplates = [
-            {
-                name: 'General Consultation',
-                category: 'SOAP_NOTE',
-                subjectiveTemplate: `Chief Complaint: [Patient's main concern]
-
-History of Present Illness:
-- Onset: [When symptoms started]
-- Duration: [How long symptoms have been present]
-- Severity: [Rate 1-10]
-- Associated symptoms: [Other symptoms]
-- Relieving factors: [What helps]
-- Aggravating factors: [What makes it worse]
-
-Past Medical History: [Previous conditions]
-Medications: [Current medications]
-Allergies: [Known allergies]
-Social History: [Smoking, alcohol, occupation]`,
-                objectiveTemplate: `Vital Signs:
-- Blood Pressure: [BP reading]
-- Heart Rate: [HR]
-- Temperature: [Temp]
-- Respiratory Rate: [RR]
-- Oxygen Saturation: [SpO2]
-
-Physical Examination:
-- General: [General appearance]
-- HEENT: [Head, eyes, ears, nose, throat]
-- Cardiovascular: [Heart exam]
-- Pulmonary: [Lung exam]
-- Abdomen: [Abdominal exam]
-- Extremities: [Extremity exam]
-- Neurological: [Neuro exam]`,
-                assessmentTemplate: `Assessment:
-1. [Primary diagnosis] - [ICD-10 code]
-2. [Secondary diagnosis] - [ICD-10 code]
-
-Clinical Reasoning:
-[Explanation of diagnosis based on history and exam]`,
-                planTemplate: `Plan:
-1. [Primary treatment]
-2. [Medications]
-3. [Follow-up instructions]
-4. [Patient education]
-5. [Referrals if needed]
-
-Follow-up: [When to return]
-Patient Instructions: [Specific instructions for patient]`,
-            },
-            {
-                name: 'Follow-up Visit',
-                category: 'FOLLOW_UP',
-                subjectiveTemplate: `Follow-up for: [Previous diagnosis]
-
-Since last visit:
-- Symptoms: [Better/worse/same]
-- Medication compliance: [Taking medications as prescribed]
-- Side effects: [Any side effects from medications]
-- New symptoms: [Any new concerns]`,
-                objectiveTemplate: `Vital Signs:
-- Blood Pressure: [BP reading]
-- Heart Rate: [HR]
-- Weight: [Current weight]
-
-Physical Examination:
-- Focused exam based on condition
-- [Specific findings]`,
-                assessmentTemplate: `Assessment:
-1. [Primary condition] - [Status: improved/stable/worsened]
-2. [Any new findings]`,
-                planTemplate: `Plan:
-1. [Continue/adjust/discontinue medications]
-2. [Additional treatments]
-3. [Follow-up schedule]
-4. [Patient education updates]`,
-            },
-            {
-                name: 'Emergency Visit',
-                category: 'EMERGENCY',
-                subjectiveTemplate: `Chief Complaint: [Patient's main concern]
-
-History of Present Illness:
-- Onset: [When symptoms started]
-- Duration: [How long]
-- Severity: [Rate 1-10]
-- Associated symptoms: [Other symptoms]
-- Mechanism of injury: [If applicable]
-
-Emergency History:
-- Allergies: [Known allergies]
-- Medications: [Current medications]
-- Past medical history: [Relevant conditions]`,
-                objectiveTemplate: `Vital Signs:
-- Blood Pressure: [BP reading]
-- Heart Rate: [HR]
-- Temperature: [Temp]
-- Respiratory Rate: [RR]
-- Oxygen Saturation: [SpO2]
-- Pain Score: [1-10]
-
-Physical Examination:
-- General: [General appearance, distress level]
-- Focused exam based on chief complaint
-- [Specific findings]`,
-                assessmentTemplate: `Assessment:
-1. [Primary diagnosis] - [ICD-10 code]
-2. [Secondary diagnosis] - [ICD-10 code]
-
-Emergency Severity:
-- [Mild/Moderate/Severe]
-- [Stable/Unstable]`,
-                planTemplate: `Plan:
-1. [Immediate treatment]
-2. [Medications]
-3. [Procedures if needed]
-4. [Disposition: discharge/admit/transfer]
-5. [Follow-up instructions]
-
-Discharge Instructions: [Specific instructions]
-Return Precautions: [When to return immediately]`,
-            },
-        ];
-        return {
-            success: true,
-            data: defaultTemplates,
-            message: 'Default SOAP templates retrieved successfully',
-        };
-    }
-    async generateSOAPFromTemplate(templateId, patientData) {
-        const template = await this.getTemplate(templateId);
-        if (!template.success) {
-            throw new common_1.NotFoundException('Template not found');
-        }
-        const soapNote = {
-            subjective: this.fillTemplate(template.data.subjectiveTemplate, patientData),
-            objective: this.fillTemplate(template.data.objectiveTemplate, patientData),
-            assessment: this.fillTemplate(template.data.assessmentTemplate, patientData),
-            plan: this.fillTemplate(template.data.planTemplate, patientData),
-        };
-        await this.useTemplate(templateId);
-        return {
-            success: true,
-            data: soapNote,
-            message: 'SOAP note generated from template',
-        };
-    }
-    fillTemplate(template, patientData) {
-        if (!template)
-            return '';
-        let filledTemplate = template;
-        const replacements = {
-            '[Patient Name]': patientData.name || '[Patient Name]',
-            '[Patient Age]': patientData.age || '[Patient Age]',
-            '[Patient Gender]': patientData.gender || '[Patient Gender]',
-            '[Date]': new Date().toLocaleDateString(),
-            '[Time]': new Date().toLocaleTimeString(),
-        };
-        Object.entries(replacements).forEach(([placeholder, value]) => {
-            filledTemplate = filledTemplate.replace(new RegExp(placeholder, 'g'), value);
-        });
-        return filledTemplate;
-    }
-};
-exports.ClinicalTemplateService = ClinicalTemplateService;
-exports.ClinicalTemplateService = ClinicalTemplateService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof database_service_1.DatabaseService !== "undefined" && database_service_1.DatabaseService) === "function" ? _a : Object])
-], ClinicalTemplateService);
-
-
-/***/ }),
-
-/***/ "./src/modules/emr/services/drug-interaction.service.ts":
-/*!**************************************************************!*\
-  !*** ./src/modules/emr/services/drug-interaction.service.ts ***!
-  \**************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DrugInteractionService = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const database_service_1 = __webpack_require__(/*! ../../auth/services/database.service */ "./src/modules/auth/services/database.service.ts");
-let DrugInteractionService = class DrugInteractionService {
-    constructor(db) {
-        this.db = db;
-    }
-    async checkDrugInteractions(medications) {
-        if (medications.length < 2) {
-            return {
-                success: true,
-                data: {
-                    interactions: [],
-                    severity: 'NONE',
-                    summary: 'No interactions possible with single medication',
-                },
-                message: 'Drug interaction check completed',
-            };
-        }
-        const interactions = [];
-        let maxSeverity = 'NONE';
-        for (let i = 0; i < medications.length; i++) {
-            for (let j = i + 1; j < medications.length; j++) {
-                const interaction = await this.findDrugInteraction(medications[i], medications[j]);
-                if (interaction) {
-                    interactions.push(interaction);
-                    if (this.getSeverityLevel(interaction.severity) > this.getSeverityLevel(maxSeverity)) {
-                        maxSeverity = interaction.severity;
-                    }
-                }
-            }
-        }
-        return {
-            success: true,
-            data: {
-                interactions,
-                severity: maxSeverity,
-                summary: this.generateInteractionSummary(interactions, maxSeverity),
-                recommendations: this.generateRecommendations(interactions),
-            },
-            message: 'Drug interaction check completed',
-        };
-    }
-    async checkNewMedicationInteractions(patientId, newMedication) {
-        const currentMedications = await this.db.patientMedication.findMany({
-            where: {
-                patientId,
-                OR: [
-                    { endDate: null },
-                    { endDate: { gte: new Date() } },
-                ],
-            },
-        });
-        const medicationNames = currentMedications.map(med => med.medicationName);
-        medicationNames.push(newMedication);
-        return this.checkDrugInteractions(medicationNames);
-    }
-    async addDrug(drugData) {
-        const existingDrug = await this.db.drug.findUnique({
-            where: { name: drugData.name },
-        });
-        if (existingDrug) {
-            throw new common_1.BadRequestException('Drug already exists in database');
-        }
-        const drug = await this.db.drug.create({
-            data: {
-                name: drugData.name,
-                genericName: drugData.genericName,
-                brandNames: drugData.brandNames || [],
-                drugClass: drugData.drugClass,
-                mechanism: drugData.mechanism,
-                standardDosage: drugData.standardDosage,
-                maxDosage: drugData.maxDosage,
-                contraindications: drugData.contraindications || [],
-            },
-        });
-        return {
-            success: true,
-            data: drug,
-            message: 'Drug added to database successfully',
-        };
-    }
-    async addDrugInteraction(interactionData) {
-        const [drug, interactingDrug] = await Promise.all([
-            this.findOrCreateDrug(interactionData.drugName),
-            this.findOrCreateDrug(interactionData.interactingDrugName),
-        ]);
-        const existingInteraction = await this.db.drugInteraction.findFirst({
-            where: {
-                OR: [
-                    {
-                        drugId: drug.id,
-                        interactingDrugId: interactingDrug.id,
-                    },
-                    {
-                        drugId: interactingDrug.id,
-                        interactingDrugId: drug.id,
-                    },
-                ],
-            },
-        });
-        if (existingInteraction) {
-            throw new common_1.BadRequestException('Drug interaction already exists');
-        }
-        const interaction = await this.db.drugInteraction.create({
-            data: {
-                drugId: drug.id,
-                interactingDrugId: interactingDrug.id,
-                severity: interactionData.severity,
-                description: interactionData.description,
-                clinicalEffect: interactionData.clinicalEffect,
-                management: interactionData.management,
-            },
-            include: {
-                drug: true,
-                interactingDrug: true,
-            },
-        });
-        return {
-            success: true,
-            data: interaction,
-            message: 'Drug interaction added successfully',
-        };
-    }
-    async searchDrugs(query, limit = 20) {
-        const drugs = await this.db.drug.findMany({
-            where: {
-                OR: [
-                    { name: { contains: query, mode: 'insensitive' } },
-                    { genericName: { contains: query, mode: 'insensitive' } },
-                    { brandNames: { has: query } },
-                    { drugClass: { contains: query, mode: 'insensitive' } },
-                ],
-            },
-            take: limit,
-            orderBy: { name: 'asc' },
-        });
-        return {
-            success: true,
-            data: drugs,
-            message: 'Drugs retrieved successfully',
-        };
-    }
-    async getDrugDetails(drugId) {
-        const drug = await this.db.drug.findUnique({
-            where: { id: drugId },
-            include: {
-                interactions: {
-                    include: {
-                        interactingDrug: true,
-                    },
-                },
-            },
-        });
-        if (!drug) {
-            throw new common_1.NotFoundException('Drug not found');
-        }
-        return {
-            success: true,
-            data: drug,
-            message: 'Drug details retrieved successfully',
-        };
-    }
-    async getCommonDrugInteractions() {
-        const commonInteractions = await this.db.drugInteraction.findMany({
-            include: {
-                drug: true,
-                interactingDrug: true,
-            },
-            orderBy: { createdAt: 'desc' },
-            take: 50,
-        });
-        return {
-            success: true,
-            data: commonInteractions,
-            message: 'Common drug interactions retrieved successfully',
-        };
-    }
-    async seedDrugDatabase() {
-        const commonDrugs = [
-            {
-                name: 'Warfarin',
-                genericName: 'Warfarin',
-                brandNames: ['Coumadin', 'Jantoven'],
-                drugClass: 'Anticoagulant',
-                contraindications: ['Active bleeding', 'Severe liver disease'],
-            },
-            {
-                name: 'Aspirin',
-                genericName: 'Aspirin',
-                brandNames: ['Bayer', 'Bufferin', 'Ecotrin'],
-                drugClass: 'NSAID',
-                contraindications: ['Active bleeding', 'Peptic ulcer disease'],
-            },
-            {
-                name: 'Metformin',
-                genericName: 'Metformin',
-                brandNames: ['Glucophage', 'Fortamet'],
-                drugClass: 'Biguanide',
-                contraindications: ['Severe kidney disease', 'Severe liver disease'],
-            },
-            {
-                name: 'Lisinopril',
-                genericName: 'Lisinopril',
-                brandNames: ['Prinivil', 'Zestril'],
-                drugClass: 'ACE Inhibitor',
-                contraindications: ['Pregnancy', 'Bilateral renal artery stenosis'],
-            },
-            {
-                name: 'Atorvastatin',
-                genericName: 'Atorvastatin',
-                brandNames: ['Lipitor'],
-                drugClass: 'Statin',
-                contraindications: ['Active liver disease', 'Pregnancy'],
-            },
-        ];
-        for (const drugData of commonDrugs) {
-            try {
-                await this.addDrug(drugData);
-            }
-            catch (error) {
-            }
-        }
-        const commonInteractions = [
-            {
-                drugName: 'Warfarin',
-                interactingDrugName: 'Aspirin',
-                severity: 'MAJOR',
-                description: 'Increased risk of bleeding',
-                clinicalEffect: 'Enhanced anticoagulant effect',
-                management: 'Monitor INR closely, consider reducing warfarin dose',
-            },
-            {
-                drugName: 'Warfarin',
-                interactingDrugName: 'Atorvastatin',
-                severity: 'MODERATE',
-                description: 'Increased warfarin effect',
-                clinicalEffect: 'Enhanced anticoagulation',
-                management: 'Monitor INR, may need warfarin dose reduction',
-            },
-            {
-                drugName: 'Metformin',
-                interactingDrugName: 'Lisinopril',
-                severity: 'MINOR',
-                description: 'Increased risk of hyperkalemia',
-                clinicalEffect: 'Elevated potassium levels',
-                management: 'Monitor potassium levels',
-            },
-        ];
-        for (const interactionData of commonInteractions) {
-            try {
-                await this.addDrugInteraction(interactionData);
-            }
-            catch (error) {
-            }
-        }
-        return {
-            success: true,
-            message: 'Drug database seeded successfully',
-        };
-    }
-    async findDrugInteraction(medication1, medication2) {
-        const interaction = await this.db.drugInteraction.findFirst({
-            where: {
-                OR: [
-                    {
-                        drug: { name: { contains: medication1, mode: 'insensitive' } },
-                        interactingDrug: { name: { contains: medication2, mode: 'insensitive' } },
-                    },
-                    {
-                        drug: { name: { contains: medication2, mode: 'insensitive' } },
-                        interactingDrug: { name: { contains: medication1, mode: 'insensitive' } },
-                    },
-                ],
-            },
-            include: {
-                drug: true,
-                interactingDrug: true,
-            },
-        });
-        return interaction;
-    }
-    async findOrCreateDrug(drugName) {
-        let drug = await this.db.drug.findFirst({
-            where: {
-                OR: [
-                    { name: { contains: drugName, mode: 'insensitive' } },
-                    { genericName: { contains: drugName, mode: 'insensitive' } },
-                ],
-            },
-        });
-        if (!drug) {
-            drug = await this.db.drug.create({
-                data: {
-                    name: drugName,
-                    genericName: drugName,
-                    brandNames: [],
-                    contraindications: [],
-                },
-            });
-        }
-        return drug;
-    }
-    getSeverityLevel(severity) {
-        const levels = {
-            'MINOR': 1,
-            'MODERATE': 2,
-            'MAJOR': 3,
-            'CONTRAINDICATED': 4,
-        };
-        return levels[severity] || 0;
-    }
-    generateInteractionSummary(interactions, maxSeverity) {
-        if (interactions.length === 0) {
-            return 'No drug interactions detected';
-        }
-        const severityCounts = interactions.reduce((acc, interaction) => {
-            acc[interaction.severity] = (acc[interaction.severity] || 0) + 1;
-            return acc;
-        }, {});
-        const summary = Object.entries(severityCounts)
-            .map(([severity, count]) => `${count} ${severity.toLowerCase()} interaction${count > 1 ? 's' : ''}`)
-            .join(', ');
-        return `${interactions.length} drug interaction${interactions.length > 1 ? 's' : ''} detected: ${summary}`;
-    }
-    generateRecommendations(interactions) {
-        const recommendations = [];
-        if (interactions.some(i => i.severity === 'CONTRAINDICATED')) {
-            recommendations.push('Consider alternative medications - contraindicated interactions detected');
-        }
-        if (interactions.some(i => i.severity === 'MAJOR')) {
-            recommendations.push('Monitor patient closely - major interactions detected');
-        }
-        if (interactions.some(i => i.severity === 'MODERATE')) {
-            recommendations.push('Consider dose adjustments - moderate interactions detected');
-        }
-        if (interactions.some(i => i.severity === 'MINOR')) {
-            recommendations.push('Monitor for side effects - minor interactions detected');
-        }
-        return recommendations;
-    }
-};
-exports.DrugInteractionService = DrugInteractionService;
-exports.DrugInteractionService = DrugInteractionService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof database_service_1.DatabaseService !== "undefined" && database_service_1.DatabaseService) === "function" ? _a : Object])
-], DrugInteractionService);
-
-
-/***/ }),
-
-/***/ "./src/modules/emr/services/emr.service.ts":
-/*!*************************************************!*\
-  !*** ./src/modules/emr/services/emr.service.ts ***!
-  \*************************************************/
+/* 28 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3468,8 +1719,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.EmrService = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const database_service_1 = __webpack_require__(/*! ../../auth/services/database.service */ "./src/modules/auth/services/database.service.ts");
+const common_1 = __webpack_require__(1);
+const database_service_1 = __webpack_require__(19);
 let EmrService = class EmrService {
     constructor(db) {
         this.db = db;
@@ -3747,11 +1998,219 @@ exports.EmrService = EmrService = __decorate([
 
 
 /***/ }),
+/* 29 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-/***/ "./src/modules/emr/services/imaging.service.ts":
-/*!*****************************************************!*\
-  !*** ./src/modules/emr/services/imaging.service.ts ***!
-  \*****************************************************/
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ImagingController = void 0;
+const common_1 = __webpack_require__(1);
+const swagger_1 = __webpack_require__(4);
+const jwt_auth_guard_1 = __webpack_require__(12);
+const imaging_service_1 = __webpack_require__(30);
+let ImagingController = class ImagingController {
+    constructor(imagingService) {
+        this.imagingService = imagingService;
+    }
+    async createImagingOrder(req, orderData) {
+        return this.imagingService.createImagingOrder(orderData);
+    }
+    async uploadImagingResult(req, resultData) {
+        return this.imagingService.uploadImagingResult(resultData);
+    }
+    async getPatientImagingResults(patientId, studyType, bodyPart, startDate, endDate, status, limit) {
+        return this.imagingService.getPatientImagingResults(patientId, {
+            studyType,
+            bodyPart,
+            startDate,
+            endDate,
+            status,
+            limit,
+        });
+    }
+    async getImagingResult(resultId) {
+        return this.imagingService.getImagingResult(resultId);
+    }
+    async reviewImagingResult(resultId, req, reviewData) {
+        return this.imagingService.reviewImagingResult(resultId, req.user.userId, reviewData.reviewNotes);
+    }
+    async flagImagingResult(resultId, req, flagData) {
+        return this.imagingService.flagImagingResult(resultId, req.user.userId, flagData.flagReason);
+    }
+    async getCriticalImagingResults(doctorId) {
+        return this.imagingService.getCriticalImagingResults(doctorId);
+    }
+    async getImagingStatistics(doctorId, startDate, endDate) {
+        return this.imagingService.getImagingStatistics(doctorId, startDate, endDate);
+    }
+    async getPatientImagingOrders(patientId, status, studyType, startDate, endDate, doctorId, limit) {
+        return this.imagingService.getPatientImagingOrders(patientId, {
+            status,
+            studyType,
+            startDate,
+            endDate,
+            doctorId,
+            limit,
+        });
+    }
+    async updateImagingOrderStatus(orderId, statusData) {
+        return this.imagingService.updateImagingOrderStatus(orderId, statusData.status, statusData.notes);
+    }
+};
+exports.ImagingController = ImagingController;
+__decorate([
+    (0, common_1.Post)('orders'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Create imaging order' }),
+    (0, swagger_1.ApiResponse)({ status: 201, description: 'Imaging order created successfully' }),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], ImagingController.prototype, "createImagingOrder", null);
+__decorate([
+    (0, common_1.Post)('results'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Upload imaging result with OCR processing' }),
+    (0, swagger_1.ApiResponse)({ status: 201, description: 'Imaging result uploaded successfully' }),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], ImagingController.prototype, "uploadImagingResult", null);
+__decorate([
+    (0, common_1.Get)('results/patient/:patientId'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get imaging results for patient' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Imaging results retrieved successfully' }),
+    __param(0, (0, common_1.Param)('patientId')),
+    __param(1, (0, common_1.Query)('studyType')),
+    __param(2, (0, common_1.Query)('bodyPart')),
+    __param(3, (0, common_1.Query)('startDate')),
+    __param(4, (0, common_1.Query)('endDate')),
+    __param(5, (0, common_1.Query)('status')),
+    __param(6, (0, common_1.Query)('limit')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String, String, String, String, Number]),
+    __metadata("design:returntype", Promise)
+], ImagingController.prototype, "getPatientImagingResults", null);
+__decorate([
+    (0, common_1.Get)('results/:resultId'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get imaging result details' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Imaging result retrieved successfully' }),
+    __param(0, (0, common_1.Param)('resultId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], ImagingController.prototype, "getImagingResult", null);
+__decorate([
+    (0, common_1.Put)('results/:resultId/review'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Review imaging result' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Imaging result reviewed successfully' }),
+    __param(0, (0, common_1.Param)('resultId')),
+    __param(1, (0, common_1.Request)()),
+    __param(2, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object, Object]),
+    __metadata("design:returntype", Promise)
+], ImagingController.prototype, "reviewImagingResult", null);
+__decorate([
+    (0, common_1.Put)('results/:resultId/flag'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Flag imaging result for follow-up' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Imaging result flagged for follow-up' }),
+    __param(0, (0, common_1.Param)('resultId')),
+    __param(1, (0, common_1.Request)()),
+    __param(2, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object, Object]),
+    __metadata("design:returntype", Promise)
+], ImagingController.prototype, "flagImagingResult", null);
+__decorate([
+    (0, common_1.Get)('results/critical'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get critical imaging results requiring immediate attention' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Critical imaging results retrieved successfully' }),
+    __param(0, (0, common_1.Query)('doctorId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], ImagingController.prototype, "getCriticalImagingResults", null);
+__decorate([
+    (0, common_1.Get)('statistics'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get imaging statistics for dashboard' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Imaging statistics retrieved successfully' }),
+    __param(0, (0, common_1.Query)('doctorId')),
+    __param(1, (0, common_1.Query)('startDate')),
+    __param(2, (0, common_1.Query)('endDate')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:returntype", Promise)
+], ImagingController.prototype, "getImagingStatistics", null);
+__decorate([
+    (0, common_1.Get)('orders/patient/:patientId'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get imaging orders for patient' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Imaging orders retrieved successfully' }),
+    __param(0, (0, common_1.Param)('patientId')),
+    __param(1, (0, common_1.Query)('status')),
+    __param(2, (0, common_1.Query)('studyType')),
+    __param(3, (0, common_1.Query)('startDate')),
+    __param(4, (0, common_1.Query)('endDate')),
+    __param(5, (0, common_1.Query)('doctorId')),
+    __param(6, (0, common_1.Query)('limit')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String, String, String, String, Number]),
+    __metadata("design:returntype", Promise)
+], ImagingController.prototype, "getPatientImagingOrders", null);
+__decorate([
+    (0, common_1.Put)('orders/:orderId/status'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Update imaging order status' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Imaging order status updated successfully' }),
+    __param(0, (0, common_1.Param)('orderId')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], ImagingController.prototype, "updateImagingOrderStatus", null);
+exports.ImagingController = ImagingController = __decorate([
+    (0, swagger_1.ApiTags)('Imaging Results'),
+    (0, common_1.Controller)('imaging'),
+    __metadata("design:paramtypes", [typeof (_a = typeof imaging_service_1.ImagingService !== "undefined" && imaging_service_1.ImagingService) === "function" ? _a : Object])
+], ImagingController);
+
+
+/***/ }),
+/* 30 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3767,8 +2226,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ImagingService = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const database_service_1 = __webpack_require__(/*! ../../auth/services/database.service */ "./src/modules/auth/services/database.service.ts");
+const common_1 = __webpack_require__(1);
+const database_service_1 = __webpack_require__(19);
 let ImagingService = class ImagingService {
     constructor(db) {
         this.db = db;
@@ -4177,11 +2636,204 @@ exports.ImagingService = ImagingService = __decorate([
 
 
 /***/ }),
+/* 31 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-/***/ "./src/modules/emr/services/lab.service.ts":
-/*!*************************************************!*\
-  !*** ./src/modules/emr/services/lab.service.ts ***!
-  \*************************************************/
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LabController = void 0;
+const common_1 = __webpack_require__(1);
+const swagger_1 = __webpack_require__(4);
+const jwt_auth_guard_1 = __webpack_require__(12);
+const lab_service_1 = __webpack_require__(32);
+let LabController = class LabController {
+    constructor(labService) {
+        this.labService = labService;
+    }
+    async createLabOrder(req, orderData) {
+        return this.labService.createLabOrder(orderData);
+    }
+    async uploadLabResult(req, resultData) {
+        return this.labService.uploadLabResult(resultData);
+    }
+    async getPatientLabResults(patientId, testCategory, startDate, endDate, isAbnormal, criticalValue, status, limit) {
+        return this.labService.getPatientLabResults(patientId, {
+            testCategory,
+            startDate,
+            endDate,
+            isAbnormal,
+            criticalValue,
+            status,
+            limit,
+        });
+    }
+    async getLabResult(resultId) {
+        return this.labService.getLabResult(resultId);
+    }
+    async reviewLabResult(resultId, req, reviewData) {
+        return this.labService.reviewLabResult(resultId, req.user.userId, reviewData.reviewNotes);
+    }
+    async flagLabResult(resultId, req, flagData) {
+        return this.labService.flagLabResult(resultId, req.user.userId, flagData.flagReason);
+    }
+    async getCriticalLabResults(doctorId) {
+        return this.labService.getCriticalLabResults(doctorId);
+    }
+    async getLabStatistics(doctorId, startDate, endDate) {
+        return this.labService.getLabStatistics(doctorId, startDate, endDate);
+    }
+    async getPatientLabOrders(patientId, status, startDate, endDate, doctorId, limit) {
+        return this.labService.getPatientLabOrders(patientId, {
+            status,
+            startDate,
+            endDate,
+            doctorId,
+            limit,
+        });
+    }
+};
+exports.LabController = LabController;
+__decorate([
+    (0, common_1.Post)('orders'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Create lab order' }),
+    (0, swagger_1.ApiResponse)({ status: 201, description: 'Lab order created successfully' }),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], LabController.prototype, "createLabOrder", null);
+__decorate([
+    (0, common_1.Post)('results'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Upload lab result with OCR processing' }),
+    (0, swagger_1.ApiResponse)({ status: 201, description: 'Lab result uploaded successfully' }),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], LabController.prototype, "uploadLabResult", null);
+__decorate([
+    (0, common_1.Get)('results/patient/:patientId'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get lab results for patient' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Lab results retrieved successfully' }),
+    __param(0, (0, common_1.Param)('patientId')),
+    __param(1, (0, common_1.Query)('testCategory')),
+    __param(2, (0, common_1.Query)('startDate')),
+    __param(3, (0, common_1.Query)('endDate')),
+    __param(4, (0, common_1.Query)('isAbnormal')),
+    __param(5, (0, common_1.Query)('criticalValue')),
+    __param(6, (0, common_1.Query)('status')),
+    __param(7, (0, common_1.Query)('limit')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String, String, Boolean, Boolean, String, Number]),
+    __metadata("design:returntype", Promise)
+], LabController.prototype, "getPatientLabResults", null);
+__decorate([
+    (0, common_1.Get)('results/:resultId'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get lab result details' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Lab result retrieved successfully' }),
+    __param(0, (0, common_1.Param)('resultId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], LabController.prototype, "getLabResult", null);
+__decorate([
+    (0, common_1.Put)('results/:resultId/review'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Review lab result' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Lab result reviewed successfully' }),
+    __param(0, (0, common_1.Param)('resultId')),
+    __param(1, (0, common_1.Request)()),
+    __param(2, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object, Object]),
+    __metadata("design:returntype", Promise)
+], LabController.prototype, "reviewLabResult", null);
+__decorate([
+    (0, common_1.Put)('results/:resultId/flag'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Flag lab result for follow-up' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Lab result flagged for follow-up' }),
+    __param(0, (0, common_1.Param)('resultId')),
+    __param(1, (0, common_1.Request)()),
+    __param(2, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object, Object]),
+    __metadata("design:returntype", Promise)
+], LabController.prototype, "flagLabResult", null);
+__decorate([
+    (0, common_1.Get)('results/critical'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get critical lab results requiring immediate attention' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Critical lab results retrieved successfully' }),
+    __param(0, (0, common_1.Query)('doctorId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], LabController.prototype, "getCriticalLabResults", null);
+__decorate([
+    (0, common_1.Get)('statistics'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get lab statistics for dashboard' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Lab statistics retrieved successfully' }),
+    __param(0, (0, common_1.Query)('doctorId')),
+    __param(1, (0, common_1.Query)('startDate')),
+    __param(2, (0, common_1.Query)('endDate')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:returntype", Promise)
+], LabController.prototype, "getLabStatistics", null);
+__decorate([
+    (0, common_1.Get)('orders/patient/:patientId'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get lab orders for patient' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Lab orders retrieved successfully' }),
+    __param(0, (0, common_1.Param)('patientId')),
+    __param(1, (0, common_1.Query)('status')),
+    __param(2, (0, common_1.Query)('startDate')),
+    __param(3, (0, common_1.Query)('endDate')),
+    __param(4, (0, common_1.Query)('doctorId')),
+    __param(5, (0, common_1.Query)('limit')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String, String, String, Number]),
+    __metadata("design:returntype", Promise)
+], LabController.prototype, "getPatientLabOrders", null);
+exports.LabController = LabController = __decorate([
+    (0, swagger_1.ApiTags)('Lab Results'),
+    (0, common_1.Controller)('lab'),
+    __metadata("design:paramtypes", [typeof (_a = typeof lab_service_1.LabService !== "undefined" && lab_service_1.LabService) === "function" ? _a : Object])
+], LabController);
+
+
+/***/ }),
+/* 32 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4197,8 +2849,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LabService = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const database_service_1 = __webpack_require__(/*! ../../auth/services/database.service */ "./src/modules/auth/services/database.service.ts");
+const common_1 = __webpack_require__(1);
+const database_service_1 = __webpack_require__(19);
 let LabService = class LabService {
     constructor(db) {
         this.db = db;
@@ -4580,11 +3232,189 @@ exports.LabService = LabService = __decorate([
 
 
 /***/ }),
+/* 33 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-/***/ "./src/modules/emr/services/patient-profile.service.ts":
-/*!*************************************************************!*\
-  !*** ./src/modules/emr/services/patient-profile.service.ts ***!
-  \*************************************************************/
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PatientProfileController = void 0;
+const common_1 = __webpack_require__(1);
+const swagger_1 = __webpack_require__(4);
+const jwt_auth_guard_1 = __webpack_require__(12);
+const patient_profile_service_1 = __webpack_require__(34);
+let PatientProfileController = class PatientProfileController {
+    constructor(patientProfileService) {
+        this.patientProfileService = patientProfileService;
+    }
+    async upsertPatientProfile(req, profileData) {
+        return this.patientProfileService.upsertPatientProfile(req.user.userId, profileData);
+    }
+    async getPatientProfile(req) {
+        return this.patientProfileService.getPatientProfile(req.user.userId);
+    }
+    async addAllergy(req, allergyData) {
+        return this.patientProfileService.addAllergy(req.user.userId, allergyData);
+    }
+    async updateAllergy(allergyId, allergyData) {
+        return this.patientProfileService.updateAllergy(allergyId, allergyData);
+    }
+    async removeAllergy(allergyId) {
+        return this.patientProfileService.removeAllergy(allergyId);
+    }
+    async getPatientAllergies(req) {
+        return this.patientProfileService.getPatientAllergies(req.user.userId);
+    }
+    async addCurrentMedication(req, medicationData) {
+        return this.patientProfileService.addCurrentMedication(req.user.userId, medicationData);
+    }
+    async updateCurrentMedication(medicationId, medicationData) {
+        return this.patientProfileService.updateCurrentMedication(medicationId, medicationData);
+    }
+    async removeCurrentMedication(medicationId) {
+        return this.patientProfileService.removeCurrentMedication(medicationId);
+    }
+    async getPatientMedications(req) {
+        return this.patientProfileService.getPatientMedications(req.user.userId);
+    }
+};
+exports.PatientProfileController = PatientProfileController;
+__decorate([
+    (0, common_1.Post)('upsert'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Create or update patient profile' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Patient profile updated successfully' }),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], PatientProfileController.prototype, "upsertPatientProfile", null);
+__decorate([
+    (0, common_1.Get)('me'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get current patient profile' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Patient profile retrieved successfully' }),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], PatientProfileController.prototype, "getPatientProfile", null);
+__decorate([
+    (0, common_1.Post)('allergies'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Add allergy to patient profile' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Allergy added successfully' }),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], PatientProfileController.prototype, "addAllergy", null);
+__decorate([
+    (0, common_1.Put)('allergies/:allergyId'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Update allergy' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Allergy updated successfully' }),
+    __param(0, (0, common_1.Param)('allergyId')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], PatientProfileController.prototype, "updateAllergy", null);
+__decorate([
+    (0, common_1.Delete)('allergies/:allergyId'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Remove allergy' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Allergy removed successfully' }),
+    __param(0, (0, common_1.Param)('allergyId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], PatientProfileController.prototype, "removeAllergy", null);
+__decorate([
+    (0, common_1.Get)('allergies'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get patient allergies' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Allergies retrieved successfully' }),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], PatientProfileController.prototype, "getPatientAllergies", null);
+__decorate([
+    (0, common_1.Post)('medications'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Add current medication' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Medication added successfully' }),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], PatientProfileController.prototype, "addCurrentMedication", null);
+__decorate([
+    (0, common_1.Put)('medications/:medicationId'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Update current medication' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Medication updated successfully' }),
+    __param(0, (0, common_1.Param)('medicationId')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], PatientProfileController.prototype, "updateCurrentMedication", null);
+__decorate([
+    (0, common_1.Delete)('medications/:medicationId'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Remove current medication' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Medication removed successfully' }),
+    __param(0, (0, common_1.Param)('medicationId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], PatientProfileController.prototype, "removeCurrentMedication", null);
+__decorate([
+    (0, common_1.Get)('medications'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get patient current medications' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Current medications retrieved successfully' }),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], PatientProfileController.prototype, "getPatientMedications", null);
+exports.PatientProfileController = PatientProfileController = __decorate([
+    (0, swagger_1.ApiTags)('Patient Profile'),
+    (0, common_1.Controller)('patient-profile'),
+    __metadata("design:paramtypes", [typeof (_a = typeof patient_profile_service_1.PatientProfileService !== "undefined" && patient_profile_service_1.PatientProfileService) === "function" ? _a : Object])
+], PatientProfileController);
+
+
+/***/ }),
+/* 34 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4600,8 +3430,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PatientProfileService = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const database_service_1 = __webpack_require__(/*! ../../auth/services/database.service */ "./src/modules/auth/services/database.service.ts");
+const common_1 = __webpack_require__(1);
+const database_service_1 = __webpack_require__(19);
 let PatientProfileService = class PatientProfileService {
     constructor(db) {
         this.db = db;
@@ -4681,29 +3511,42 @@ let PatientProfileService = class PatientProfileService {
         };
     }
     async getPatientProfile(patientId) {
-        const profile = await this.db.patientProfile.findUnique({
-            where: { patientId },
-            include: {
-                allergies: true,
-                currentMedications: true,
-                visits: {
-                    include: {
-                        doctor: {
-                            select: {
-                                id: true,
-                                firstName: true,
-                                lastName: true,
-                                specialization: true,
-                            },
+        const include = {
+            allergies: true,
+            currentMedications: true,
+            visits: {
+                include: {
+                    doctor: {
+                        select: {
+                            id: true,
+                            firstName: true,
+                            lastName: true,
+                            specialization: true,
                         },
                     },
-                    orderBy: { visitDate: 'desc' },
-                    take: 10,
                 },
+                orderBy: { visitDate: 'desc' },
+                take: 10,
             },
+        };
+        let profile = await this.db.patientProfile.findUnique({
+            where: { patientId },
+            include,
         });
         if (!profile) {
-            throw new common_1.NotFoundException('Patient profile not found');
+            profile = await this.db.patientProfile.create({
+                data: {
+                    patientId,
+                    preferredLanguage: 'English',
+                    communicationPref: 'EMAIL',
+                },
+                include,
+            });
+            return {
+                success: true,
+                data: profile,
+                message: 'Patient profile initialized',
+            };
         }
         return {
             success: true,
@@ -4855,11 +3698,202 @@ exports.PatientProfileService = PatientProfileService = __decorate([
 
 
 /***/ }),
+/* 35 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-/***/ "./src/modules/emr/services/prescription.service.ts":
-/*!**********************************************************!*\
-  !*** ./src/modules/emr/services/prescription.service.ts ***!
-  \**********************************************************/
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PrescriptionController = void 0;
+const common_1 = __webpack_require__(1);
+const swagger_1 = __webpack_require__(4);
+const jwt_auth_guard_1 = __webpack_require__(12);
+const prescription_service_1 = __webpack_require__(36);
+let PrescriptionController = class PrescriptionController {
+    constructor(prescriptionService) {
+        this.prescriptionService = prescriptionService;
+    }
+    async createPrescription(req, prescriptionData) {
+        return this.prescriptionService.createPrescription(prescriptionData);
+    }
+    async updatePrescription(prescriptionId, updateData) {
+        return this.prescriptionService.updatePrescription(prescriptionId, updateData);
+    }
+    async getPrescription(prescriptionId) {
+        return this.prescriptionService.getPrescription(prescriptionId);
+    }
+    async getPatientPrescriptions(patientId, status, startDate, endDate, doctorId, limit) {
+        return this.prescriptionService.getPatientPrescriptions(patientId, {
+            status,
+            startDate,
+            endDate,
+            doctorId,
+            limit,
+        });
+    }
+    async updatePrescriptionStatus(prescriptionId, statusData) {
+        return this.prescriptionService.updatePrescriptionStatus(prescriptionId, statusData.status, statusData.notes);
+    }
+    async cancelPrescription(prescriptionId, cancelData) {
+        return this.prescriptionService.cancelPrescription(prescriptionId, cancelData.reason);
+    }
+    async getPrescriptionStatistics(doctorId, startDate, endDate) {
+        return this.prescriptionService.getPrescriptionStatistics(doctorId, startDate, endDate);
+    }
+    async searchMedications(query) {
+        return this.prescriptionService.searchMedications(query);
+    }
+    async checkDrugInteractions(interactionData) {
+        const newMedication = interactionData.medications?.[0] || '';
+        return this.prescriptionService.checkDrugInteractions(interactionData.patientId, newMedication);
+    }
+    async checkNewMedicationInteractions(interactionData) {
+        return this.prescriptionService.checkDrugInteractions(interactionData.patientId, interactionData.newMedication);
+    }
+};
+exports.PrescriptionController = PrescriptionController;
+__decorate([
+    (0, common_1.Post)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Create a new prescription with drug interaction checking' }),
+    (0, swagger_1.ApiResponse)({ status: 201, description: 'Prescription created successfully' }),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], PrescriptionController.prototype, "createPrescription", null);
+__decorate([
+    (0, common_1.Put)(':prescriptionId'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Update prescription' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Prescription updated successfully' }),
+    __param(0, (0, common_1.Param)('prescriptionId')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], PrescriptionController.prototype, "updatePrescription", null);
+__decorate([
+    (0, common_1.Get)(':prescriptionId'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get prescription details' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Prescription retrieved successfully' }),
+    __param(0, (0, common_1.Param)('prescriptionId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], PrescriptionController.prototype, "getPrescription", null);
+__decorate([
+    (0, common_1.Get)('patient/:patientId'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get patient prescriptions' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Patient prescriptions retrieved successfully' }),
+    __param(0, (0, common_1.Param)('patientId')),
+    __param(1, (0, common_1.Query)('status')),
+    __param(2, (0, common_1.Query)('startDate')),
+    __param(3, (0, common_1.Query)('endDate')),
+    __param(4, (0, common_1.Query)('doctorId')),
+    __param(5, (0, common_1.Query)('limit')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String, String, String, Number]),
+    __metadata("design:returntype", Promise)
+], PrescriptionController.prototype, "getPatientPrescriptions", null);
+__decorate([
+    (0, common_1.Put)(':prescriptionId/status'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Update prescription status' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Prescription status updated successfully' }),
+    __param(0, (0, common_1.Param)('prescriptionId')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], PrescriptionController.prototype, "updatePrescriptionStatus", null);
+__decorate([
+    (0, common_1.Put)(':prescriptionId/cancel'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Cancel prescription' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Prescription cancelled successfully' }),
+    __param(0, (0, common_1.Param)('prescriptionId')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], PrescriptionController.prototype, "cancelPrescription", null);
+__decorate([
+    (0, common_1.Get)('doctor/:doctorId/statistics'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get prescription statistics for a doctor' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Prescription statistics retrieved successfully' }),
+    __param(0, (0, common_1.Param)('doctorId')),
+    __param(1, (0, common_1.Query)('startDate')),
+    __param(2, (0, common_1.Query)('endDate')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:returntype", Promise)
+], PrescriptionController.prototype, "getPrescriptionStatistics", null);
+__decorate([
+    (0, common_1.Get)('medications/search'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Search for medications in drug database' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Medications retrieved successfully' }),
+    __param(0, (0, common_1.Query)('query')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], PrescriptionController.prototype, "searchMedications", null);
+__decorate([
+    (0, common_1.Post)('interactions/check'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Check drug interactions for medication list' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Drug interaction check completed' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], PrescriptionController.prototype, "checkDrugInteractions", null);
+__decorate([
+    (0, common_1.Post)('interactions/check-new'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Check interactions for new medication with existing medications' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Drug interaction check completed' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], PrescriptionController.prototype, "checkNewMedicationInteractions", null);
+exports.PrescriptionController = PrescriptionController = __decorate([
+    (0, swagger_1.ApiTags)('Prescriptions'),
+    (0, common_1.Controller)('prescriptions'),
+    __metadata("design:paramtypes", [typeof (_a = typeof prescription_service_1.PrescriptionService !== "undefined" && prescription_service_1.PrescriptionService) === "function" ? _a : Object])
+], PrescriptionController);
+
+
+/***/ }),
+/* 36 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4875,8 +3909,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PrescriptionService = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const database_service_1 = __webpack_require__(/*! ../../auth/services/database.service */ "./src/modules/auth/services/database.service.ts");
+const common_1 = __webpack_require__(1);
+const database_service_1 = __webpack_require__(19);
 let PrescriptionService = class PrescriptionService {
     constructor(db) {
         this.db = db;
@@ -5235,11 +4269,202 @@ exports.PrescriptionService = PrescriptionService = __decorate([
 
 
 /***/ }),
+/* 37 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-/***/ "./src/modules/emr/services/visit.service.ts":
-/*!***************************************************!*\
-  !*** ./src/modules/emr/services/visit.service.ts ***!
-  \***************************************************/
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.VisitController = void 0;
+const common_1 = __webpack_require__(1);
+const swagger_1 = __webpack_require__(4);
+const jwt_auth_guard_1 = __webpack_require__(12);
+const visit_service_1 = __webpack_require__(38);
+let VisitController = class VisitController {
+    constructor(visitService) {
+        this.visitService = visitService;
+    }
+    async createVisit(req, visitData) {
+        return this.visitService.createVisit(visitData);
+    }
+    async updateVisit(visitId, updateData) {
+        return this.visitService.updateVisit(visitId, updateData);
+    }
+    async getVisit(visitId) {
+        return this.visitService.getVisit(visitId);
+    }
+    async getPatientVisits(patientId, startDate, endDate, visitType, doctorId, limit) {
+        return this.visitService.getPatientVisits(patientId, {
+            startDate,
+            endDate,
+            visitType,
+            doctorId,
+            limit,
+        });
+    }
+    async addDiagnosis(visitId, diagnosisData) {
+        return this.visitService.addDiagnosis(visitId, diagnosisData);
+    }
+    async updateDiagnosis(diagnosisId, diagnosisData) {
+        return this.visitService.updateDiagnosis(diagnosisId, diagnosisData);
+    }
+    async removeDiagnosis(diagnosisId) {
+        return this.visitService.removeDiagnosis(diagnosisId);
+    }
+    async processVoiceTranscription(visitId, transcriptionData) {
+        return this.visitService.processVoiceTranscription(visitId, transcriptionData.voiceFileUrl, transcriptionData.transcribedText);
+    }
+    async getIcd10Suggestions(symptoms) {
+        return this.visitService.getIcd10Suggestions(symptoms);
+    }
+    async getVisitStatistics(doctorId, startDate, endDate) {
+        return this.visitService.getVisitStatistics(doctorId, startDate, endDate);
+    }
+};
+exports.VisitController = VisitController;
+__decorate([
+    (0, common_1.Post)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Create a new patient visit (SOAP note)' }),
+    (0, swagger_1.ApiResponse)({ status: 201, description: 'Visit created successfully' }),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], VisitController.prototype, "createVisit", null);
+__decorate([
+    (0, common_1.Put)(':visitId'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Update visit (SOAP note)' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Visit updated successfully' }),
+    __param(0, (0, common_1.Param)('visitId')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], VisitController.prototype, "updateVisit", null);
+__decorate([
+    (0, common_1.Get)(':visitId'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get visit details' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Visit retrieved successfully' }),
+    __param(0, (0, common_1.Param)('visitId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], VisitController.prototype, "getVisit", null);
+__decorate([
+    (0, common_1.Get)('patient/:patientId'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get patient visit history' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Patient visits retrieved successfully' }),
+    __param(0, (0, common_1.Param)('patientId')),
+    __param(1, (0, common_1.Query)('startDate')),
+    __param(2, (0, common_1.Query)('endDate')),
+    __param(3, (0, common_1.Query)('visitType')),
+    __param(4, (0, common_1.Query)('doctorId')),
+    __param(5, (0, common_1.Query)('limit')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String, String, String, Number]),
+    __metadata("design:returntype", Promise)
+], VisitController.prototype, "getPatientVisits", null);
+__decorate([
+    (0, common_1.Post)(':visitId/diagnoses'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Add diagnosis to visit' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Diagnosis added successfully' }),
+    __param(0, (0, common_1.Param)('visitId')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], VisitController.prototype, "addDiagnosis", null);
+__decorate([
+    (0, common_1.Put)('diagnoses/:diagnosisId'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Update diagnosis' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Diagnosis updated successfully' }),
+    __param(0, (0, common_1.Param)('diagnosisId')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], VisitController.prototype, "updateDiagnosis", null);
+__decorate([
+    (0, common_1.Delete)('diagnoses/:diagnosisId'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Remove diagnosis' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Diagnosis removed successfully' }),
+    __param(0, (0, common_1.Param)('diagnosisId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], VisitController.prototype, "removeDiagnosis", null);
+__decorate([
+    (0, common_1.Post)(':visitId/voice-transcription'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Process voice-to-text transcription' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Voice transcription processed successfully' }),
+    __param(0, (0, common_1.Param)('visitId')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], VisitController.prototype, "processVoiceTranscription", null);
+__decorate([
+    (0, common_1.Get)('icd10/suggestions'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get ICD-10 code suggestions based on symptoms' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'ICD-10 suggestions retrieved successfully' }),
+    __param(0, (0, common_1.Query)('symptoms')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], VisitController.prototype, "getIcd10Suggestions", null);
+__decorate([
+    (0, common_1.Get)('doctor/:doctorId/statistics'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get visit statistics for a doctor' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Visit statistics retrieved successfully' }),
+    __param(0, (0, common_1.Param)('doctorId')),
+    __param(1, (0, common_1.Query)('startDate')),
+    __param(2, (0, common_1.Query)('endDate')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:returntype", Promise)
+], VisitController.prototype, "getVisitStatistics", null);
+exports.VisitController = VisitController = __decorate([
+    (0, swagger_1.ApiTags)('Patient Visits'),
+    (0, common_1.Controller)('visits'),
+    __metadata("design:paramtypes", [typeof (_a = typeof visit_service_1.VisitService !== "undefined" && visit_service_1.VisitService) === "function" ? _a : Object])
+], VisitController);
+
+
+/***/ }),
+/* 38 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5255,8 +4480,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.VisitService = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const database_service_1 = __webpack_require__(/*! ../../auth/services/database.service */ "./src/modules/auth/services/database.service.ts");
+const common_1 = __webpack_require__(1);
+const database_service_1 = __webpack_require__(19);
 let VisitService = class VisitService {
     constructor(db) {
         this.db = db;
@@ -5579,11 +4804,796 @@ exports.VisitService = VisitService = __decorate([
 
 
 /***/ }),
+/* 39 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-/***/ "./src/modules/patient-booking/controllers/patient-booking.controller.ts":
-/*!*******************************************************************************!*\
-  !*** ./src/modules/patient-booking/controllers/patient-booking.controller.ts ***!
-  \*******************************************************************************/
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ClinicalTemplateService = void 0;
+const common_1 = __webpack_require__(1);
+const database_service_1 = __webpack_require__(19);
+let ClinicalTemplateService = class ClinicalTemplateService {
+    constructor(db) {
+        this.db = db;
+    }
+    async createTemplate(templateData) {
+        const template = await this.db.clinicalTemplate.create({
+            data: {
+                doctorId: templateData.doctorId,
+                name: templateData.name,
+                category: templateData.category,
+                specialty: templateData.specialty,
+                isPublic: templateData.isPublic || false,
+                subjectiveTemplate: templateData.subjectiveTemplate,
+                objectiveTemplate: templateData.objectiveTemplate,
+                assessmentTemplate: templateData.assessmentTemplate,
+                planTemplate: templateData.planTemplate,
+            },
+            include: {
+                doctor: {
+                    select: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                        specialization: true,
+                    },
+                },
+            },
+        });
+        return {
+            success: true,
+            data: template,
+            message: 'Clinical template created successfully',
+        };
+    }
+    async getDoctorTemplates(doctorId, filters) {
+        const where = {
+            OR: [
+                { doctorId },
+                { isPublic: true },
+            ],
+        };
+        if (filters?.category) {
+            where.category = filters.category;
+        }
+        if (filters?.specialty) {
+            where.specialty = filters.specialty;
+        }
+        if (filters?.isPublic !== undefined) {
+            where.isPublic = filters.isPublic;
+        }
+        const templates = await this.db.clinicalTemplate.findMany({
+            where,
+            include: {
+                doctor: {
+                    select: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                        specialization: true,
+                    },
+                },
+            },
+            orderBy: [
+                { isPublic: 'asc' },
+                { usageCount: 'desc' },
+                { name: 'asc' },
+            ],
+        });
+        return {
+            success: true,
+            data: templates,
+            message: 'Clinical templates retrieved successfully',
+        };
+    }
+    async getTemplate(templateId) {
+        const template = await this.db.clinicalTemplate.findUnique({
+            where: { id: templateId },
+            include: {
+                doctor: {
+                    select: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                        specialization: true,
+                    },
+                },
+            },
+        });
+        if (!template) {
+            throw new common_1.NotFoundException('Clinical template not found');
+        }
+        return {
+            success: true,
+            data: template,
+            message: 'Clinical template retrieved successfully',
+        };
+    }
+    async updateTemplate(templateId, updateData) {
+        const template = await this.db.clinicalTemplate.findUnique({
+            where: { id: templateId },
+        });
+        if (!template) {
+            throw new common_1.NotFoundException('Clinical template not found');
+        }
+        const updatedTemplate = await this.db.clinicalTemplate.update({
+            where: { id: templateId },
+            data: {
+                name: updateData.name,
+                category: updateData.category,
+                specialty: updateData.specialty,
+                isPublic: updateData.isPublic,
+                subjectiveTemplate: updateData.subjectiveTemplate,
+                objectiveTemplate: updateData.objectiveTemplate,
+                assessmentTemplate: updateData.assessmentTemplate,
+                planTemplate: updateData.planTemplate,
+            },
+            include: {
+                doctor: {
+                    select: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                        specialization: true,
+                    },
+                },
+            },
+        });
+        return {
+            success: true,
+            data: updatedTemplate,
+            message: 'Clinical template updated successfully',
+        };
+    }
+    async deleteTemplate(templateId) {
+        const template = await this.db.clinicalTemplate.findUnique({
+            where: { id: templateId },
+        });
+        if (!template) {
+            throw new common_1.NotFoundException('Clinical template not found');
+        }
+        await this.db.clinicalTemplate.delete({
+            where: { id: templateId },
+        });
+        return {
+            success: true,
+            message: 'Clinical template deleted successfully',
+        };
+    }
+    async useTemplate(templateId) {
+        const template = await this.db.clinicalTemplate.findUnique({
+            where: { id: templateId },
+        });
+        if (!template) {
+            throw new common_1.NotFoundException('Clinical template not found');
+        }
+        const updatedTemplate = await this.db.clinicalTemplate.update({
+            where: { id: templateId },
+            data: {
+                usageCount: template.usageCount + 1,
+            },
+        });
+        return {
+            success: true,
+            data: updatedTemplate,
+            message: 'Template usage recorded',
+        };
+    }
+    async getPopularTemplates(limit = 10) {
+        const templates = await this.db.clinicalTemplate.findMany({
+            where: { isPublic: true },
+            orderBy: { usageCount: 'desc' },
+            take: limit,
+            include: {
+                doctor: {
+                    select: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                        specialization: true,
+                    },
+                },
+            },
+        });
+        return {
+            success: true,
+            data: templates,
+            message: 'Popular templates retrieved successfully',
+        };
+    }
+    async getTemplateCategories() {
+        const categories = await this.db.clinicalTemplate.groupBy({
+            by: ['category'],
+            _count: { category: true },
+            orderBy: { _count: { category: 'desc' } },
+        });
+        return {
+            success: true,
+            data: categories.map(cat => ({
+                category: cat.category,
+                count: cat._count.category,
+            })),
+            message: 'Template categories retrieved successfully',
+        };
+    }
+    async getDefaultSOAPTemplates() {
+        const defaultTemplates = [
+            {
+                name: 'General Consultation',
+                category: 'SOAP_NOTE',
+                subjectiveTemplate: `Chief Complaint: [Patient's main concern]
+
+History of Present Illness:
+- Onset: [When symptoms started]
+- Duration: [How long symptoms have been present]
+- Severity: [Rate 1-10]
+- Associated symptoms: [Other symptoms]
+- Relieving factors: [What helps]
+- Aggravating factors: [What makes it worse]
+
+Past Medical History: [Previous conditions]
+Medications: [Current medications]
+Allergies: [Known allergies]
+Social History: [Smoking, alcohol, occupation]`,
+                objectiveTemplate: `Vital Signs:
+- Blood Pressure: [BP reading]
+- Heart Rate: [HR]
+- Temperature: [Temp]
+- Respiratory Rate: [RR]
+- Oxygen Saturation: [SpO2]
+
+Physical Examination:
+- General: [General appearance]
+- HEENT: [Head, eyes, ears, nose, throat]
+- Cardiovascular: [Heart exam]
+- Pulmonary: [Lung exam]
+- Abdomen: [Abdominal exam]
+- Extremities: [Extremity exam]
+- Neurological: [Neuro exam]`,
+                assessmentTemplate: `Assessment:
+1. [Primary diagnosis] - [ICD-10 code]
+2. [Secondary diagnosis] - [ICD-10 code]
+
+Clinical Reasoning:
+[Explanation of diagnosis based on history and exam]`,
+                planTemplate: `Plan:
+1. [Primary treatment]
+2. [Medications]
+3. [Follow-up instructions]
+4. [Patient education]
+5. [Referrals if needed]
+
+Follow-up: [When to return]
+Patient Instructions: [Specific instructions for patient]`,
+            },
+            {
+                name: 'Follow-up Visit',
+                category: 'FOLLOW_UP',
+                subjectiveTemplate: `Follow-up for: [Previous diagnosis]
+
+Since last visit:
+- Symptoms: [Better/worse/same]
+- Medication compliance: [Taking medications as prescribed]
+- Side effects: [Any side effects from medications]
+- New symptoms: [Any new concerns]`,
+                objectiveTemplate: `Vital Signs:
+- Blood Pressure: [BP reading]
+- Heart Rate: [HR]
+- Weight: [Current weight]
+
+Physical Examination:
+- Focused exam based on condition
+- [Specific findings]`,
+                assessmentTemplate: `Assessment:
+1. [Primary condition] - [Status: improved/stable/worsened]
+2. [Any new findings]`,
+                planTemplate: `Plan:
+1. [Continue/adjust/discontinue medications]
+2. [Additional treatments]
+3. [Follow-up schedule]
+4. [Patient education updates]`,
+            },
+            {
+                name: 'Emergency Visit',
+                category: 'EMERGENCY',
+                subjectiveTemplate: `Chief Complaint: [Patient's main concern]
+
+History of Present Illness:
+- Onset: [When symptoms started]
+- Duration: [How long]
+- Severity: [Rate 1-10]
+- Associated symptoms: [Other symptoms]
+- Mechanism of injury: [If applicable]
+
+Emergency History:
+- Allergies: [Known allergies]
+- Medications: [Current medications]
+- Past medical history: [Relevant conditions]`,
+                objectiveTemplate: `Vital Signs:
+- Blood Pressure: [BP reading]
+- Heart Rate: [HR]
+- Temperature: [Temp]
+- Respiratory Rate: [RR]
+- Oxygen Saturation: [SpO2]
+- Pain Score: [1-10]
+
+Physical Examination:
+- General: [General appearance, distress level]
+- Focused exam based on chief complaint
+- [Specific findings]`,
+                assessmentTemplate: `Assessment:
+1. [Primary diagnosis] - [ICD-10 code]
+2. [Secondary diagnosis] - [ICD-10 code]
+
+Emergency Severity:
+- [Mild/Moderate/Severe]
+- [Stable/Unstable]`,
+                planTemplate: `Plan:
+1. [Immediate treatment]
+2. [Medications]
+3. [Procedures if needed]
+4. [Disposition: discharge/admit/transfer]
+5. [Follow-up instructions]
+
+Discharge Instructions: [Specific instructions]
+Return Precautions: [When to return immediately]`,
+            },
+        ];
+        return {
+            success: true,
+            data: defaultTemplates,
+            message: 'Default SOAP templates retrieved successfully',
+        };
+    }
+    async generateSOAPFromTemplate(templateId, patientData) {
+        const template = await this.getTemplate(templateId);
+        if (!template.success) {
+            throw new common_1.NotFoundException('Template not found');
+        }
+        const soapNote = {
+            subjective: this.fillTemplate(template.data.subjectiveTemplate, patientData),
+            objective: this.fillTemplate(template.data.objectiveTemplate, patientData),
+            assessment: this.fillTemplate(template.data.assessmentTemplate, patientData),
+            plan: this.fillTemplate(template.data.planTemplate, patientData),
+        };
+        await this.useTemplate(templateId);
+        return {
+            success: true,
+            data: soapNote,
+            message: 'SOAP note generated from template',
+        };
+    }
+    fillTemplate(template, patientData) {
+        if (!template)
+            return '';
+        let filledTemplate = template;
+        const replacements = {
+            '[Patient Name]': patientData.name || '[Patient Name]',
+            '[Patient Age]': patientData.age || '[Patient Age]',
+            '[Patient Gender]': patientData.gender || '[Patient Gender]',
+            '[Date]': new Date().toLocaleDateString(),
+            '[Time]': new Date().toLocaleTimeString(),
+        };
+        Object.entries(replacements).forEach(([placeholder, value]) => {
+            filledTemplate = filledTemplate.replace(new RegExp(placeholder, 'g'), value);
+        });
+        return filledTemplate;
+    }
+};
+exports.ClinicalTemplateService = ClinicalTemplateService;
+exports.ClinicalTemplateService = ClinicalTemplateService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof database_service_1.DatabaseService !== "undefined" && database_service_1.DatabaseService) === "function" ? _a : Object])
+], ClinicalTemplateService);
+
+
+/***/ }),
+/* 40 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DrugInteractionService = void 0;
+const common_1 = __webpack_require__(1);
+const database_service_1 = __webpack_require__(19);
+let DrugInteractionService = class DrugInteractionService {
+    constructor(db) {
+        this.db = db;
+    }
+    async checkDrugInteractions(medications) {
+        if (medications.length < 2) {
+            return {
+                success: true,
+                data: {
+                    interactions: [],
+                    severity: 'NONE',
+                    summary: 'No interactions possible with single medication',
+                },
+                message: 'Drug interaction check completed',
+            };
+        }
+        const interactions = [];
+        let maxSeverity = 'NONE';
+        for (let i = 0; i < medications.length; i++) {
+            for (let j = i + 1; j < medications.length; j++) {
+                const interaction = await this.findDrugInteraction(medications[i], medications[j]);
+                if (interaction) {
+                    interactions.push(interaction);
+                    if (this.getSeverityLevel(interaction.severity) > this.getSeverityLevel(maxSeverity)) {
+                        maxSeverity = interaction.severity;
+                    }
+                }
+            }
+        }
+        return {
+            success: true,
+            data: {
+                interactions,
+                severity: maxSeverity,
+                summary: this.generateInteractionSummary(interactions, maxSeverity),
+                recommendations: this.generateRecommendations(interactions),
+            },
+            message: 'Drug interaction check completed',
+        };
+    }
+    async checkNewMedicationInteractions(patientId, newMedication) {
+        const currentMedications = await this.db.patientMedication.findMany({
+            where: {
+                patientId,
+                OR: [
+                    { endDate: null },
+                    { endDate: { gte: new Date() } },
+                ],
+            },
+        });
+        const medicationNames = currentMedications.map(med => med.medicationName);
+        medicationNames.push(newMedication);
+        return this.checkDrugInteractions(medicationNames);
+    }
+    async addDrug(drugData) {
+        const existingDrug = await this.db.drug.findUnique({
+            where: { name: drugData.name },
+        });
+        if (existingDrug) {
+            throw new common_1.BadRequestException('Drug already exists in database');
+        }
+        const drug = await this.db.drug.create({
+            data: {
+                name: drugData.name,
+                genericName: drugData.genericName,
+                brandNames: drugData.brandNames || [],
+                drugClass: drugData.drugClass,
+                mechanism: drugData.mechanism,
+                standardDosage: drugData.standardDosage,
+                maxDosage: drugData.maxDosage,
+                contraindications: drugData.contraindications || [],
+            },
+        });
+        return {
+            success: true,
+            data: drug,
+            message: 'Drug added to database successfully',
+        };
+    }
+    async addDrugInteraction(interactionData) {
+        const [drug, interactingDrug] = await Promise.all([
+            this.findOrCreateDrug(interactionData.drugName),
+            this.findOrCreateDrug(interactionData.interactingDrugName),
+        ]);
+        const existingInteraction = await this.db.drugInteraction.findFirst({
+            where: {
+                OR: [
+                    {
+                        drugId: drug.id,
+                        interactingDrugId: interactingDrug.id,
+                    },
+                    {
+                        drugId: interactingDrug.id,
+                        interactingDrugId: drug.id,
+                    },
+                ],
+            },
+        });
+        if (existingInteraction) {
+            throw new common_1.BadRequestException('Drug interaction already exists');
+        }
+        const interaction = await this.db.drugInteraction.create({
+            data: {
+                drugId: drug.id,
+                interactingDrugId: interactingDrug.id,
+                severity: interactionData.severity,
+                description: interactionData.description,
+                clinicalEffect: interactionData.clinicalEffect,
+                management: interactionData.management,
+            },
+            include: {
+                drug: true,
+                interactingDrug: true,
+            },
+        });
+        return {
+            success: true,
+            data: interaction,
+            message: 'Drug interaction added successfully',
+        };
+    }
+    async searchDrugs(query, limit = 20) {
+        const drugs = await this.db.drug.findMany({
+            where: {
+                OR: [
+                    { name: { contains: query, mode: 'insensitive' } },
+                    { genericName: { contains: query, mode: 'insensitive' } },
+                    { brandNames: { has: query } },
+                    { drugClass: { contains: query, mode: 'insensitive' } },
+                ],
+            },
+            take: limit,
+            orderBy: { name: 'asc' },
+        });
+        return {
+            success: true,
+            data: drugs,
+            message: 'Drugs retrieved successfully',
+        };
+    }
+    async getDrugDetails(drugId) {
+        const drug = await this.db.drug.findUnique({
+            where: { id: drugId },
+            include: {
+                interactions: {
+                    include: {
+                        interactingDrug: true,
+                    },
+                },
+            },
+        });
+        if (!drug) {
+            throw new common_1.NotFoundException('Drug not found');
+        }
+        return {
+            success: true,
+            data: drug,
+            message: 'Drug details retrieved successfully',
+        };
+    }
+    async getCommonDrugInteractions() {
+        const commonInteractions = await this.db.drugInteraction.findMany({
+            include: {
+                drug: true,
+                interactingDrug: true,
+            },
+            orderBy: { createdAt: 'desc' },
+            take: 50,
+        });
+        return {
+            success: true,
+            data: commonInteractions,
+            message: 'Common drug interactions retrieved successfully',
+        };
+    }
+    async seedDrugDatabase() {
+        const commonDrugs = [
+            {
+                name: 'Warfarin',
+                genericName: 'Warfarin',
+                brandNames: ['Coumadin', 'Jantoven'],
+                drugClass: 'Anticoagulant',
+                contraindications: ['Active bleeding', 'Severe liver disease'],
+            },
+            {
+                name: 'Aspirin',
+                genericName: 'Aspirin',
+                brandNames: ['Bayer', 'Bufferin', 'Ecotrin'],
+                drugClass: 'NSAID',
+                contraindications: ['Active bleeding', 'Peptic ulcer disease'],
+            },
+            {
+                name: 'Metformin',
+                genericName: 'Metformin',
+                brandNames: ['Glucophage', 'Fortamet'],
+                drugClass: 'Biguanide',
+                contraindications: ['Severe kidney disease', 'Severe liver disease'],
+            },
+            {
+                name: 'Lisinopril',
+                genericName: 'Lisinopril',
+                brandNames: ['Prinivil', 'Zestril'],
+                drugClass: 'ACE Inhibitor',
+                contraindications: ['Pregnancy', 'Bilateral renal artery stenosis'],
+            },
+            {
+                name: 'Atorvastatin',
+                genericName: 'Atorvastatin',
+                brandNames: ['Lipitor'],
+                drugClass: 'Statin',
+                contraindications: ['Active liver disease', 'Pregnancy'],
+            },
+        ];
+        for (const drugData of commonDrugs) {
+            try {
+                await this.addDrug(drugData);
+            }
+            catch (error) {
+            }
+        }
+        const commonInteractions = [
+            {
+                drugName: 'Warfarin',
+                interactingDrugName: 'Aspirin',
+                severity: 'MAJOR',
+                description: 'Increased risk of bleeding',
+                clinicalEffect: 'Enhanced anticoagulant effect',
+                management: 'Monitor INR closely, consider reducing warfarin dose',
+            },
+            {
+                drugName: 'Warfarin',
+                interactingDrugName: 'Atorvastatin',
+                severity: 'MODERATE',
+                description: 'Increased warfarin effect',
+                clinicalEffect: 'Enhanced anticoagulation',
+                management: 'Monitor INR, may need warfarin dose reduction',
+            },
+            {
+                drugName: 'Metformin',
+                interactingDrugName: 'Lisinopril',
+                severity: 'MINOR',
+                description: 'Increased risk of hyperkalemia',
+                clinicalEffect: 'Elevated potassium levels',
+                management: 'Monitor potassium levels',
+            },
+        ];
+        for (const interactionData of commonInteractions) {
+            try {
+                await this.addDrugInteraction(interactionData);
+            }
+            catch (error) {
+            }
+        }
+        return {
+            success: true,
+            message: 'Drug database seeded successfully',
+        };
+    }
+    async findDrugInteraction(medication1, medication2) {
+        const interaction = await this.db.drugInteraction.findFirst({
+            where: {
+                OR: [
+                    {
+                        drug: { name: { contains: medication1, mode: 'insensitive' } },
+                        interactingDrug: { name: { contains: medication2, mode: 'insensitive' } },
+                    },
+                    {
+                        drug: { name: { contains: medication2, mode: 'insensitive' } },
+                        interactingDrug: { name: { contains: medication1, mode: 'insensitive' } },
+                    },
+                ],
+            },
+            include: {
+                drug: true,
+                interactingDrug: true,
+            },
+        });
+        return interaction;
+    }
+    async findOrCreateDrug(drugName) {
+        let drug = await this.db.drug.findFirst({
+            where: {
+                OR: [
+                    { name: { contains: drugName, mode: 'insensitive' } },
+                    { genericName: { contains: drugName, mode: 'insensitive' } },
+                ],
+            },
+        });
+        if (!drug) {
+            drug = await this.db.drug.create({
+                data: {
+                    name: drugName,
+                    genericName: drugName,
+                    brandNames: [],
+                    contraindications: [],
+                },
+            });
+        }
+        return drug;
+    }
+    getSeverityLevel(severity) {
+        const levels = {
+            'MINOR': 1,
+            'MODERATE': 2,
+            'MAJOR': 3,
+            'CONTRAINDICATED': 4,
+        };
+        return levels[severity] || 0;
+    }
+    generateInteractionSummary(interactions, maxSeverity) {
+        if (interactions.length === 0) {
+            return 'No drug interactions detected';
+        }
+        const severityCounts = interactions.reduce((acc, interaction) => {
+            acc[interaction.severity] = (acc[interaction.severity] || 0) + 1;
+            return acc;
+        }, {});
+        const summary = Object.entries(severityCounts)
+            .map(([severity, count]) => `${count} ${severity.toLowerCase()} interaction${count > 1 ? 's' : ''}`)
+            .join(', ');
+        return `${interactions.length} drug interaction${interactions.length > 1 ? 's' : ''} detected: ${summary}`;
+    }
+    generateRecommendations(interactions) {
+        const recommendations = [];
+        if (interactions.some(i => i.severity === 'CONTRAINDICATED')) {
+            recommendations.push('Consider alternative medications - contraindicated interactions detected');
+        }
+        if (interactions.some(i => i.severity === 'MAJOR')) {
+            recommendations.push('Monitor patient closely - major interactions detected');
+        }
+        if (interactions.some(i => i.severity === 'MODERATE')) {
+            recommendations.push('Consider dose adjustments - moderate interactions detected');
+        }
+        if (interactions.some(i => i.severity === 'MINOR')) {
+            recommendations.push('Monitor for side effects - minor interactions detected');
+        }
+        return recommendations;
+    }
+};
+exports.DrugInteractionService = DrugInteractionService;
+exports.DrugInteractionService = DrugInteractionService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof database_service_1.DatabaseService !== "undefined" && database_service_1.DatabaseService) === "function" ? _a : Object])
+], DrugInteractionService);
+
+
+/***/ }),
+/* 41 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PatientBookingModule = void 0;
+const common_1 = __webpack_require__(1);
+const auth_module_1 = __webpack_require__(8);
+const patient_booking_controller_1 = __webpack_require__(42);
+const patient_booking_service_1 = __webpack_require__(43);
+let PatientBookingModule = class PatientBookingModule {
+};
+exports.PatientBookingModule = PatientBookingModule;
+exports.PatientBookingModule = PatientBookingModule = __decorate([
+    (0, common_1.Module)({
+        imports: [auth_module_1.AuthModule],
+        controllers: [patient_booking_controller_1.PatientBookingController],
+        providers: [patient_booking_service_1.PatientBookingService],
+        exports: [patient_booking_service_1.PatientBookingService],
+    })
+], PatientBookingModule);
+
+
+/***/ }),
+/* 42 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5602,10 +5612,10 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PatientBookingController = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const jwt_auth_guard_1 = __webpack_require__(/*! ../../auth/guards/jwt-auth.guard */ "./src/modules/auth/guards/jwt-auth.guard.ts");
-const patient_booking_service_1 = __webpack_require__(/*! ../services/patient-booking.service */ "./src/modules/patient-booking/services/patient-booking.service.ts");
+const common_1 = __webpack_require__(1);
+const swagger_1 = __webpack_require__(4);
+const jwt_auth_guard_1 = __webpack_require__(12);
+const patient_booking_service_1 = __webpack_require__(43);
 let PatientBookingController = class PatientBookingController {
     constructor(patientBookingService) {
         this.patientBookingService = patientBookingService;
@@ -5717,45 +5727,7 @@ exports.PatientBookingController = PatientBookingController = __decorate([
 
 
 /***/ }),
-
-/***/ "./src/modules/patient-booking/patient-booking.module.ts":
-/*!***************************************************************!*\
-  !*** ./src/modules/patient-booking/patient-booking.module.ts ***!
-  \***************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.PatientBookingModule = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const auth_module_1 = __webpack_require__(/*! ../auth/auth.module */ "./src/modules/auth/auth.module.ts");
-const patient_booking_controller_1 = __webpack_require__(/*! ./controllers/patient-booking.controller */ "./src/modules/patient-booking/controllers/patient-booking.controller.ts");
-const patient_booking_service_1 = __webpack_require__(/*! ./services/patient-booking.service */ "./src/modules/patient-booking/services/patient-booking.service.ts");
-let PatientBookingModule = class PatientBookingModule {
-};
-exports.PatientBookingModule = PatientBookingModule;
-exports.PatientBookingModule = PatientBookingModule = __decorate([
-    (0, common_1.Module)({
-        imports: [auth_module_1.AuthModule],
-        controllers: [patient_booking_controller_1.PatientBookingController],
-        providers: [patient_booking_service_1.PatientBookingService],
-        exports: [patient_booking_service_1.PatientBookingService],
-    })
-], PatientBookingModule);
-
-
-/***/ }),
-
-/***/ "./src/modules/patient-booking/services/patient-booking.service.ts":
-/*!*************************************************************************!*\
-  !*** ./src/modules/patient-booking/services/patient-booking.service.ts ***!
-  \*************************************************************************/
+/* 43 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5771,8 +5743,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PatientBookingService = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const database_service_1 = __webpack_require__(/*! ../../auth/services/database.service */ "./src/modules/auth/services/database.service.ts");
+const common_1 = __webpack_require__(1);
+const database_service_1 = __webpack_require__(19);
 let PatientBookingService = class PatientBookingService {
     constructor(db) {
         this.db = db;
@@ -6092,11 +6064,58 @@ exports.PatientBookingService = PatientBookingService = __decorate([
 
 
 /***/ }),
+/* 44 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-/***/ "./src/modules/scheduling/controllers/scheduling.controller.ts":
-/*!*********************************************************************!*\
-  !*** ./src/modules/scheduling/controllers/scheduling.controller.ts ***!
-  \*********************************************************************/
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SchedulingModule = void 0;
+const common_1 = __webpack_require__(1);
+const schedule_1 = __webpack_require__(45);
+const database_service_1 = __webpack_require__(19);
+const scheduling_controller_1 = __webpack_require__(46);
+const appointment_management_service_1 = __webpack_require__(50);
+const doctor_availability_service_1 = __webpack_require__(52);
+const scheduling_service_1 = __webpack_require__(49);
+const slot_engine_service_1 = __webpack_require__(51);
+let SchedulingModule = class SchedulingModule {
+};
+exports.SchedulingModule = SchedulingModule;
+exports.SchedulingModule = SchedulingModule = __decorate([
+    (0, common_1.Module)({
+        imports: [schedule_1.ScheduleModule.forRoot()],
+        controllers: [scheduling_controller_1.SchedulingController],
+        providers: [
+            scheduling_service_1.SchedulingService,
+            doctor_availability_service_1.DoctorAvailabilityService,
+            slot_engine_service_1.SlotEngineService,
+            appointment_management_service_1.AppointmentManagementService,
+            database_service_1.DatabaseService,
+        ],
+        exports: [
+            scheduling_service_1.SchedulingService,
+            doctor_availability_service_1.DoctorAvailabilityService,
+            slot_engine_service_1.SlotEngineService,
+            appointment_management_service_1.AppointmentManagementService,
+        ],
+    })
+], SchedulingModule);
+
+
+/***/ }),
+/* 45 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/schedule");
+
+/***/ }),
+/* 46 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6115,11 +6134,11 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SchedulingController = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const jwt_auth_guard_1 = __webpack_require__(/*! ../../auth/guards/jwt-auth.guard */ "./src/modules/auth/guards/jwt-auth.guard.ts");
-const scheduling_dto_1 = __webpack_require__(/*! ../dto/scheduling.dto */ "./src/modules/scheduling/dto/scheduling.dto.ts");
-const scheduling_service_1 = __webpack_require__(/*! ../services/scheduling.service */ "./src/modules/scheduling/services/scheduling.service.ts");
+const common_1 = __webpack_require__(1);
+const swagger_1 = __webpack_require__(4);
+const jwt_auth_guard_1 = __webpack_require__(12);
+const scheduling_dto_1 = __webpack_require__(47);
+const scheduling_service_1 = __webpack_require__(49);
 let SchedulingController = class SchedulingController {
     constructor(schedulingService) {
         this.schedulingService = schedulingService;
@@ -6551,11 +6570,7 @@ exports.SchedulingController = SchedulingController = __decorate([
 
 
 /***/ }),
-
-/***/ "./src/modules/scheduling/dto/scheduling.dto.ts":
-/*!******************************************************!*\
-  !*** ./src/modules/scheduling/dto/scheduling.dto.ts ***!
-  \******************************************************/
+/* 47 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6570,8 +6585,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ScheduleAnalyticsDto = exports.TimeSlotAvailabilityDto = exports.UpdateAvailabilityDto = exports.GetAvailabilityDto = exports.UpdateAppointmentDto = exports.BookAppointmentDto = exports.AppointmentStatus = exports.AppointmentType = exports.CreateExceptionDto = exports.ExceptionType = exports.UpdateTimeSlotDto = exports.CreateTimeSlotDto = exports.UpdateScheduleTemplateDto = exports.CreateScheduleTemplateDto = void 0;
-const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
-const class_transformer_1 = __webpack_require__(/*! class-transformer */ "class-transformer");
+const class_validator_1 = __webpack_require__(14);
+const class_transformer_1 = __webpack_require__(48);
 class CreateScheduleTemplateDto {
 }
 exports.CreateScheduleTemplateDto = CreateScheduleTemplateDto;
@@ -6901,862 +6916,13 @@ __decorate([
 
 
 /***/ }),
+/* 48 */
+/***/ ((module) => {
 
-/***/ "./src/modules/scheduling/scheduling.module.ts":
-/*!*****************************************************!*\
-  !*** ./src/modules/scheduling/scheduling.module.ts ***!
-  \*****************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SchedulingModule = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const schedule_1 = __webpack_require__(/*! @nestjs/schedule */ "@nestjs/schedule");
-const database_service_1 = __webpack_require__(/*! ../auth/services/database.service */ "./src/modules/auth/services/database.service.ts");
-const scheduling_controller_1 = __webpack_require__(/*! ./controllers/scheduling.controller */ "./src/modules/scheduling/controllers/scheduling.controller.ts");
-const appointment_management_service_1 = __webpack_require__(/*! ./services/appointment-management.service */ "./src/modules/scheduling/services/appointment-management.service.ts");
-const doctor_availability_service_1 = __webpack_require__(/*! ./services/doctor-availability.service */ "./src/modules/scheduling/services/doctor-availability.service.ts");
-const scheduling_service_1 = __webpack_require__(/*! ./services/scheduling.service */ "./src/modules/scheduling/services/scheduling.service.ts");
-const slot_engine_service_1 = __webpack_require__(/*! ./services/slot-engine.service */ "./src/modules/scheduling/services/slot-engine.service.ts");
-let SchedulingModule = class SchedulingModule {
-};
-exports.SchedulingModule = SchedulingModule;
-exports.SchedulingModule = SchedulingModule = __decorate([
-    (0, common_1.Module)({
-        imports: [schedule_1.ScheduleModule.forRoot()],
-        controllers: [scheduling_controller_1.SchedulingController],
-        providers: [
-            scheduling_service_1.SchedulingService,
-            doctor_availability_service_1.DoctorAvailabilityService,
-            slot_engine_service_1.SlotEngineService,
-            appointment_management_service_1.AppointmentManagementService,
-            database_service_1.DatabaseService,
-        ],
-        exports: [
-            scheduling_service_1.SchedulingService,
-            doctor_availability_service_1.DoctorAvailabilityService,
-            slot_engine_service_1.SlotEngineService,
-            appointment_management_service_1.AppointmentManagementService,
-        ],
-    })
-], SchedulingModule);
-
+module.exports = require("class-transformer");
 
 /***/ }),
-
-/***/ "./src/modules/scheduling/services/appointment-management.service.ts":
-/*!***************************************************************************!*\
-  !*** ./src/modules/scheduling/services/appointment-management.service.ts ***!
-  \***************************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AppointmentManagementService = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const database_service_1 = __webpack_require__(/*! ../../auth/services/database.service */ "./src/modules/auth/services/database.service.ts");
-const slot_engine_service_1 = __webpack_require__(/*! ./slot-engine.service */ "./src/modules/scheduling/services/slot-engine.service.ts");
-let AppointmentManagementService = class AppointmentManagementService {
-    constructor(db, slotEngine) {
-        this.db = db;
-        this.slotEngine = slotEngine;
-    }
-    async createAppointment(appointmentData) {
-        const availabilityCheck = await this.slotEngine.checkSlotAvailability(appointmentData.doctorId, appointmentData.date, appointmentData.startTime, appointmentData.endTime);
-        if (!availabilityCheck.success) {
-            throw new common_1.BadRequestException(availabilityCheck.message);
-        }
-        const conflictCheck = await this.slotEngine.checkConflicts(appointmentData.doctorId, appointmentData.date, appointmentData.startTime, appointmentData.endTime);
-        if (conflictCheck.hasConflicts) {
-            throw new common_1.BadRequestException('Time slot conflicts with existing appointment');
-        }
-        const appointment = await this.db.appointment.create({
-            data: {
-                patientId: appointmentData.patientId,
-                doctorId: appointmentData.doctorId,
-                scheduleId: availabilityCheck.data.scheduleId,
-                appointmentDate: new Date(appointmentData.date),
-                startTime: appointmentData.startTime,
-                endTime: appointmentData.endTime,
-                duration: this.slotEngine.calculateSlotDuration(appointmentData.startTime, appointmentData.endTime),
-                type: appointmentData.type,
-                status: 'PENDING',
-                notes: appointmentData.notes,
-                patientName: appointmentData.patientName,
-                patientPhone: appointmentData.patientPhone,
-                patientEmail: appointmentData.patientEmail,
-            },
-            include: {
-                patient: true,
-            },
-        });
-        await this.slotEngine.lockSlot(appointmentData.doctorId, availabilityCheck.data.scheduleId, appointmentData.startTime, appointmentData.endTime);
-        return {
-            success: true,
-            data: appointment,
-            message: 'Appointment created successfully',
-        };
-    }
-    async confirmAppointment(appointmentId, doctorId) {
-        const appointment = await this.db.appointment.findUnique({
-            where: { id: appointmentId },
-            include: { patient: true },
-        });
-        if (!appointment) {
-            throw new common_1.NotFoundException('Appointment not found');
-        }
-        if (appointment.doctorId !== doctorId) {
-            throw new common_1.BadRequestException('Unauthorized to confirm this appointment');
-        }
-        if (appointment.status !== 'PENDING') {
-            throw new common_1.BadRequestException('Appointment is not in pending status');
-        }
-        const updatedAppointment = await this.db.appointment.update({
-            where: { id: appointmentId },
-            data: { status: 'CONFIRMED' },
-            include: { patient: true },
-        });
-        return {
-            success: true,
-            data: updatedAppointment,
-            message: 'Appointment confirmed successfully',
-        };
-    }
-    async rescheduleAppointment(appointmentId, newDate, newStartTime, newEndTime, reason) {
-        const appointment = await this.db.appointment.findUnique({
-            where: { id: appointmentId },
-        });
-        if (!appointment) {
-            throw new common_1.NotFoundException('Appointment not found');
-        }
-        if (appointment.status === 'CANCELLED') {
-            throw new common_1.BadRequestException('Cannot reschedule a cancelled appointment');
-        }
-        const availabilityCheck = await this.slotEngine.checkSlotAvailability(appointment.doctorId, newDate, newStartTime, newEndTime);
-        if (!availabilityCheck.success) {
-            throw new common_1.BadRequestException(availabilityCheck.message);
-        }
-        const conflictCheck = await this.slotEngine.checkConflicts(appointment.doctorId, newDate, newStartTime, newEndTime, appointmentId);
-        if (conflictCheck.hasConflicts) {
-            throw new common_1.BadRequestException('New time slot conflicts with existing appointment');
-        }
-        await this.slotEngine.releaseSlot(appointment.doctorId, appointment.scheduleId, appointment.startTime);
-        const updatedAppointment = await this.db.appointment.update({
-            where: { id: appointmentId },
-            data: {
-                appointmentDate: new Date(newDate),
-                startTime: newStartTime,
-                endTime: newEndTime,
-                duration: this.slotEngine.calculateSlotDuration(newStartTime, newEndTime),
-                scheduleId: availabilityCheck.data.scheduleId,
-                status: 'PENDING',
-                notes: reason ? `${appointment.notes || ''}\nRescheduled: ${reason}` : appointment.notes,
-            },
-            include: { patient: true },
-        });
-        await this.slotEngine.lockSlot(appointment.doctorId, availabilityCheck.data.scheduleId, newStartTime, newEndTime);
-        return {
-            success: true,
-            data: updatedAppointment,
-            message: 'Appointment rescheduled successfully',
-        };
-    }
-    async cancelAppointment(appointmentId, reason, cancelledBy) {
-        const appointment = await this.db.appointment.findUnique({
-            where: { id: appointmentId },
-        });
-        if (!appointment) {
-            throw new common_1.NotFoundException('Appointment not found');
-        }
-        if (appointment.status === 'CANCELLED') {
-            throw new common_1.BadRequestException('Appointment is already cancelled');
-        }
-        if (appointment.status === 'COMPLETED') {
-            throw new common_1.BadRequestException('Cannot cancel a completed appointment');
-        }
-        const updatedAppointment = await this.db.appointment.update({
-            where: { id: appointmentId },
-            data: {
-                status: 'CANCELLED',
-                notes: reason
-                    ? `${appointment.notes || ''}\nCancelled by ${cancelledBy}: ${reason}`
-                    : appointment.notes,
-            },
-            include: { patient: true },
-        });
-        await this.slotEngine.releaseSlot(appointment.doctorId, appointment.scheduleId, appointment.startTime);
-        return {
-            success: true,
-            data: updatedAppointment,
-            message: 'Appointment cancelled successfully',
-        };
-    }
-    async completeAppointment(appointmentId, doctorId, notes) {
-        const appointment = await this.db.appointment.findUnique({
-            where: { id: appointmentId },
-        });
-        if (!appointment) {
-            throw new common_1.NotFoundException('Appointment not found');
-        }
-        if (appointment.doctorId !== doctorId) {
-            throw new common_1.BadRequestException('Unauthorized to complete this appointment');
-        }
-        if (appointment.status !== 'CONFIRMED') {
-            throw new common_1.BadRequestException('Only confirmed appointments can be marked as completed');
-        }
-        const updatedAppointment = await this.db.appointment.update({
-            where: { id: appointmentId },
-            data: {
-                status: 'COMPLETED',
-                notes: notes ? `${appointment.notes || ''}\nCompleted: ${notes}` : appointment.notes,
-            },
-            include: { patient: true },
-        });
-        return {
-            success: true,
-            data: updatedAppointment,
-            message: 'Appointment marked as completed',
-        };
-    }
-    async getDoctorAppointments(doctorId, startDate, endDate, status) {
-        const where = { doctorId };
-        if (startDate && endDate) {
-            where.appointmentDate = {
-                gte: new Date(startDate),
-                lte: new Date(endDate),
-            };
-        }
-        if (status) {
-            where.status = status;
-        }
-        const appointments = await this.db.appointment.findMany({
-            where,
-            include: {
-                patient: true,
-            },
-            orderBy: { appointmentDate: 'asc' },
-        });
-        return {
-            success: true,
-            data: appointments,
-            message: 'Doctor appointments retrieved successfully',
-        };
-    }
-    async getPatientAppointments(patientId, startDate, endDate, status) {
-        const where = { patientId };
-        if (startDate && endDate) {
-            where.appointmentDate = {
-                gte: new Date(startDate),
-                lte: new Date(endDate),
-            };
-        }
-        if (status) {
-            where.status = status;
-        }
-        const appointments = await this.db.appointment.findMany({
-            where,
-            include: {
-                patient: true,
-            },
-            orderBy: { appointmentDate: 'asc' },
-        });
-        return {
-            success: true,
-            data: appointments,
-            message: 'Patient appointments retrieved successfully',
-        };
-    }
-    async getAppointmentById(appointmentId) {
-        const appointment = await this.db.appointment.findUnique({
-            where: { id: appointmentId },
-            include: {
-                patient: true,
-            },
-        });
-        if (!appointment) {
-            throw new common_1.NotFoundException('Appointment not found');
-        }
-        return {
-            success: true,
-            data: appointment,
-            message: 'Appointment retrieved successfully',
-        };
-    }
-    async getUpcomingAppointments(doctorId, limit = 10) {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const appointments = await this.db.appointment.findMany({
-            where: {
-                doctorId,
-                appointmentDate: { gte: today },
-                status: { in: ['PENDING', 'CONFIRMED'] },
-            },
-            include: {
-                patient: true,
-            },
-            orderBy: { appointmentDate: 'asc' },
-            take: limit,
-        });
-        return {
-            success: true,
-            data: appointments,
-            message: 'Upcoming appointments retrieved successfully',
-        };
-    }
-    async getTodaysAppointments(doctorId) {
-        const today = new Date();
-        const startOfDay = new Date(today);
-        startOfDay.setHours(0, 0, 0, 0);
-        const endOfDay = new Date(today);
-        endOfDay.setHours(23, 59, 59, 999);
-        const appointments = await this.db.appointment.findMany({
-            where: {
-                doctorId,
-                appointmentDate: {
-                    gte: startOfDay,
-                    lte: endOfDay,
-                },
-                status: { not: 'CANCELLED' },
-            },
-            include: {
-                patient: true,
-            },
-            orderBy: { startTime: 'asc' },
-        });
-        return {
-            success: true,
-            data: appointments,
-            message: 'Today\'s appointments retrieved successfully',
-        };
-    }
-    async getAppointmentStats(doctorId, startDate, endDate) {
-        const start = startDate ? new Date(startDate) : new Date();
-        const end = endDate ? new Date(endDate) : new Date();
-        if (!startDate) {
-            start.setDate(start.getDate() - 30);
-        }
-        const appointments = await this.db.appointment.findMany({
-            where: {
-                doctorId,
-                appointmentDate: {
-                    gte: start,
-                    lte: end,
-                },
-            },
-        });
-        const stats = {
-            total: appointments.length,
-            pending: appointments.filter(apt => apt.status === 'PENDING').length,
-            confirmed: appointments.filter(apt => apt.status === 'CONFIRMED').length,
-            completed: appointments.filter(apt => apt.status === 'COMPLETED').length,
-            cancelled: appointments.filter(apt => apt.status === 'CANCELLED').length,
-            noShow: appointments.filter(apt => apt.status === 'NO_SHOW').length,
-        };
-        return {
-            success: true,
-            data: stats,
-            message: 'Appointment statistics retrieved successfully',
-        };
-    }
-    async getPatientAppointmentHistory(patientId, limit = 20) {
-        const appointments = await this.db.appointment.findMany({
-            where: { patientId },
-            include: {
-                patient: true,
-            },
-            orderBy: { appointmentDate: 'desc' },
-            take: limit,
-        });
-        return {
-            success: true,
-            data: appointments,
-            message: 'Patient appointment history retrieved successfully',
-        };
-    }
-};
-exports.AppointmentManagementService = AppointmentManagementService;
-exports.AppointmentManagementService = AppointmentManagementService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof database_service_1.DatabaseService !== "undefined" && database_service_1.DatabaseService) === "function" ? _a : Object, typeof (_b = typeof slot_engine_service_1.SlotEngineService !== "undefined" && slot_engine_service_1.SlotEngineService) === "function" ? _b : Object])
-], AppointmentManagementService);
-
-
-/***/ }),
-
-/***/ "./src/modules/scheduling/services/doctor-availability.service.ts":
-/*!************************************************************************!*\
-  !*** ./src/modules/scheduling/services/doctor-availability.service.ts ***!
-  \************************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DoctorAvailabilityService = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const schedule_1 = __webpack_require__(/*! @nestjs/schedule */ "@nestjs/schedule");
-const database_service_1 = __webpack_require__(/*! ../../auth/services/database.service */ "./src/modules/auth/services/database.service.ts");
-let DoctorAvailabilityService = class DoctorAvailabilityService {
-    constructor(db) {
-        this.db = db;
-    }
-    async setRecurringAvailability(doctorId, availabilityData) {
-        const doctor = await this.db.user.findUnique({ where: { id: doctorId } });
-        if (!doctor) {
-            throw new common_1.NotFoundException('Doctor not found');
-        }
-        let template = await this.db.doctorScheduleTemplate.findFirst({
-            where: {
-                doctorId,
-                name: 'Default Weekly Schedule',
-            },
-        });
-        if (template) {
-            template = await this.db.doctorScheduleTemplate.update({
-                where: { id: template.id },
-                data: {
-                    description: 'Recurring weekly availability',
-                    isDefault: true,
-                    isActive: true,
-                },
-            });
-        }
-        else {
-            template = await this.db.doctorScheduleTemplate.create({
-                data: {
-                    doctorId,
-                    name: 'Default Weekly Schedule',
-                    description: 'Recurring weekly availability',
-                    isDefault: true,
-                    isActive: true,
-                },
-            });
-        }
-        for (const dayOfWeek of availabilityData.workingDays) {
-            await this.createTimeSlotForDay(template.id, dayOfWeek, availabilityData);
-        }
-        return {
-            success: true,
-            data: template,
-            message: 'Recurring availability set successfully',
-        };
-    }
-    async createTimeSlotForDay(templateId, dayOfWeek, availabilityData) {
-        const existingSlot = await this.db.doctorTimeSlot.findFirst({
-            where: {
-                templateId,
-                dayOfWeek: dayOfWeek,
-            },
-        });
-        if (existingSlot) {
-            await this.db.doctorTimeSlot.update({
-                where: { id: existingSlot.id },
-                data: {
-                    startTime: availabilityData.startTime,
-                    endTime: availabilityData.endTime,
-                    slotDuration: availabilityData.slotDuration,
-                    bufferTime: availabilityData.bufferTime,
-                    isAvailable: true,
-                },
-            });
-        }
-        else {
-            await this.db.doctorTimeSlot.create({
-                data: {
-                    templateId,
-                    dayOfWeek: dayOfWeek,
-                    startTime: availabilityData.startTime,
-                    endTime: availabilityData.endTime,
-                    slotDuration: availabilityData.slotDuration,
-                    bufferTime: availabilityData.bufferTime,
-                    isAvailable: true,
-                    maxBookings: 1,
-                },
-            });
-        }
-    }
-    async markDateUnavailable(doctorId, date, reason) {
-        const exception = await this.db.doctorScheduleException.create({
-            data: {
-                doctorId,
-                date: new Date(date),
-                type: 'PERSONAL',
-                reason: reason || 'Doctor unavailable',
-                isAllDay: true,
-            },
-        });
-        return {
-            success: true,
-            data: exception,
-            message: 'Date marked as unavailable',
-        };
-    }
-    async addCustomHours(doctorId, date, startTime, endTime, reason) {
-        const exception = await this.db.doctorScheduleException.create({
-            data: {
-                doctorId,
-                date: new Date(date),
-                startTime,
-                endTime,
-                type: 'CUSTOM_HOURS',
-                reason: reason || 'Custom working hours',
-                isAllDay: false,
-            },
-        });
-        return {
-            success: true,
-            data: exception,
-            message: 'Custom hours added successfully',
-        };
-    }
-    async getAvailability(doctorId, startDate, endDate) {
-        const start = new Date(startDate);
-        const end = new Date(endDate);
-        const recurringSchedule = await this.db.doctorScheduleTemplate.findFirst({
-            where: {
-                doctorId,
-                isActive: true,
-                isDefault: true,
-            },
-            include: {
-                timeSlots: true,
-            },
-        });
-        const exceptions = await this.db.doctorScheduleException.findMany({
-            where: {
-                doctorId,
-                date: {
-                    gte: start,
-                    lte: end,
-                },
-            },
-        });
-        const availability = [];
-        const currentDate = new Date(start);
-        while (currentDate <= end) {
-            const dayOfWeek = this.getDayOfWeek(currentDate);
-            const dateStr = currentDate.toISOString().split('T')[0];
-            const exception = exceptions.find(ex => ex.date.toISOString().split('T')[0] === dateStr);
-            if (exception) {
-                const isAvailable = exception.type !== 'PERSONAL';
-                availability.push({
-                    date: dateStr,
-                    isAvailable,
-                    startTime: exception.startTime,
-                    endTime: exception.endTime,
-                    reason: exception.reason,
-                    type: 'exception',
-                });
-            }
-            else if (recurringSchedule) {
-                const daySlot = recurringSchedule.timeSlots.find(slot => slot.dayOfWeek === dayOfWeek);
-                if (daySlot) {
-                    availability.push({
-                        date: dateStr,
-                        isAvailable: daySlot.isAvailable,
-                        startTime: daySlot.startTime,
-                        endTime: daySlot.endTime,
-                        slotDuration: daySlot.slotDuration,
-                        bufferTime: daySlot.bufferTime,
-                        type: 'recurring',
-                    });
-                }
-            }
-            currentDate.setDate(currentDate.getDate() + 1);
-        }
-        return {
-            success: true,
-            data: availability,
-            message: 'Availability retrieved successfully',
-        };
-    }
-    async getAvailableSlots(doctorId, date) {
-        const targetDate = new Date(date);
-        const dayOfWeek = this.getDayOfWeek(targetDate);
-        const exception = await this.db.doctorScheduleException.findFirst({
-            where: {
-                doctorId,
-                date: targetDate,
-            },
-        });
-        let baseSchedule;
-        if (exception) {
-            if (exception.type === 'PERSONAL') {
-                return {
-                    success: true,
-                    data: [],
-                    message: 'Doctor is unavailable on this date',
-                };
-            }
-            baseSchedule = {
-                startTime: exception.startTime || '09:00',
-                endTime: exception.endTime || '17:00',
-                slotDuration: 30,
-                bufferTime: 10,
-            };
-        }
-        else {
-            const recurringSchedule = await this.db.doctorScheduleTemplate.findFirst({
-                where: {
-                    doctorId,
-                    isActive: true,
-                    isDefault: true,
-                },
-                include: {
-                    timeSlots: {
-                        where: {
-                            dayOfWeek: dayOfWeek,
-                        },
-                    },
-                },
-            });
-            if (!recurringSchedule || recurringSchedule.timeSlots.length === 0) {
-                return {
-                    success: true,
-                    data: [],
-                    message: 'No schedule found for this day',
-                };
-            }
-            const daySlot = recurringSchedule.timeSlots[0];
-            baseSchedule = {
-                startTime: daySlot.startTime,
-                endTime: daySlot.endTime,
-                slotDuration: daySlot.slotDuration,
-                bufferTime: daySlot.bufferTime,
-            };
-        }
-        const slots = this.generateTimeSlots(baseSchedule, date);
-        const existingAppointments = await this.db.appointment.findMany({
-            where: {
-                doctorId,
-                appointmentDate: targetDate,
-                status: {
-                    not: 'CANCELLED',
-                },
-            },
-        });
-        const availableSlots = slots.map(slot => {
-            const isBooked = existingAppointments.some(apt => apt.startTime === slot.startTime);
-            return {
-                ...slot,
-                isAvailable: !isBooked,
-                isBooked,
-            };
-        });
-        return {
-            success: true,
-            data: availableSlots,
-            message: 'Available slots retrieved successfully',
-        };
-    }
-    generateTimeSlots(schedule, date) {
-        const slots = [];
-        const startTime = new Date(`${date}T${schedule.startTime}`);
-        const endTime = new Date(`${date}T${schedule.endTime}`);
-        let currentTime = new Date(startTime);
-        while (currentTime < endTime) {
-            const slotEnd = new Date(currentTime.getTime() + schedule.slotDuration * 60000);
-            if (slotEnd <= endTime) {
-                slots.push({
-                    id: `${date}-${currentTime.toTimeString().split(' ')[0]}`,
-                    startTime: currentTime.toTimeString().split(' ')[0].substring(0, 5),
-                    endTime: slotEnd.toTimeString().split(' ')[0].substring(0, 5),
-                    isAvailable: true,
-                    isBooked: false,
-                });
-            }
-            currentTime = new Date(currentTime.getTime() + (schedule.slotDuration + schedule.bufferTime) * 60000);
-        }
-        return slots;
-    }
-    getDayOfWeek(date) {
-        const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
-        return days[date.getDay()];
-    }
-    async generateDailySlots() {
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        const doctors = await this.db.user.findMany({
-            where: {
-                role: 'DOCTOR',
-            },
-        });
-        for (const doctor of doctors) {
-            await this.generateSlotsForDoctor(doctor.id, tomorrow.toISOString().split('T')[0]);
-        }
-        console.log('Daily slot generation completed');
-    }
-    async generateSlotsForDoctor(doctorId, date) {
-        const targetDate = new Date(date);
-        const dayOfWeek = this.getDayOfWeek(targetDate);
-        const existingSchedule = await this.db.doctorSchedule.findFirst({
-            where: {
-                doctorId,
-                date: targetDate,
-            },
-        });
-        if (existingSchedule) {
-            return;
-        }
-        const recurringSchedule = await this.db.doctorScheduleTemplate.findFirst({
-            where: {
-                doctorId,
-                isActive: true,
-                isDefault: true,
-            },
-            include: {
-                timeSlots: {
-                    where: {
-                        dayOfWeek: dayOfWeek,
-                    },
-                },
-            },
-        });
-        if (!recurringSchedule || recurringSchedule.timeSlots.length === 0) {
-            return;
-        }
-        const exception = await this.db.doctorScheduleException.findFirst({
-            where: {
-                doctorId,
-                date: targetDate,
-            },
-        });
-        if (exception && exception.type === 'PERSONAL') {
-            return;
-        }
-        const profile = await this.db.doctorProfile.findFirst({
-            where: { doctorId },
-        });
-        if (!profile) {
-            return;
-        }
-        const daySlot = recurringSchedule.timeSlots[0];
-        const scheduleData = exception ? {
-            startTime: exception.startTime || daySlot.startTime,
-            endTime: exception.endTime || daySlot.endTime,
-            slotDuration: daySlot.slotDuration,
-            bufferTime: daySlot.bufferTime,
-        } : {
-            startTime: daySlot.startTime,
-            endTime: daySlot.endTime,
-            slotDuration: daySlot.slotDuration,
-            bufferTime: daySlot.bufferTime,
-        };
-        await this.db.doctorSchedule.create({
-            data: {
-                doctorId,
-                profileId: profile.id,
-                templateId: recurringSchedule.id,
-                dayOfWeek: dayOfWeek,
-                startTime: scheduleData.startTime,
-                endTime: scheduleData.endTime,
-                date: targetDate,
-                slotDuration: scheduleData.slotDuration,
-                bufferTime: scheduleData.bufferTime,
-                maxBookings: 1,
-                location: 'Main Clinic',
-                serviceType: 'CONSULTATION',
-                isAvailable: true,
-            },
-        });
-    }
-    async getWorkingHours(doctorId, date) {
-        const targetDate = new Date(date);
-        const dayOfWeek = this.getDayOfWeek(targetDate);
-        const exception = await this.db.doctorScheduleException.findFirst({
-            where: {
-                doctorId,
-                date: targetDate,
-            },
-        });
-        if (exception) {
-            const isAvailable = exception.type !== 'PERSONAL';
-            return {
-                startTime: exception.startTime || '09:00',
-                endTime: exception.endTime || '17:00',
-                isAvailable,
-                reason: exception.reason,
-                type: 'exception',
-            };
-        }
-        const recurringSchedule = await this.db.doctorScheduleTemplate.findFirst({
-            where: {
-                doctorId,
-                isActive: true,
-                isDefault: true,
-            },
-            include: {
-                timeSlots: {
-                    where: {
-                        dayOfWeek: dayOfWeek,
-                    },
-                },
-            },
-        });
-        if (!recurringSchedule || recurringSchedule.timeSlots.length === 0) {
-            return {
-                startTime: null,
-                endTime: null,
-                isAvailable: false,
-                reason: 'No schedule for this day',
-                type: 'no_schedule',
-            };
-        }
-        const daySlot = recurringSchedule.timeSlots[0];
-        return {
-            startTime: daySlot.startTime,
-            endTime: daySlot.endTime,
-            isAvailable: daySlot.isAvailable,
-            reason: null,
-            type: 'recurring',
-        };
-    }
-};
-exports.DoctorAvailabilityService = DoctorAvailabilityService;
-__decorate([
-    (0, schedule_1.Cron)(schedule_1.CronExpression.EVERY_DAY_AT_2AM),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], DoctorAvailabilityService.prototype, "generateDailySlots", null);
-exports.DoctorAvailabilityService = DoctorAvailabilityService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof database_service_1.DatabaseService !== "undefined" && database_service_1.DatabaseService) === "function" ? _a : Object])
-], DoctorAvailabilityService);
-
-
-/***/ }),
-
-/***/ "./src/modules/scheduling/services/scheduling.service.ts":
-/*!***************************************************************!*\
-  !*** ./src/modules/scheduling/services/scheduling.service.ts ***!
-  \***************************************************************/
+/* 49 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7772,11 +6938,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a, _b, _c, _d;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SchedulingService = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const database_service_1 = __webpack_require__(/*! ../../auth/services/database.service */ "./src/modules/auth/services/database.service.ts");
-const appointment_management_service_1 = __webpack_require__(/*! ./appointment-management.service */ "./src/modules/scheduling/services/appointment-management.service.ts");
-const doctor_availability_service_1 = __webpack_require__(/*! ./doctor-availability.service */ "./src/modules/scheduling/services/doctor-availability.service.ts");
-const slot_engine_service_1 = __webpack_require__(/*! ./slot-engine.service */ "./src/modules/scheduling/services/slot-engine.service.ts");
+const common_1 = __webpack_require__(1);
+const database_service_1 = __webpack_require__(19);
+const appointment_management_service_1 = __webpack_require__(50);
+const doctor_availability_service_1 = __webpack_require__(52);
+const slot_engine_service_1 = __webpack_require__(51);
 let SchedulingService = class SchedulingService {
     constructor(db, doctorAvailability, slotEngine, appointmentManagement) {
         this.db = db;
@@ -8240,11 +7406,352 @@ exports.SchedulingService = SchedulingService = __decorate([
 
 
 /***/ }),
+/* 50 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-/***/ "./src/modules/scheduling/services/slot-engine.service.ts":
-/*!****************************************************************!*\
-  !*** ./src/modules/scheduling/services/slot-engine.service.ts ***!
-  \****************************************************************/
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AppointmentManagementService = void 0;
+const common_1 = __webpack_require__(1);
+const database_service_1 = __webpack_require__(19);
+const slot_engine_service_1 = __webpack_require__(51);
+let AppointmentManagementService = class AppointmentManagementService {
+    constructor(db, slotEngine) {
+        this.db = db;
+        this.slotEngine = slotEngine;
+    }
+    async createAppointment(appointmentData) {
+        const availabilityCheck = await this.slotEngine.checkSlotAvailability(appointmentData.doctorId, appointmentData.date, appointmentData.startTime, appointmentData.endTime);
+        if (!availabilityCheck.success) {
+            throw new common_1.BadRequestException(availabilityCheck.message);
+        }
+        const conflictCheck = await this.slotEngine.checkConflicts(appointmentData.doctorId, appointmentData.date, appointmentData.startTime, appointmentData.endTime);
+        if (conflictCheck.hasConflicts) {
+            throw new common_1.BadRequestException('Time slot conflicts with existing appointment');
+        }
+        const appointment = await this.db.appointment.create({
+            data: {
+                patientId: appointmentData.patientId,
+                doctorId: appointmentData.doctorId,
+                scheduleId: availabilityCheck.data.scheduleId,
+                appointmentDate: new Date(appointmentData.date),
+                startTime: appointmentData.startTime,
+                endTime: appointmentData.endTime,
+                duration: this.slotEngine.calculateSlotDuration(appointmentData.startTime, appointmentData.endTime),
+                type: appointmentData.type,
+                status: 'PENDING',
+                notes: appointmentData.notes,
+                patientName: appointmentData.patientName,
+                patientPhone: appointmentData.patientPhone,
+                patientEmail: appointmentData.patientEmail,
+            },
+            include: {
+                patient: true,
+            },
+        });
+        await this.slotEngine.lockSlot(appointmentData.doctorId, availabilityCheck.data.scheduleId, appointmentData.startTime, appointmentData.endTime);
+        return {
+            success: true,
+            data: appointment,
+            message: 'Appointment created successfully',
+        };
+    }
+    async confirmAppointment(appointmentId, doctorId) {
+        const appointment = await this.db.appointment.findUnique({
+            where: { id: appointmentId },
+            include: { patient: true },
+        });
+        if (!appointment) {
+            throw new common_1.NotFoundException('Appointment not found');
+        }
+        if (appointment.doctorId !== doctorId) {
+            throw new common_1.BadRequestException('Unauthorized to confirm this appointment');
+        }
+        if (appointment.status !== 'PENDING') {
+            throw new common_1.BadRequestException('Appointment is not in pending status');
+        }
+        const updatedAppointment = await this.db.appointment.update({
+            where: { id: appointmentId },
+            data: { status: 'CONFIRMED' },
+            include: { patient: true },
+        });
+        return {
+            success: true,
+            data: updatedAppointment,
+            message: 'Appointment confirmed successfully',
+        };
+    }
+    async rescheduleAppointment(appointmentId, newDate, newStartTime, newEndTime, reason) {
+        const appointment = await this.db.appointment.findUnique({
+            where: { id: appointmentId },
+        });
+        if (!appointment) {
+            throw new common_1.NotFoundException('Appointment not found');
+        }
+        if (appointment.status === 'CANCELLED') {
+            throw new common_1.BadRequestException('Cannot reschedule a cancelled appointment');
+        }
+        const availabilityCheck = await this.slotEngine.checkSlotAvailability(appointment.doctorId, newDate, newStartTime, newEndTime);
+        if (!availabilityCheck.success) {
+            throw new common_1.BadRequestException(availabilityCheck.message);
+        }
+        const conflictCheck = await this.slotEngine.checkConflicts(appointment.doctorId, newDate, newStartTime, newEndTime, appointmentId);
+        if (conflictCheck.hasConflicts) {
+            throw new common_1.BadRequestException('New time slot conflicts with existing appointment');
+        }
+        await this.slotEngine.releaseSlot(appointment.doctorId, appointment.scheduleId, appointment.startTime);
+        const updatedAppointment = await this.db.appointment.update({
+            where: { id: appointmentId },
+            data: {
+                appointmentDate: new Date(newDate),
+                startTime: newStartTime,
+                endTime: newEndTime,
+                duration: this.slotEngine.calculateSlotDuration(newStartTime, newEndTime),
+                scheduleId: availabilityCheck.data.scheduleId,
+                status: 'PENDING',
+                notes: reason ? `${appointment.notes || ''}\nRescheduled: ${reason}` : appointment.notes,
+            },
+            include: { patient: true },
+        });
+        await this.slotEngine.lockSlot(appointment.doctorId, availabilityCheck.data.scheduleId, newStartTime, newEndTime);
+        return {
+            success: true,
+            data: updatedAppointment,
+            message: 'Appointment rescheduled successfully',
+        };
+    }
+    async cancelAppointment(appointmentId, reason, cancelledBy) {
+        const appointment = await this.db.appointment.findUnique({
+            where: { id: appointmentId },
+        });
+        if (!appointment) {
+            throw new common_1.NotFoundException('Appointment not found');
+        }
+        if (appointment.status === 'CANCELLED') {
+            throw new common_1.BadRequestException('Appointment is already cancelled');
+        }
+        if (appointment.status === 'COMPLETED') {
+            throw new common_1.BadRequestException('Cannot cancel a completed appointment');
+        }
+        const updatedAppointment = await this.db.appointment.update({
+            where: { id: appointmentId },
+            data: {
+                status: 'CANCELLED',
+                notes: reason
+                    ? `${appointment.notes || ''}\nCancelled by ${cancelledBy}: ${reason}`
+                    : appointment.notes,
+            },
+            include: { patient: true },
+        });
+        await this.slotEngine.releaseSlot(appointment.doctorId, appointment.scheduleId, appointment.startTime);
+        return {
+            success: true,
+            data: updatedAppointment,
+            message: 'Appointment cancelled successfully',
+        };
+    }
+    async completeAppointment(appointmentId, doctorId, notes) {
+        const appointment = await this.db.appointment.findUnique({
+            where: { id: appointmentId },
+        });
+        if (!appointment) {
+            throw new common_1.NotFoundException('Appointment not found');
+        }
+        if (appointment.doctorId !== doctorId) {
+            throw new common_1.BadRequestException('Unauthorized to complete this appointment');
+        }
+        if (appointment.status !== 'CONFIRMED') {
+            throw new common_1.BadRequestException('Only confirmed appointments can be marked as completed');
+        }
+        const updatedAppointment = await this.db.appointment.update({
+            where: { id: appointmentId },
+            data: {
+                status: 'COMPLETED',
+                notes: notes ? `${appointment.notes || ''}\nCompleted: ${notes}` : appointment.notes,
+            },
+            include: { patient: true },
+        });
+        return {
+            success: true,
+            data: updatedAppointment,
+            message: 'Appointment marked as completed',
+        };
+    }
+    async getDoctorAppointments(doctorId, startDate, endDate, status) {
+        const where = { doctorId };
+        if (startDate && endDate) {
+            where.appointmentDate = {
+                gte: new Date(startDate),
+                lte: new Date(endDate),
+            };
+        }
+        if (status) {
+            where.status = status;
+        }
+        const appointments = await this.db.appointment.findMany({
+            where,
+            include: {
+                patient: true,
+            },
+            orderBy: { appointmentDate: 'asc' },
+        });
+        return {
+            success: true,
+            data: appointments,
+            message: 'Doctor appointments retrieved successfully',
+        };
+    }
+    async getPatientAppointments(patientId, startDate, endDate, status) {
+        const where = { patientId };
+        if (startDate && endDate) {
+            where.appointmentDate = {
+                gte: new Date(startDate),
+                lte: new Date(endDate),
+            };
+        }
+        if (status) {
+            where.status = status;
+        }
+        const appointments = await this.db.appointment.findMany({
+            where,
+            include: {
+                patient: true,
+            },
+            orderBy: { appointmentDate: 'asc' },
+        });
+        return {
+            success: true,
+            data: appointments,
+            message: 'Patient appointments retrieved successfully',
+        };
+    }
+    async getAppointmentById(appointmentId) {
+        const appointment = await this.db.appointment.findUnique({
+            where: { id: appointmentId },
+            include: {
+                patient: true,
+            },
+        });
+        if (!appointment) {
+            throw new common_1.NotFoundException('Appointment not found');
+        }
+        return {
+            success: true,
+            data: appointment,
+            message: 'Appointment retrieved successfully',
+        };
+    }
+    async getUpcomingAppointments(doctorId, limit = 10) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const appointments = await this.db.appointment.findMany({
+            where: {
+                doctorId,
+                appointmentDate: { gte: today },
+                status: { in: ['PENDING', 'CONFIRMED'] },
+            },
+            include: {
+                patient: true,
+            },
+            orderBy: { appointmentDate: 'asc' },
+            take: limit,
+        });
+        return {
+            success: true,
+            data: appointments,
+            message: 'Upcoming appointments retrieved successfully',
+        };
+    }
+    async getTodaysAppointments(doctorId) {
+        const today = new Date();
+        const startOfDay = new Date(today);
+        startOfDay.setHours(0, 0, 0, 0);
+        const endOfDay = new Date(today);
+        endOfDay.setHours(23, 59, 59, 999);
+        const appointments = await this.db.appointment.findMany({
+            where: {
+                doctorId,
+                appointmentDate: {
+                    gte: startOfDay,
+                    lte: endOfDay,
+                },
+                status: { not: 'CANCELLED' },
+            },
+            include: {
+                patient: true,
+            },
+            orderBy: { startTime: 'asc' },
+        });
+        return {
+            success: true,
+            data: appointments,
+            message: 'Today\'s appointments retrieved successfully',
+        };
+    }
+    async getAppointmentStats(doctorId, startDate, endDate) {
+        const start = startDate ? new Date(startDate) : new Date();
+        const end = endDate ? new Date(endDate) : new Date();
+        if (!startDate) {
+            start.setDate(start.getDate() - 30);
+        }
+        const appointments = await this.db.appointment.findMany({
+            where: {
+                doctorId,
+                appointmentDate: {
+                    gte: start,
+                    lte: end,
+                },
+            },
+        });
+        const stats = {
+            total: appointments.length,
+            pending: appointments.filter(apt => apt.status === 'PENDING').length,
+            confirmed: appointments.filter(apt => apt.status === 'CONFIRMED').length,
+            completed: appointments.filter(apt => apt.status === 'COMPLETED').length,
+            cancelled: appointments.filter(apt => apt.status === 'CANCELLED').length,
+            noShow: appointments.filter(apt => apt.status === 'NO_SHOW').length,
+        };
+        return {
+            success: true,
+            data: stats,
+            message: 'Appointment statistics retrieved successfully',
+        };
+    }
+    async getPatientAppointmentHistory(patientId, limit = 20) {
+        const appointments = await this.db.appointment.findMany({
+            where: { patientId },
+            include: {
+                patient: true,
+            },
+            orderBy: { appointmentDate: 'desc' },
+            take: limit,
+        });
+        return {
+            success: true,
+            data: appointments,
+            message: 'Patient appointment history retrieved successfully',
+        };
+    }
+};
+exports.AppointmentManagementService = AppointmentManagementService;
+exports.AppointmentManagementService = AppointmentManagementService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof database_service_1.DatabaseService !== "undefined" && database_service_1.DatabaseService) === "function" ? _a : Object, typeof (_b = typeof slot_engine_service_1.SlotEngineService !== "undefined" && slot_engine_service_1.SlotEngineService) === "function" ? _b : Object])
+], AppointmentManagementService);
+
+
+/***/ }),
+/* 51 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8260,9 +7767,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SlotEngineService = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const schedule_1 = __webpack_require__(/*! @nestjs/schedule */ "@nestjs/schedule");
-const database_service_1 = __webpack_require__(/*! ../../auth/services/database.service */ "./src/modules/auth/services/database.service.ts");
+const common_1 = __webpack_require__(1);
+const schedule_1 = __webpack_require__(45);
+const database_service_1 = __webpack_require__(19);
 let SlotEngineService = class SlotEngineService {
     constructor(db) {
         this.db = db;
@@ -8549,158 +8056,456 @@ exports.SlotEngineService = SlotEngineService = __decorate([
 
 
 /***/ }),
+/* 52 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-/***/ "@nestjs/common":
-/*!*********************************!*\
-  !*** external "@nestjs/common" ***!
-  \*********************************/
-/***/ ((module) => {
 
-module.exports = require("@nestjs/common");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DoctorAvailabilityService = void 0;
+const common_1 = __webpack_require__(1);
+const schedule_1 = __webpack_require__(45);
+const database_service_1 = __webpack_require__(19);
+let DoctorAvailabilityService = class DoctorAvailabilityService {
+    constructor(db) {
+        this.db = db;
+    }
+    async setRecurringAvailability(doctorId, availabilityData) {
+        const doctor = await this.db.user.findUnique({ where: { id: doctorId } });
+        if (!doctor) {
+            throw new common_1.NotFoundException('Doctor not found');
+        }
+        let template = await this.db.doctorScheduleTemplate.findFirst({
+            where: {
+                doctorId,
+                name: 'Default Weekly Schedule',
+            },
+        });
+        if (template) {
+            template = await this.db.doctorScheduleTemplate.update({
+                where: { id: template.id },
+                data: {
+                    description: 'Recurring weekly availability',
+                    isDefault: true,
+                    isActive: true,
+                },
+            });
+        }
+        else {
+            template = await this.db.doctorScheduleTemplate.create({
+                data: {
+                    doctorId,
+                    name: 'Default Weekly Schedule',
+                    description: 'Recurring weekly availability',
+                    isDefault: true,
+                    isActive: true,
+                },
+            });
+        }
+        for (const dayOfWeek of availabilityData.workingDays) {
+            await this.createTimeSlotForDay(template.id, dayOfWeek, availabilityData);
+        }
+        return {
+            success: true,
+            data: template,
+            message: 'Recurring availability set successfully',
+        };
+    }
+    async createTimeSlotForDay(templateId, dayOfWeek, availabilityData) {
+        const existingSlot = await this.db.doctorTimeSlot.findFirst({
+            where: {
+                templateId,
+                dayOfWeek: dayOfWeek,
+            },
+        });
+        if (existingSlot) {
+            await this.db.doctorTimeSlot.update({
+                where: { id: existingSlot.id },
+                data: {
+                    startTime: availabilityData.startTime,
+                    endTime: availabilityData.endTime,
+                    slotDuration: availabilityData.slotDuration,
+                    bufferTime: availabilityData.bufferTime,
+                    isAvailable: true,
+                },
+            });
+        }
+        else {
+            await this.db.doctorTimeSlot.create({
+                data: {
+                    templateId,
+                    dayOfWeek: dayOfWeek,
+                    startTime: availabilityData.startTime,
+                    endTime: availabilityData.endTime,
+                    slotDuration: availabilityData.slotDuration,
+                    bufferTime: availabilityData.bufferTime,
+                    isAvailable: true,
+                    maxBookings: 1,
+                },
+            });
+        }
+    }
+    async markDateUnavailable(doctorId, date, reason) {
+        const exception = await this.db.doctorScheduleException.create({
+            data: {
+                doctorId,
+                date: new Date(date),
+                type: 'PERSONAL',
+                reason: reason || 'Doctor unavailable',
+                isAllDay: true,
+            },
+        });
+        return {
+            success: true,
+            data: exception,
+            message: 'Date marked as unavailable',
+        };
+    }
+    async addCustomHours(doctorId, date, startTime, endTime, reason) {
+        const exception = await this.db.doctorScheduleException.create({
+            data: {
+                doctorId,
+                date: new Date(date),
+                startTime,
+                endTime,
+                type: 'CUSTOM_HOURS',
+                reason: reason || 'Custom working hours',
+                isAllDay: false,
+            },
+        });
+        return {
+            success: true,
+            data: exception,
+            message: 'Custom hours added successfully',
+        };
+    }
+    async getAvailability(doctorId, startDate, endDate) {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const recurringSchedule = await this.db.doctorScheduleTemplate.findFirst({
+            where: {
+                doctorId,
+                isActive: true,
+                isDefault: true,
+            },
+            include: {
+                timeSlots: true,
+            },
+        });
+        const exceptions = await this.db.doctorScheduleException.findMany({
+            where: {
+                doctorId,
+                date: {
+                    gte: start,
+                    lte: end,
+                },
+            },
+        });
+        const availability = [];
+        const currentDate = new Date(start);
+        while (currentDate <= end) {
+            const dayOfWeek = this.getDayOfWeek(currentDate);
+            const dateStr = currentDate.toISOString().split('T')[0];
+            const exception = exceptions.find(ex => ex.date.toISOString().split('T')[0] === dateStr);
+            if (exception) {
+                const isAvailable = exception.type !== 'PERSONAL';
+                availability.push({
+                    date: dateStr,
+                    isAvailable,
+                    startTime: exception.startTime,
+                    endTime: exception.endTime,
+                    reason: exception.reason,
+                    type: 'exception',
+                });
+            }
+            else if (recurringSchedule) {
+                const daySlot = recurringSchedule.timeSlots.find(slot => slot.dayOfWeek === dayOfWeek);
+                if (daySlot) {
+                    availability.push({
+                        date: dateStr,
+                        isAvailable: daySlot.isAvailable,
+                        startTime: daySlot.startTime,
+                        endTime: daySlot.endTime,
+                        slotDuration: daySlot.slotDuration,
+                        bufferTime: daySlot.bufferTime,
+                        type: 'recurring',
+                    });
+                }
+            }
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+        return {
+            success: true,
+            data: availability,
+            message: 'Availability retrieved successfully',
+        };
+    }
+    async getAvailableSlots(doctorId, date) {
+        const targetDate = new Date(date);
+        const dayOfWeek = this.getDayOfWeek(targetDate);
+        const exception = await this.db.doctorScheduleException.findFirst({
+            where: {
+                doctorId,
+                date: targetDate,
+            },
+        });
+        let baseSchedule;
+        if (exception) {
+            if (exception.type === 'PERSONAL') {
+                return {
+                    success: true,
+                    data: [],
+                    message: 'Doctor is unavailable on this date',
+                };
+            }
+            baseSchedule = {
+                startTime: exception.startTime || '09:00',
+                endTime: exception.endTime || '17:00',
+                slotDuration: 30,
+                bufferTime: 10,
+            };
+        }
+        else {
+            const recurringSchedule = await this.db.doctorScheduleTemplate.findFirst({
+                where: {
+                    doctorId,
+                    isActive: true,
+                    isDefault: true,
+                },
+                include: {
+                    timeSlots: {
+                        where: {
+                            dayOfWeek: dayOfWeek,
+                        },
+                    },
+                },
+            });
+            if (!recurringSchedule || recurringSchedule.timeSlots.length === 0) {
+                return {
+                    success: true,
+                    data: [],
+                    message: 'No schedule found for this day',
+                };
+            }
+            const daySlot = recurringSchedule.timeSlots[0];
+            baseSchedule = {
+                startTime: daySlot.startTime,
+                endTime: daySlot.endTime,
+                slotDuration: daySlot.slotDuration,
+                bufferTime: daySlot.bufferTime,
+            };
+        }
+        const slots = this.generateTimeSlots(baseSchedule, date);
+        const existingAppointments = await this.db.appointment.findMany({
+            where: {
+                doctorId,
+                appointmentDate: targetDate,
+                status: {
+                    not: 'CANCELLED',
+                },
+            },
+        });
+        const availableSlots = slots.map(slot => {
+            const isBooked = existingAppointments.some(apt => apt.startTime === slot.startTime);
+            return {
+                ...slot,
+                isAvailable: !isBooked,
+                isBooked,
+            };
+        });
+        return {
+            success: true,
+            data: availableSlots,
+            message: 'Available slots retrieved successfully',
+        };
+    }
+    generateTimeSlots(schedule, date) {
+        const slots = [];
+        const startTime = new Date(`${date}T${schedule.startTime}`);
+        const endTime = new Date(`${date}T${schedule.endTime}`);
+        let currentTime = new Date(startTime);
+        while (currentTime < endTime) {
+            const slotEnd = new Date(currentTime.getTime() + schedule.slotDuration * 60000);
+            if (slotEnd <= endTime) {
+                slots.push({
+                    id: `${date}-${currentTime.toTimeString().split(' ')[0]}`,
+                    startTime: currentTime.toTimeString().split(' ')[0].substring(0, 5),
+                    endTime: slotEnd.toTimeString().split(' ')[0].substring(0, 5),
+                    isAvailable: true,
+                    isBooked: false,
+                });
+            }
+            currentTime = new Date(currentTime.getTime() + (schedule.slotDuration + schedule.bufferTime) * 60000);
+        }
+        return slots;
+    }
+    getDayOfWeek(date) {
+        const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+        return days[date.getDay()];
+    }
+    async generateDailySlots() {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const doctors = await this.db.user.findMany({
+            where: {
+                role: 'DOCTOR',
+            },
+        });
+        for (const doctor of doctors) {
+            await this.generateSlotsForDoctor(doctor.id, tomorrow.toISOString().split('T')[0]);
+        }
+        console.log('Daily slot generation completed');
+    }
+    async generateSlotsForDoctor(doctorId, date) {
+        const targetDate = new Date(date);
+        const dayOfWeek = this.getDayOfWeek(targetDate);
+        const existingSchedule = await this.db.doctorSchedule.findFirst({
+            where: {
+                doctorId,
+                date: targetDate,
+            },
+        });
+        if (existingSchedule) {
+            return;
+        }
+        const recurringSchedule = await this.db.doctorScheduleTemplate.findFirst({
+            where: {
+                doctorId,
+                isActive: true,
+                isDefault: true,
+            },
+            include: {
+                timeSlots: {
+                    where: {
+                        dayOfWeek: dayOfWeek,
+                    },
+                },
+            },
+        });
+        if (!recurringSchedule || recurringSchedule.timeSlots.length === 0) {
+            return;
+        }
+        const exception = await this.db.doctorScheduleException.findFirst({
+            where: {
+                doctorId,
+                date: targetDate,
+            },
+        });
+        if (exception && exception.type === 'PERSONAL') {
+            return;
+        }
+        const profile = await this.db.doctorProfile.findFirst({
+            where: { doctorId },
+        });
+        if (!profile) {
+            return;
+        }
+        const daySlot = recurringSchedule.timeSlots[0];
+        const scheduleData = exception ? {
+            startTime: exception.startTime || daySlot.startTime,
+            endTime: exception.endTime || daySlot.endTime,
+            slotDuration: daySlot.slotDuration,
+            bufferTime: daySlot.bufferTime,
+        } : {
+            startTime: daySlot.startTime,
+            endTime: daySlot.endTime,
+            slotDuration: daySlot.slotDuration,
+            bufferTime: daySlot.bufferTime,
+        };
+        await this.db.doctorSchedule.create({
+            data: {
+                doctorId,
+                profileId: profile.id,
+                templateId: recurringSchedule.id,
+                dayOfWeek: dayOfWeek,
+                startTime: scheduleData.startTime,
+                endTime: scheduleData.endTime,
+                date: targetDate,
+                slotDuration: scheduleData.slotDuration,
+                bufferTime: scheduleData.bufferTime,
+                maxBookings: 1,
+                location: 'Main Clinic',
+                serviceType: 'CONSULTATION',
+                isAvailable: true,
+            },
+        });
+    }
+    async getWorkingHours(doctorId, date) {
+        const targetDate = new Date(date);
+        const dayOfWeek = this.getDayOfWeek(targetDate);
+        const exception = await this.db.doctorScheduleException.findFirst({
+            where: {
+                doctorId,
+                date: targetDate,
+            },
+        });
+        if (exception) {
+            const isAvailable = exception.type !== 'PERSONAL';
+            return {
+                startTime: exception.startTime || '09:00',
+                endTime: exception.endTime || '17:00',
+                isAvailable,
+                reason: exception.reason,
+                type: 'exception',
+            };
+        }
+        const recurringSchedule = await this.db.doctorScheduleTemplate.findFirst({
+            where: {
+                doctorId,
+                isActive: true,
+                isDefault: true,
+            },
+            include: {
+                timeSlots: {
+                    where: {
+                        dayOfWeek: dayOfWeek,
+                    },
+                },
+            },
+        });
+        if (!recurringSchedule || recurringSchedule.timeSlots.length === 0) {
+            return {
+                startTime: null,
+                endTime: null,
+                isAvailable: false,
+                reason: 'No schedule for this day',
+                type: 'no_schedule',
+            };
+        }
+        const daySlot = recurringSchedule.timeSlots[0];
+        return {
+            startTime: daySlot.startTime,
+            endTime: daySlot.endTime,
+            isAvailable: daySlot.isAvailable,
+            reason: null,
+            type: 'recurring',
+        };
+    }
+};
+exports.DoctorAvailabilityService = DoctorAvailabilityService;
+__decorate([
+    (0, schedule_1.Cron)(schedule_1.CronExpression.EVERY_DAY_AT_2AM),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], DoctorAvailabilityService.prototype, "generateDailySlots", null);
+exports.DoctorAvailabilityService = DoctorAvailabilityService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof database_service_1.DatabaseService !== "undefined" && database_service_1.DatabaseService) === "function" ? _a : Object])
+], DoctorAvailabilityService);
 
-/***/ }),
-
-/***/ "@nestjs/config":
-/*!*********************************!*\
-  !*** external "@nestjs/config" ***!
-  \*********************************/
-/***/ ((module) => {
-
-module.exports = require("@nestjs/config");
-
-/***/ }),
-
-/***/ "@nestjs/core":
-/*!*******************************!*\
-  !*** external "@nestjs/core" ***!
-  \*******************************/
-/***/ ((module) => {
-
-module.exports = require("@nestjs/core");
-
-/***/ }),
-
-/***/ "@nestjs/jwt":
-/*!******************************!*\
-  !*** external "@nestjs/jwt" ***!
-  \******************************/
-/***/ ((module) => {
-
-module.exports = require("@nestjs/jwt");
-
-/***/ }),
-
-/***/ "@nestjs/passport":
-/*!***********************************!*\
-  !*** external "@nestjs/passport" ***!
-  \***********************************/
-/***/ ((module) => {
-
-module.exports = require("@nestjs/passport");
-
-/***/ }),
-
-/***/ "@nestjs/schedule":
-/*!***********************************!*\
-  !*** external "@nestjs/schedule" ***!
-  \***********************************/
-/***/ ((module) => {
-
-module.exports = require("@nestjs/schedule");
-
-/***/ }),
-
-/***/ "@nestjs/swagger":
-/*!**********************************!*\
-  !*** external "@nestjs/swagger" ***!
-  \**********************************/
-/***/ ((module) => {
-
-module.exports = require("@nestjs/swagger");
-
-/***/ }),
-
-/***/ "@nestjs/throttler":
-/*!************************************!*\
-  !*** external "@nestjs/throttler" ***!
-  \************************************/
-/***/ ((module) => {
-
-module.exports = require("@nestjs/throttler");
-
-/***/ }),
-
-/***/ "@prisma/client":
-/*!*********************************!*\
-  !*** external "@prisma/client" ***!
-  \*********************************/
-/***/ ((module) => {
-
-module.exports = require("@prisma/client");
-
-/***/ }),
-
-/***/ "bcrypt":
-/*!*************************!*\
-  !*** external "bcrypt" ***!
-  \*************************/
-/***/ ((module) => {
-
-module.exports = require("bcrypt");
-
-/***/ }),
-
-/***/ "class-transformer":
-/*!************************************!*\
-  !*** external "class-transformer" ***!
-  \************************************/
-/***/ ((module) => {
-
-module.exports = require("class-transformer");
-
-/***/ }),
-
-/***/ "class-validator":
-/*!**********************************!*\
-  !*** external "class-validator" ***!
-  \**********************************/
-/***/ ((module) => {
-
-module.exports = require("class-validator");
-
-/***/ }),
-
-/***/ "helmet":
-/*!*************************!*\
-  !*** external "helmet" ***!
-  \*************************/
-/***/ ((module) => {
-
-module.exports = require("helmet");
-
-/***/ }),
-
-/***/ "passport-jwt":
-/*!*******************************!*\
-  !*** external "passport-jwt" ***!
-  \*******************************/
-/***/ ((module) => {
-
-module.exports = require("passport-jwt");
-
-/***/ }),
-
-/***/ "speakeasy":
-/*!****************************!*\
-  !*** external "speakeasy" ***!
-  \****************************/
-/***/ ((module) => {
-
-module.exports = require("speakeasy");
 
 /***/ })
-
-/******/ 	});
+/******/ 	]);
 /************************************************************************/
 /******/ 	// The module cache
 /******/ 	var __webpack_module_cache__ = {};
@@ -8731,16 +8536,13 @@ var __webpack_exports__ = {};
 // This entry needs to be wrapped in an IIFE because it needs to be isolated against other modules in the chunk.
 (() => {
 var exports = __webpack_exports__;
-/*!*********************!*\
-  !*** ./src/main.ts ***!
-  \*********************/
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const helmet_1 = __webpack_require__(/*! helmet */ "helmet");
-const core_1 = __webpack_require__(/*! @nestjs/core */ "@nestjs/core");
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const app_module_1 = __webpack_require__(/*! ./app.module */ "./src/app.module.ts");
+const common_1 = __webpack_require__(1);
+const helmet_1 = __webpack_require__(2);
+const core_1 = __webpack_require__(3);
+const swagger_1 = __webpack_require__(4);
+const app_module_1 = __webpack_require__(5);
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     app.use((0, helmet_1.default)({

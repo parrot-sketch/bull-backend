@@ -160,3 +160,4 @@ export class PatientProfileController {
     return this.patientProfileService.getPatientMedications(req.user.userId);
   }
 }
+
