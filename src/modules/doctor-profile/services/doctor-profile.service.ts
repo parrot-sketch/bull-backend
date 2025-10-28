@@ -224,7 +224,7 @@ export class DoctorProfileService {
       where: { profileId: profile.id },
       orderBy: { createdAt: 'desc' },
     });
-    return { success: true, data: fee ? { consultationFee: (fee as any).baseFee, currency: (profile as any).currency ?? 'USD' } : { consultationFee: 0, currency: 'USD' } };
+    return { success: true, data: fee ? { consultationFee: (fee as any).baseFee, currency: 'USD' } : { consultationFee: 0, currency: 'USD' } };
   }
 
   async updateBilling(doctorId: string, billing: { consultationFee: number; currency?: string }) {
@@ -239,11 +239,8 @@ export class DoctorProfileService {
         baseFee: billing.consultationFee as any,
       },
     });
-    // Optionally store currency on profile if present
-    if (billing.currency) {
-      await this.db.doctorProfile.update({ where: { doctorId }, data: { currency: billing.currency as any } as any });
-    }
-    return { success: true, data: { consultationFee: (fee as any).baseFee, currency: billing.currency ?? (profile as any).currency ?? 'USD' } };
+    // Currency is not stored on profile; default to 'USD' for now
+    return { success: true, data: { consultationFee: (fee as any).baseFee, currency: 'USD' } };
   }
 
   // ===========================================
