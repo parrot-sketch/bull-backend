@@ -1,6 +1,7 @@
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import * as speakeasy from 'speakeasy';
 import { AuditService } from './audit.service';
 import { DatabaseService } from './database.service';
 
@@ -75,7 +76,7 @@ export class AuthService {
     };
   }
 
-  async login(credentials: { email: string; password: string }, auditContext?: { ipAddress?: string; userAgent?: string }) {
+  async login(credentials: { email: string; password: string; mfaCode?: string }, auditContext?: { ipAddress?: string; userAgent?: string }) {
     console.log('🔐 Login attempt for:', credentials.email);
     
     // Find user
@@ -118,6 +119,44 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    // MFA check
+    const mfaSettings = await this.db.mfaSettings.findUnique({ where: { userId: user.id } });
+    if (mfaSettings?.isEnabled) {
+      if (!credentials.mfaCode) {
+        await this.auditService.log('LOGIN_MFA_REQUIRED', {
+          userId: user.id,
+          resource: 'USER',
+          resourceId: user.id,
+          ipAddress: auditContext?.ipAddress,
+          userAgent: auditContext?.userAgent,
+          severity: 'INFO',
+        });
+        return {
+          success: true,
+          mfaRequired: true,
+          user: this.mapUserToResponse(user),
+        };
+      }
+      const validMfa = speakeasy.totp.verify({
+        secret: mfaSettings.secret || '',
+        encoding: 'base32',
+        token: credentials.mfaCode,
+        window: 1,
+      });
+      if (!validMfa) {
+        await this.auditService.log('LOGIN_FAILED', {
+          userId: user.id,
+          resource: 'USER',
+          resourceId: user.id,
+          ipAddress: auditContext?.ipAddress,
+          userAgent: auditContext?.userAgent,
+          metadata: { reason: 'INVALID_MFA_CODE' },
+          severity: 'WARN',
+        });
+        throw new UnauthorizedException('Invalid MFA code');
+      }
+    }
+
     // Generate tokens
     const tokens = await this.generateTokens(user.id);
 
@@ -137,6 +176,38 @@ export class AuthService {
       user: this.mapUserToResponse(user),
       ...tokens,
     };
+  }
+
+  // MFA: Setup TOTP
+  async setupMfa(userId: string) {
+    const user = await this.db.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+    const secret = speakeasy.generateSecret({ name: `iHosi (${user.email})`, length: 20 });
+    await this.db.mfaSettings.upsert({
+      where: { userId },
+      update: { secret: secret.base32, method: 'TOTP', isEnabled: false },
+      create: { userId, secret: secret.base32, method: 'TOTP', isEnabled: false },
+    });
+    await this.auditService.log('MFA_SETUP_REQUESTED', { userId, resource: 'USER', resourceId: userId, severity: 'INFO' });
+    return { success: true, data: { secret: secret.base32, otpauthUrl: secret.otpauth_url } };
+  }
+
+  // MFA: Verify and enable
+  async verifyMfa(userId: string, code: string) {
+    const settings = await this.db.mfaSettings.findUnique({ where: { userId } });
+    if (!settings || !settings.secret) {
+      throw new BadRequestException('MFA not initialized');
+    }
+    const verified = speakeasy.totp.verify({ secret: settings.secret, encoding: 'base32', token: code, window: 1 });
+    if (!verified) {
+      throw new UnauthorizedException('Invalid MFA code');
+    }
+    const backupCodes = Array.from({ length: 8 }).map(() => Math.random().toString(36).slice(2, 10));
+    await this.db.mfaSettings.update({ where: { userId }, data: { isEnabled: true, backupCodes } });
+    await this.auditService.log('MFA_ENABLED', { userId, resource: 'USER', resourceId: userId, severity: 'INFO' });
+    return { success: true, data: { backupCodes } };
   }
 
   async refreshToken(refreshToken: string) {

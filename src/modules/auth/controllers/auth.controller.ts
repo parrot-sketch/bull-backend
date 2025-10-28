@@ -11,7 +11,7 @@ export class LoginDto {
   email!: string;
 
   @IsString()
-  @MinLength(8)
+  @IsNotEmpty()
   password!: string;
 
   @IsOptional()
@@ -113,5 +113,21 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'User profile retrieved' })
   async getCurrentUser(@Request() req: any) {
     return this.authService.getCurrentUser(req.user.userId);
+  }
+
+  @Post('mfa/setup')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Initiate MFA TOTP setup' })
+  async mfaSetup(@Request() req: any) {
+    return this.authService.setupMfa(req.user.userId);
+  }
+
+  @Post('mfa/verify')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Verify MFA TOTP code and enable MFA' })
+  async mfaVerify(@Request() req: any, @Body() body: { code: string }) {
+    return this.authService.verifyMfa(req.user.userId, body.code);
   }
 }
