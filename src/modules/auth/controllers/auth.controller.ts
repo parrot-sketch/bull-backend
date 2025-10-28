@@ -130,4 +130,44 @@ export class AuthController {
   async mfaVerify(@Request() req: any, @Body() body: { code: string }) {
     return this.authService.verifyMfa(req.user.userId, body.code);
   }
+
+  @Post('test/register-patient')
+  @ApiOperation({ summary: 'Register test patient (development only)' })
+  @ApiResponse({ status: 201, description: 'Test patient registered successfully' })
+  async registerTestPatient(@Request() req: any) {
+    const auditContext = {
+      ipAddress: req.ip || req.connection.remoteAddress,
+      userAgent: req.headers['user-agent'],
+    };
+    
+    const testPatientData = {
+      email: 'patient@test.com',
+      password: 'patient123',
+      firstName: 'John',
+      lastName: 'Doe',
+      role: 'PATIENT',
+    };
+    
+    return this.authService.register(testPatientData, auditContext);
+  }
+
+  @Post('test/register-doctor')
+  @ApiOperation({ summary: 'Register test doctor (development only)' })
+  @ApiResponse({ status: 201, description: 'Test doctor registered successfully' })
+  async registerTestDoctor(@Request() req: any) {
+    const auditContext = {
+      ipAddress: req.ip || req.connection.remoteAddress,
+      userAgent: req.headers['user-agent'],
+    };
+    
+    const testDoctorData = {
+      email: 'doctor@test.com',
+      password: 'doctor123',
+      firstName: 'Dr. Sarah',
+      lastName: 'Smith',
+      role: 'DOCTOR',
+    };
+    
+    return this.authService.register(testDoctorData, auditContext);
+  }
 }

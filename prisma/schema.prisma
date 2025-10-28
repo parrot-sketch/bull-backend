@@ -81,6 +81,15 @@ model User {
   patientProfile    PatientProfile?
   bookings          PatientBooking[]
   
+  // EMR Relations
+  patientVisits     PatientVisit[]
+  prescriptions     Prescription[]
+  labOrders         LabOrder[]
+  imagingOrders     ImagingOrder[]
+  clinicalTemplates ClinicalTemplate[]
+  labResults        LabResult[]
+  imagingResults    ImagingResult[]
+  
   @@map("users")
 }
 
@@ -726,37 +735,6 @@ model DoctorScheduleException {
 // PATIENT-SPECIFIC MODELS
 // ===========================================
 
-model PatientProfile {
-  id        String @id @default(cuid())
-  patientId String @unique
-  patient   User   @relation(fields: [patientId], references: [id], onDelete: Cascade)
-  
-  // Medical History
-  bloodType          String?
-  allergies          String[]
-  currentMedications String[]
-  medicalConditions  String[]
-  pastSurgeries      String[]
-  familyHistory      String?
-  
-  // Emergency Contact
-  emergencyContactName       String?
-  emergencyContactPhone       String?
-  emergencyContactRelation    String?
-  
-  // Insurance Information
-  primaryInsurance       String?
-  primaryInsuranceId     String?
-  secondaryInsurance     String?
-  secondaryInsuranceId   String?
-  
-  // Timestamps
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  @@map("patient_profiles")
-}
-
 model PatientBooking {
   id        String @id @default(cuid())
   patientId String
@@ -847,6 +825,7 @@ model Appointment {
   
   // Relations
   reminders      AppointmentReminder[]
+  visits         PatientVisit[]
   
   // Timestamps
   createdAt DateTime @default(now())
@@ -953,4 +932,571 @@ enum ReminderStatus {
   DELIVERED
   FAILED
   CANCELLED
+}
+
+// ===========================================
+// ELECTRONIC MEDICAL RECORDS (EMR) SYSTEM
+// ===========================================
+
+// Patient Medical Profile
+model PatientProfile {
+  id        String @id @default(cuid())
+  patientId String @unique
+  patient   User   @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  
+  // Demographics
+  dateOfBirth     DateTime?
+  gender          Gender?
+  bloodType       BloodType?
+  height          Float? // in cm
+  weight          Float? // in kg
+  emergencyContact String?
+  emergencyPhone  String?
+  
+  // Medical History
+  medicalHistory    String[] // Array of conditions
+  surgicalHistory   String[] // Array of surgeries
+  familyHistory     String[] // Array of family conditions
+  socialHistory     String?  // Smoking, alcohol, etc.
+  
+  // Allergies & Medications
+  allergies         PatientAllergy[]
+  currentMedications PatientMedication[]
+  
+  // Insurance & Billing
+  primaryInsurance   String?
+  insuranceNumber    String?
+  insuranceExpiry    DateTime?
+  
+  // Preferences
+  preferredLanguage  String @default("English")
+  communicationPref CommunicationPreference @default(EMAIL)
+  
+  // Relations
+  visits             PatientVisit[]
+  labResults        LabResult[]
+  imagingResults    ImagingResult[]
+  prescriptions     Prescription[]
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("patient_profiles")
+}
+
+enum BloodType {
+  A_POSITIVE
+  A_NEGATIVE
+  B_POSITIVE
+  B_NEGATIVE
+  AB_POSITIVE
+  AB_NEGATIVE
+  O_POSITIVE
+  O_NEGATIVE
+}
+
+enum CommunicationPreference {
+  EMAIL
+  SMS
+  PHONE
+  PUSH_NOTIFICATION
+}
+
+// Patient Allergies
+model PatientAllergy {
+  id        String @id @default(cuid())
+  patientId String
+  patient   PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  
+  allergen     String
+  severity     AllergySeverity
+  reaction     String
+  notes        String?
+  diagnosedAt  DateTime?
+  diagnosedBy  String? // Doctor ID
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("patient_allergies")
+}
+
+enum AllergySeverity {
+  MILD
+  MODERATE
+  SEVERE
+  LIFE_THREATENING
+}
+
+// Current Medications
+model PatientMedication {
+  id        String @id @default(cuid())
+  patientId String
+  patient   PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  
+  medicationName String
+  dosage         String
+  frequency      String
+  route          String? // oral, IV, etc.
+  startDate      DateTime
+  endDate        DateTime?
+  prescribedBy   String? // Doctor ID
+  pharmacy       String?
+  notes          String?
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("patient_medications")
+}
+
+// Patient Visits (SOAP Notes)
+model PatientVisit {
+  id        String @id @default(cuid())
+  patientId String
+  patient   PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctorId  String
+  doctor    User @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  appointmentId String?
+  appointment   Appointment? @relation(fields: [appointmentId], references: [id])
+  
+  // Visit Details
+  visitDate      DateTime @default(now())
+  visitType      VisitType @default(CONSULTATION)
+  chiefComplaint String
+  
+  // SOAP Notes
+  subjective     String? // Patient's description
+  objective      String? // Doctor's observations
+  assessment     String? // Diagnosis/assessment
+  plan           String? // Treatment plan
+  
+  // Voice-to-Text
+  voiceNotes     String? // Transcribed voice notes
+  voiceFileUrl   String? // Link to voice recording
+  
+  // ICD-10 Codes
+  diagnoses      VisitDiagnosis[]
+  
+  // Follow-up
+  followUpRequired Boolean @default(false)
+  followUpDate     DateTime?
+  followUpNotes    String?
+  
+  // Relations
+  prescriptions   Prescription[]
+  labOrders       LabOrder[]
+  imagingOrders   ImagingOrder[]
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("patient_visits")
+}
+
+enum VisitType {
+  CONSULTATION
+  FOLLOW_UP
+  EMERGENCY
+  PREVENTIVE
+  SPECIALIST_REFERRAL
+}
+
+// Visit Diagnoses (ICD-10)
+model VisitDiagnosis {
+  id        String @id @default(cuid())
+  visitId   String
+  visit     PatientVisit @relation(fields: [visitId], references: [id], onDelete: Cascade)
+  
+  icd10Code     String
+  diagnosisName String
+  isPrimary     Boolean @default(false)
+  notes         String?
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  
+  @@map("visit_diagnoses")
+}
+
+// Prescription Management
+model Prescription {
+  id        String @id @default(cuid())
+  patientId String
+  patient   PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctorId  String
+  doctor    User @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  visitId   String?
+  visit     PatientVisit? @relation(fields: [visitId], references: [id])
+  
+  // Prescription Details
+  medicationName    String
+  genericName       String?
+  dosage            String
+  frequency         String
+  duration          String
+  quantity          Int
+  refills           Int @default(0)
+  instructions      String?
+  
+  // Drug Information
+  drugInteractions  String[] // Array of interaction warnings
+  contraindications String[] // Array of contraindications
+  
+  // Pharmacy & Delivery
+  pharmacyName      String?
+  pharmacyAddress   String?
+  pharmacyPhone     String?
+  deliveryMethod    DeliveryMethod @default(PICKUP)
+  
+  // Status
+  status            PrescriptionStatus @default(PENDING)
+  prescribedAt      DateTime @default(now())
+  filledAt          DateTime?
+  pickedUpAt        DateTime?
+  
+  // Digital Prescription
+  qrCode            String? // QR code for verification
+  digitalSignature  String? // Doctor's digital signature
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("prescriptions")
+}
+
+enum DeliveryMethod {
+  PICKUP
+  DELIVERY
+  MAIL
+}
+
+enum PrescriptionStatus {
+  PENDING
+  SENT_TO_PHARMACY
+  FILLED
+  PICKED_UP
+  CANCELLED
+  EXPIRED
+}
+
+// Lab Results Management
+model LabResult {
+  id        String @id @default(cuid())
+  patientId String
+  patient   PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctorId  String?
+  doctor    User? @relation(fields: [doctorId], references: [id], onDelete: SetNull)
+  orderId   String?
+  order     LabOrder? @relation(fields: [orderId], references: [id])
+  
+  // Lab Details
+  testName        String
+  testCategory    LabTestCategory
+  resultValue     String
+  resultUnit      String?
+  referenceRange  String?
+  isAbnormal      Boolean @default(false)
+  criticalValue   Boolean @default(false)
+  
+  // File Management
+  reportFileUrl   String? // PDF/image of lab report
+  ocrText         String? // OCR extracted text
+  
+  // Lab Information
+  labName         String
+  labAddress      String?
+  labPhone        String?
+  technicianName  String?
+  
+  // Dates
+  collectedAt     DateTime
+  processedAt     DateTime?
+  reportedAt      DateTime @default(now())
+  
+  // Status
+  status          LabResultStatus @default(PENDING_REVIEW)
+  reviewedAt      DateTime?
+  reviewedBy      String? // Doctor ID
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("lab_results")
+}
+
+enum LabTestCategory {
+  BLOOD_CHEMISTRY
+  HEMATOLOGY
+  MICROBIOLOGY
+  IMMUNOLOGY
+  ENDOCRINOLOGY
+  CARDIOLOGY
+  ONCOLOGY
+  PATHOLOGY
+  OTHER
+}
+
+enum LabResultStatus {
+  PENDING_REVIEW
+  REVIEWED
+  FLAGGED_FOR_FOLLOWUP
+  CRITICAL_ALERT_SENT
+}
+
+// Lab Orders
+model LabOrder {
+  id        String @id @default(cuid())
+  patientId String
+  doctorId  String
+  doctor    User @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  visitId   String?
+  visit     PatientVisit? @relation(fields: [visitId], references: [id])
+  
+  // Order Details
+  testsRequested  String[] // Array of test names
+  clinicalNotes   String?
+  urgency         OrderUrgency @default(ROUTINE)
+  
+  // Lab Information
+  labName         String?
+  labAddress      String?
+  
+  // Status
+  status          LabOrderStatus @default(PENDING)
+  orderedAt       DateTime @default(now())
+  collectedAt     DateTime?
+  completedAt     DateTime?
+  
+  // Relations
+  results         LabResult[]
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("lab_orders")
+}
+
+enum OrderUrgency {
+  STAT
+  URGENT
+  ROUTINE
+  SCHEDULED
+}
+
+enum LabOrderStatus {
+  PENDING
+  SENT_TO_LAB
+  COLLECTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+// Imaging Results Management
+model ImagingResult {
+  id        String @id @default(cuid())
+  patientId String
+  patient   PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctorId  String?
+  doctor    User? @relation(fields: [doctorId], references: [id], onDelete: SetNull)
+  orderId   String?
+  order     ImagingOrder? @relation(fields: [orderId], references: [id])
+  
+  // Imaging Details
+  studyType        ImagingStudyType
+  bodyPart         String
+  technique        String?
+  contrastUsed     Boolean @default(false)
+  
+  // Results
+  findings         String?
+  impression       String?
+  recommendations  String?
+  
+  // File Management
+  imageUrls        String[] // Array of image URLs
+  reportFileUrl    String? // PDF of radiology report
+  ocrText          String? // OCR extracted text
+  
+  // Radiologist Information
+  radiologistName  String?
+  radiologistId    String?
+  
+  // Dates
+  performedAt      DateTime
+  reportedAt       DateTime @default(now())
+  
+  // Status
+  status           ImagingResultStatus @default(PENDING_REVIEW)
+  reviewedAt       DateTime?
+  reviewedBy       String? // Doctor ID
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("imaging_results")
+}
+
+enum ImagingStudyType {
+  X_RAY
+  CT_SCAN
+  MRI
+  ULTRASOUND
+  MAMMOGRAPHY
+  NUCLEAR_MEDICINE
+  PET_SCAN
+  OTHER
+}
+
+enum ImagingResultStatus {
+  PENDING_REVIEW
+  REVIEWED
+  FLAGGED_FOR_FOLLOWUP
+  CRITICAL_FINDING_ALERT
+}
+
+// Imaging Orders
+model ImagingOrder {
+  id        String @id @default(cuid())
+  patientId String
+  doctorId  String
+  doctor    User @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  visitId   String?
+  visit     PatientVisit? @relation(fields: [visitId], references: [id])
+  
+  // Order Details
+  studyType        ImagingStudyType
+  bodyPart         String
+  clinicalHistory  String?
+  urgency          OrderUrgency @default(ROUTINE)
+  
+  // Imaging Center
+  imagingCenter    String?
+  centerAddress    String?
+  
+  // Status
+  status           ImagingOrderStatus @default(PENDING)
+  orderedAt        DateTime @default(now())
+  scheduledAt      DateTime?
+  performedAt      DateTime?
+  completedAt     DateTime?
+  
+  // Relations
+  results         ImagingResult[]
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("imaging_orders")
+}
+
+enum ImagingOrderStatus {
+  PENDING
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+// Clinical Templates (SOAP, etc.)
+model ClinicalTemplate {
+  id        String @id @default(cuid())
+  doctorId  String?
+  doctor    User? @relation(fields: [doctorId], references: [id], onDelete: SetNull)
+  
+  // Template Details
+  name          String
+  category      TemplateCategory
+  specialty     String?
+  isPublic      Boolean @default(false)
+  
+  // Template Content
+  subjectiveTemplate String?
+  objectiveTemplate  String?
+  assessmentTemplate  String?
+  planTemplate       String?
+  
+  // Usage
+  usageCount    Int @default(0)
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("clinical_templates")
+}
+
+enum TemplateCategory {
+  SOAP_NOTE
+  CONSULTATION
+  FOLLOW_UP
+  EMERGENCY
+  PREVENTIVE
+  SPECIALIST
+  PROCEDURE
+}
+
+// Drug Database (for interactions)
+model Drug {
+  id        String @id @default(cuid())
+  
+  // Drug Information
+  name              String @unique
+  genericName       String?
+  brandNames        String[]
+  drugClass         String?
+  mechanism         String?
+  
+  // Dosage Information
+  standardDosage    String?
+  maxDosage         String?
+  contraindications String[]
+  
+  // Interactions
+  interactions      DrugInteraction[]
+  drugInteractions  DrugInteraction[] @relation("DrugInteractions")
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("drugs")
+}
+
+// Drug Interactions
+model DrugInteraction {
+  id        String @id @default(cuid())
+  drugId    String
+  drug      Drug @relation(fields: [drugId], references: [id], onDelete: Cascade)
+  
+  interactingDrugId String
+  interactingDrug   Drug @relation("DrugInteractions", fields: [interactingDrugId], references: [id], onDelete: Cascade)
+  
+  severity        InteractionSeverity
+  description     String
+  clinicalEffect  String?
+  management      String?
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  
+  @@unique([drugId, interactingDrugId])
+  @@map("drug_interactions")
+}
+
+enum InteractionSeverity {
+  MINOR
+  MODERATE
+  MAJOR
+  CONTRAINDICATED
 }

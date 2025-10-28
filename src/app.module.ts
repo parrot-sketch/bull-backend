@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './modules/auth/auth.module';
 import { DoctorProfileModule } from './modules/doctor-profile/doctor-profile.module';
+import { EmrModule } from './modules/emr/emr.module';
 import { PatientBookingModule } from './modules/patient-booking/patient-booking.module';
 import { SchedulingModule } from './modules/scheduling/scheduling.module';
 
@@ -17,6 +18,7 @@ import { SchedulingModule } from './modules/scheduling/scheduling.module';
     DoctorProfileModule,
     SchedulingModule,
     PatientBookingModule,
+    EmrModule,
   ],
   controllers: [],
   providers: [
