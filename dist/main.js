@@ -3563,7 +3563,7 @@ let PatientProfileService = class PatientProfileService {
         }
         const allergy = await this.db.patientAllergy.create({
             data: {
-                patientId,
+                patientId: profile.id,
                 allergen: allergyData.allergen,
                 severity: allergyData.severity,
                 reaction: allergyData.reaction,
@@ -3612,7 +3612,7 @@ let PatientProfileService = class PatientProfileService {
         }
         const medication = await this.db.patientMedication.create({
             data: {
-                patientId,
+                patientId: profile.id,
                 medicationName: medicationData.medicationName,
                 dosage: medicationData.dosage,
                 frequency: medicationData.frequency,
@@ -3662,8 +3662,18 @@ let PatientProfileService = class PatientProfileService {
         };
     }
     async getPatientAllergies(patientId) {
-        const allergies = await this.db.patientAllergy.findMany({
+        const profile = await this.db.patientProfile.findUnique({
             where: { patientId },
+        });
+        if (!profile) {
+            return {
+                success: true,
+                data: [],
+                message: 'No allergies found',
+            };
+        }
+        const allergies = await this.db.patientAllergy.findMany({
+            where: { patientId: profile.id },
             orderBy: { createdAt: 'desc' },
         });
         return {
@@ -3673,9 +3683,19 @@ let PatientProfileService = class PatientProfileService {
         };
     }
     async getPatientMedications(patientId) {
+        const profile = await this.db.patientProfile.findUnique({
+            where: { patientId },
+        });
+        if (!profile) {
+            return {
+                success: true,
+                data: [],
+                message: 'No medications found',
+            };
+        }
         const medications = await this.db.patientMedication.findMany({
             where: {
-                patientId,
+                patientId: profile.id,
                 OR: [
                     { endDate: null },
                     { endDate: { gte: new Date() } },

@@ -170,6 +170,7 @@ export class PatientProfileService {
     diagnosedAt?: string;
     diagnosedBy?: string;
   }) {
+    // patientId here is User.id from JWT, but we need PatientProfile.id
     const profile = await this.db.patientProfile.findUnique({
       where: { patientId },
     });
@@ -178,9 +179,10 @@ export class PatientProfileService {
       throw new NotFoundException('Patient profile not found');
     }
 
+    // Use profile.id (PatientProfile.id) as the foreign key, not patientId (User.id)
     const allergy = await this.db.patientAllergy.create({
       data: {
-        patientId,
+        patientId: profile.id, // This is the PatientProfile.id, matching the schema foreign key
         allergen: allergyData.allergen,
         severity: allergyData.severity as any,
         reaction: allergyData.reaction,
@@ -251,6 +253,7 @@ export class PatientProfileService {
     pharmacy?: string;
     notes?: string;
   }) {
+    // patientId here is User.id from JWT, but we need PatientProfile.id
     const profile = await this.db.patientProfile.findUnique({
       where: { patientId },
     });
@@ -259,9 +262,10 @@ export class PatientProfileService {
       throw new NotFoundException('Patient profile not found');
     }
 
+    // Use profile.id (PatientProfile.id) as the foreign key, not patientId (User.id)
     const medication = await this.db.patientMedication.create({
       data: {
-        patientId,
+        patientId: profile.id, // This is the PatientProfile.id, matching the schema foreign key
         medicationName: medicationData.medicationName,
         dosage: medicationData.dosage,
         frequency: medicationData.frequency,
@@ -336,8 +340,22 @@ export class PatientProfileService {
    * Get patient's allergies
    */
   async getPatientAllergies(patientId: string) {
-    const allergies = await this.db.patientAllergy.findMany({
+    // patientId here is User.id from JWT, but we need PatientProfile.id
+    const profile = await this.db.patientProfile.findUnique({
       where: { patientId },
+    });
+
+    if (!profile) {
+      // Return empty array if profile doesn't exist yet
+      return {
+        success: true,
+        data: [],
+        message: 'No allergies found',
+      };
+    }
+
+    const allergies = await this.db.patientAllergy.findMany({
+      where: { patientId: profile.id }, // Use PatientProfile.id
       orderBy: { createdAt: 'desc' },
     });
 
@@ -352,9 +370,23 @@ export class PatientProfileService {
    * Get patient's current medications
    */
   async getPatientMedications(patientId: string) {
+    // patientId here is User.id from JWT, but we need PatientProfile.id
+    const profile = await this.db.patientProfile.findUnique({
+      where: { patientId },
+    });
+
+    if (!profile) {
+      // Return empty array if profile doesn't exist yet
+      return {
+        success: true,
+        data: [],
+        message: 'No medications found',
+      };
+    }
+
     const medications = await this.db.patientMedication.findMany({
       where: { 
-        patientId,
+        patientId: profile.id, // Use PatientProfile.id
         OR: [
           { endDate: null },
           { endDate: { gte: new Date() } },
