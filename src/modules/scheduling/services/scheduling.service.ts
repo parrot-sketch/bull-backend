@@ -607,7 +607,8 @@ export class SchedulingService {
       throw new NotFoundException('Appointment not found');
     }
 
-    // If confirming a PENDING appointment, validate slot availability first
+    // If confirming a PENDING appointment, only check for conflicts with OTHER appointments
+    // Don't revalidate availability since the patient already booked this slot
     if (updateData.status === 'CONFIRMED' && appointment.status === 'PENDING') {
       const appointmentDate = updateData.date 
         ? new Date(updateData.date) 
@@ -615,32 +616,32 @@ export class SchedulingService {
       const startTime = updateData.startTime || appointment.startTime;
       const endTime = updateData.endTime || appointment.endTime;
 
-      // Check if slot is still available
-      const availabilityCheck = await this.slotEngine.checkSlotAvailability(
-        appointment.doctorId,
-        appointmentDate.toISOString().split('T')[0],
-        startTime,
-        endTime,
-      );
-
-      if (!availabilityCheck.success) {
-        throw new BadRequestException('Time slot is no longer available. Please choose another time.');
-      }
-
-      // Check for conflicts (excluding current appointment)
+      // Check for conflicts with OTHER CONFIRMED appointments only (excluding current appointment)
+      // We allow confirming PENDING appointments even if there are other PENDING ones (doctor can manage)
+      // But we prevent confirming if there's already a CONFIRMED appointment at the same time
       const conflicts = await this.db.appointment.findFirst({
         where: {
           doctorId: appointment.doctorId,
           appointmentDate,
           startTime,
           id: { not: appointmentId },
-          status: { notIn: ['CANCELLED', 'NO_SHOW'] },
+          status: 'CONFIRMED', // Only check against CONFIRMED appointments
         },
       });
 
       if (conflicts) {
-        throw new BadRequestException('This time slot conflicts with another appointment');
+        // If there's a conflict with a confirmed appointment, prevent it
+        throw new BadRequestException(
+          `This time slot conflicts with another confirmed appointment. ` +
+          `Please resolve the conflict or reschedule one of the appointments.`
+        );
       }
+
+      // Note: We don't check schedule availability here because:
+      // 1. The appointment already exists (PENDING status)
+      // 2. The patient already booked this slot
+      // 3. The doctor is confirming an existing booking, not creating a new one
+      // The schedule should be updated separately if needed
 
       // Update appointment with confirmed status
       const updatedAppointment = await this.db.appointment.update({
