@@ -107,9 +107,9 @@ const jwt_1 = __webpack_require__(9);
 const passport_1 = __webpack_require__(10);
 const appointments_controller_1 = __webpack_require__(11);
 const auth_controller_1 = __webpack_require__(13);
-const auth_service_1 = __webpack_require__(15);
-const database_service_1 = __webpack_require__(19);
-const audit_service_1 = __webpack_require__(18);
+const auth_service_1 = __webpack_require__(16);
+const database_service_1 = __webpack_require__(20);
+const audit_service_1 = __webpack_require__(19);
 const jwt_strategy_1 = __webpack_require__(21);
 let AuthModule = class AuthModule {
 };
@@ -313,15 +313,16 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a;
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AuthController = exports.RefreshDto = exports.RegisterDto = exports.LoginDto = void 0;
 const common_1 = __webpack_require__(1);
 const swagger_1 = __webpack_require__(4);
 const throttler_1 = __webpack_require__(7);
-const class_validator_1 = __webpack_require__(14);
+const client_1 = __webpack_require__(14);
+const class_validator_1 = __webpack_require__(15);
 const jwt_auth_guard_1 = __webpack_require__(12);
-const auth_service_1 = __webpack_require__(15);
+const auth_service_1 = __webpack_require__(16);
 class LoginDto {
 }
 exports.LoginDto = LoginDto;
@@ -359,17 +360,25 @@ __decorate([
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.Length)(1, 50, { message: 'First name must be between 1 and 50 characters' }),
+    (0, class_validator_1.Matches)(/^[a-zA-ZÀ-ÿ\s\-']+$/, {
+        message: 'First name can only contain letters, spaces, hyphens, and apostrophes'
+    }),
     __metadata("design:type", String)
 ], RegisterDto.prototype, "firstName", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.Length)(1, 50, { message: 'Last name must be between 1 and 50 characters' }),
+    (0, class_validator_1.Matches)(/^[a-zA-ZÀ-ÿ\s\-']+$/, {
+        message: 'Last name can only contain letters, spaces, hyphens, and apostrophes'
+    }),
     __metadata("design:type", String)
 ], RegisterDto.prototype, "lastName", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
+    (0, class_validator_1.IsEnum)(client_1.UserRole, { message: 'Role must be one of: PATIENT, DOCTOR, NURSE, ADMIN, TECHNICIAN, RECEPTIONIST' }),
+    __metadata("design:type", typeof (_a = typeof client_1.UserRole !== "undefined" && client_1.UserRole) === "function" ? _a : Object)
 ], RegisterDto.prototype, "role", void 0);
 class RefreshDto {
 }
@@ -548,7 +557,7 @@ __decorate([
 exports.AuthController = AuthController = __decorate([
     (0, swagger_1.ApiTags)('Authentication'),
     (0, common_1.Controller)('auth'),
-    __metadata("design:paramtypes", [typeof (_a = typeof auth_service_1.AuthService !== "undefined" && auth_service_1.AuthService) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [typeof (_b = typeof auth_service_1.AuthService !== "undefined" && auth_service_1.AuthService) === "function" ? _b : Object])
 ], AuthController);
 
 
@@ -556,10 +565,16 @@ exports.AuthController = AuthController = __decorate([
 /* 14 */
 /***/ ((module) => {
 
-module.exports = require("class-validator");
+module.exports = require("@prisma/client");
 
 /***/ }),
 /* 15 */
+/***/ ((module) => {
+
+module.exports = require("class-validator");
+
+/***/ }),
+/* 16 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -577,10 +592,10 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AuthService = void 0;
 const common_1 = __webpack_require__(1);
 const jwt_1 = __webpack_require__(9);
-const bcrypt = __webpack_require__(16);
-const speakeasy = __webpack_require__(17);
-const audit_service_1 = __webpack_require__(18);
-const database_service_1 = __webpack_require__(19);
+const bcrypt = __webpack_require__(17);
+const speakeasy = __webpack_require__(18);
+const audit_service_1 = __webpack_require__(19);
+const database_service_1 = __webpack_require__(20);
 let AuthService = class AuthService {
     constructor(db, jwtService, auditService) {
         this.db = db;
@@ -589,60 +604,118 @@ let AuthService = class AuthService {
         this.jwtSecret = process.env.JWT_SECRET;
         this.jwtExpiresIn = process.env.JWT_EXPIRES_IN || '15m';
         this.refreshTokenExpiresIn = process.env.REFRESH_TOKEN_EXPIRES_IN || '7d';
+        this.bcryptRounds = parseInt(process.env.BCRYPT_ROUNDS || '12', 10);
+        this.VALID_ROLES = [
+            'PATIENT',
+            'DOCTOR',
+            'NURSE',
+            'ADMIN',
+            'TECHNICIAN',
+            'RECEPTIONIST',
+        ];
     }
     async register(userData, auditContext) {
-        const existingUser = await this.db.user.findUnique({
-            where: { email: userData.email },
-        });
-        if (existingUser) {
+        try {
+            const normalizedEmail = this.normalizeEmail(userData.email);
+            const sanitizedFirstName = this.sanitizeName(userData.firstName);
+            const sanitizedLastName = this.sanitizeName(userData.lastName);
+            const validatedRole = this.validateRole(userData.role);
+            const existingUser = await this.db.user.findUnique({
+                where: { email: normalizedEmail },
+            });
+            if (existingUser) {
+                await this.auditService.log('REGISTER_FAILED', {
+                    resource: 'USER',
+                    ipAddress: auditContext?.ipAddress,
+                    userAgent: auditContext?.userAgent,
+                    metadata: { email: normalizedEmail, reason: 'EMAIL_EXISTS' },
+                    severity: 'WARN',
+                });
+                throw new common_1.ConflictException('User with this email already exists');
+            }
+            let hashedPassword;
+            try {
+                hashedPassword = await bcrypt.hash(userData.password, this.bcryptRounds);
+            }
+            catch (error) {
+                console.error('Password hashing failed:', error);
+                await this.auditService.log('REGISTER_FAILED', {
+                    resource: 'USER',
+                    ipAddress: auditContext?.ipAddress,
+                    userAgent: auditContext?.userAgent,
+                    metadata: { email: normalizedEmail, reason: 'PASSWORD_HASH_ERROR' },
+                    severity: 'ERROR',
+                });
+                throw new common_1.BadRequestException('Registration failed. Please try again.');
+            }
+            const refreshTokenExpiryMs = this.parseExpiryToMilliseconds(this.refreshTokenExpiresIn);
+            const result = await this.db.$transaction(async (tx) => {
+                const user = await tx.user.create({
+                    data: {
+                        email: normalizedEmail,
+                        password: hashedPassword,
+                        firstName: sanitizedFirstName,
+                        lastName: sanitizedLastName,
+                        role: validatedRole,
+                    },
+                });
+                const tokens = this.generateJwtPair(user.id);
+                await tx.userSession.create({
+                    data: {
+                        userId: user.id,
+                        refreshToken: tokens.refreshToken,
+                        expiresAt: new Date(Date.now() + refreshTokenExpiryMs),
+                        isActive: true,
+                        ipAddress: auditContext?.ipAddress,
+                        userAgent: auditContext?.userAgent,
+                    },
+                });
+                return { user, tokens };
+            });
+            await this.auditService.log('REGISTER_SUCCESS', {
+                userId: result.user.id,
+                resource: 'USER',
+                resourceId: result.user.id,
+                ipAddress: auditContext?.ipAddress,
+                userAgent: auditContext?.userAgent,
+                metadata: { email: normalizedEmail, role: result.user.role },
+                severity: 'INFO',
+            }).catch((error) => {
+                console.error('Audit logging failed:', error);
+            });
+            return {
+                success: true,
+                message: 'User registered successfully',
+                user: this.mapUserToResponse(result.user),
+                ...result.tokens,
+            };
+        }
+        catch (error) {
+            if (error instanceof common_1.ConflictException ||
+                error instanceof common_1.BadRequestException) {
+                throw error;
+            }
+            console.error('Unexpected registration error:', error);
             await this.auditService.log('REGISTER_FAILED', {
                 resource: 'USER',
                 ipAddress: auditContext?.ipAddress,
                 userAgent: auditContext?.userAgent,
-                metadata: { email: userData.email, reason: 'EMAIL_EXISTS' },
-                severity: 'WARN',
+                metadata: {
+                    email: userData.email,
+                    reason: 'UNEXPECTED_ERROR',
+                    error: error instanceof Error ? error.message : 'Unknown error'
+                },
+                severity: 'ERROR',
+            }).catch(() => {
             });
-            throw new common_1.ConflictException('User with this email already exists');
+            throw new common_1.BadRequestException('Registration failed. Please try again.');
         }
-        const hashedPassword = await bcrypt.hash(userData.password, 10);
-        const user = await this.db.user.create({
-            data: {
-                email: userData.email,
-                password: hashedPassword,
-                firstName: userData.firstName,
-                lastName: userData.lastName,
-                role: userData.role || 'PATIENT',
-            },
-        });
-        const tokens = this.generateJwtPair(user.id);
-        await this.db.userSession.create({
-            data: {
-                userId: user.id,
-                refreshToken: tokens.refreshToken,
-                expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-                isActive: true,
-            },
-        });
-        await this.auditService.log('REGISTER_SUCCESS', {
-            userId: user.id,
-            resource: 'USER',
-            resourceId: user.id,
-            ipAddress: auditContext?.ipAddress,
-            userAgent: auditContext?.userAgent,
-            metadata: { email: userData.email, role: user.role },
-            severity: 'INFO',
-        });
-        return {
-            success: true,
-            message: 'User registered successfully',
-            user: this.mapUserToResponse(user),
-            ...tokens,
-        };
     }
     async login(credentials, auditContext) {
         console.log('🔐 Login attempt for:', credentials.email);
+        const normalizedEmail = this.normalizeEmail(credentials.email);
         const user = await this.db.user.findUnique({
-            where: { email: credentials.email },
+            where: { email: normalizedEmail },
         });
         console.log('👤 User found:', !!user);
         console.log('👤 User active:', user?.isActive);
@@ -711,12 +784,15 @@ let AuthService = class AuthService {
             }
         }
         const tokens = this.generateJwtPair(user.id);
+        const refreshTokenExpiryMs = this.parseExpiryToMilliseconds(this.refreshTokenExpiresIn);
         await this.db.userSession.create({
             data: {
                 userId: user.id,
                 refreshToken: tokens.refreshToken,
-                expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+                expiresAt: new Date(Date.now() + refreshTokenExpiryMs),
                 isActive: true,
+                ipAddress: auditContext?.ipAddress,
+                userAgent: auditContext?.userAgent,
             },
         });
         await this.auditService.log('LOGIN_SUCCESS', {
@@ -725,7 +801,7 @@ let AuthService = class AuthService {
             resourceId: user.id,
             ipAddress: auditContext?.ipAddress,
             userAgent: auditContext?.userAgent,
-            metadata: { email: credentials.email, role: user.role },
+            metadata: { email: normalizedEmail, role: user.role },
             severity: 'INFO',
         });
         return {
@@ -771,11 +847,12 @@ let AuthService = class AuthService {
             throw new common_1.UnauthorizedException('Invalid refresh token');
         }
         const tokens = this.generateJwtPair(session.userId);
+        const refreshTokenExpiryMs = this.parseExpiryToMilliseconds(this.refreshTokenExpiresIn);
         await this.db.userSession.update({
             where: { id: session.id },
             data: {
                 refreshToken: tokens.refreshToken,
-                expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+                expiresAt: new Date(Date.now() + refreshTokenExpiryMs),
             },
         });
         return {
@@ -823,6 +900,57 @@ let AuthService = class AuthService {
         const refreshToken = this.jwtService.sign({ userId, type: 'refresh' }, { expiresIn: this.refreshTokenExpiresIn });
         return { accessToken, refreshToken, token: accessToken };
     }
+    normalizeEmail(email) {
+        if (!email || typeof email !== 'string') {
+            throw new common_1.BadRequestException('Email is required and must be a string');
+        }
+        return email.toLowerCase().trim();
+    }
+    sanitizeName(name) {
+        if (!name || typeof name !== 'string') {
+            throw new common_1.BadRequestException('Name fields are required');
+        }
+        const sanitized = name.trim().replace(/\s+/g, ' ');
+        if (sanitized.length < 1 || sanitized.length > 50) {
+            throw new common_1.BadRequestException('Name must be between 1 and 50 characters');
+        }
+        const nameRegex = /^[a-zA-ZÀ-ÿ\s\-']+$/;
+        if (!nameRegex.test(sanitized)) {
+            throw new common_1.BadRequestException('Name can only contain letters, spaces, hyphens, and apostrophes');
+        }
+        return sanitized;
+    }
+    validateRole(role) {
+        if (!role) {
+            return 'PATIENT';
+        }
+        const upperRole = role.toUpperCase();
+        if (!this.VALID_ROLES.includes(upperRole)) {
+            throw new common_1.BadRequestException(`Invalid role: ${role}. Allowed roles: ${this.VALID_ROLES.join(', ')}`);
+        }
+        return upperRole;
+    }
+    parseExpiryToMilliseconds(expiry) {
+        const match = expiry.match(/^(\d+)([dhms])$/);
+        if (!match) {
+            console.warn(`Invalid expiry format: ${expiry}, defaulting to 7d`);
+            return 7 * 24 * 60 * 60 * 1000;
+        }
+        const value = parseInt(match[1], 10);
+        const unit = match[2];
+        switch (unit) {
+            case 'd':
+                return value * 24 * 60 * 60 * 1000;
+            case 'h':
+                return value * 60 * 60 * 1000;
+            case 'm':
+                return value * 60 * 1000;
+            case 's':
+                return value * 1000;
+            default:
+                return 7 * 24 * 60 * 60 * 1000;
+        }
+    }
     mapUserToResponse(user) {
         return {
             id: user.id,
@@ -845,19 +973,19 @@ exports.AuthService = AuthService = __decorate([
 
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ ((module) => {
 
 module.exports = require("bcrypt");
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ ((module) => {
 
 module.exports = require("speakeasy");
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -874,7 +1002,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AuditService = void 0;
 const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(19);
+const database_service_1 = __webpack_require__(20);
 let AuditService = class AuditService {
     constructor(db) {
         this.db = db;
@@ -906,7 +1034,7 @@ exports.AuditService = AuditService = __decorate([
 
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -919,7 +1047,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DatabaseService = void 0;
 const common_1 = __webpack_require__(1);
-const client_1 = __webpack_require__(20);
+const client_1 = __webpack_require__(14);
 let DatabaseService = class DatabaseService extends client_1.PrismaClient {
     async onModuleInit() {
         await this.$connect();
@@ -935,12 +1063,6 @@ exports.DatabaseService = DatabaseService = __decorate([
     (0, common_1.Injectable)()
 ], DatabaseService);
 
-
-/***/ }),
-/* 20 */
-/***/ ((module) => {
-
-module.exports = require("@prisma/client");
 
 /***/ }),
 /* 21 */
@@ -963,7 +1085,7 @@ const common_1 = __webpack_require__(1);
 const config_1 = __webpack_require__(6);
 const passport_1 = __webpack_require__(10);
 const passport_jwt_1 = __webpack_require__(22);
-const database_service_1 = __webpack_require__(19);
+const database_service_1 = __webpack_require__(20);
 let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy) {
     constructor(configService, db) {
         super({
@@ -1036,7 +1158,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DoctorProfileModule = void 0;
 const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(19);
+const database_service_1 = __webpack_require__(20);
 const doctor_profile_controller_1 = __webpack_require__(24);
 const doctor_profile_service_1 = __webpack_require__(25);
 let DoctorProfileModule = class DoctorProfileModule {
@@ -1271,7 +1393,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DoctorProfileService = void 0;
 const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(19);
+const database_service_1 = __webpack_require__(20);
 let DoctorProfileService = class DoctorProfileService {
     constructor(db) {
         this.db = db;
@@ -1722,7 +1844,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.EmrService = void 0;
 const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(19);
+const database_service_1 = __webpack_require__(20);
 let EmrService = class EmrService {
     constructor(db) {
         this.db = db;
@@ -2229,7 +2351,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ImagingService = void 0;
 const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(19);
+const database_service_1 = __webpack_require__(20);
 let ImagingService = class ImagingService {
     constructor(db) {
         this.db = db;
@@ -2852,7 +2974,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LabService = void 0;
 const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(19);
+const database_service_1 = __webpack_require__(20);
 let LabService = class LabService {
     constructor(db) {
         this.db = db;
@@ -3433,7 +3555,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PatientProfileService = void 0;
 const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(19);
+const database_service_1 = __webpack_require__(20);
 let PatientProfileService = class PatientProfileService {
     constructor(db) {
         this.db = db;
@@ -3932,7 +4054,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PrescriptionService = void 0;
 const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(19);
+const database_service_1 = __webpack_require__(20);
 let PrescriptionService = class PrescriptionService {
     constructor(db) {
         this.db = db;
@@ -4503,7 +4625,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.VisitService = void 0;
 const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(19);
+const database_service_1 = __webpack_require__(20);
 let VisitService = class VisitService {
     constructor(db) {
         this.db = db;
@@ -4843,7 +4965,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ClinicalTemplateService = void 0;
 const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(19);
+const database_service_1 = __webpack_require__(20);
 let ClinicalTemplateService = class ClinicalTemplateService {
     constructor(db) {
         this.db = db;
@@ -5237,7 +5359,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DrugInteractionService = void 0;
 const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(19);
+const database_service_1 = __webpack_require__(20);
 let DrugInteractionService = class DrugInteractionService {
     constructor(db) {
         this.db = db;
@@ -5598,7 +5720,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NotificationsModule = void 0;
 const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(19);
+const database_service_1 = __webpack_require__(20);
 const notification_controller_1 = __webpack_require__(42);
 const notification_service_1 = __webpack_require__(45);
 let NotificationsModule = class NotificationsModule {
@@ -5754,7 +5876,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.QueryNotificationsDto = exports.UpdateNotificationDto = exports.CreateNotificationDto = exports.NotificationChannel = exports.NotificationPriority = exports.NotificationType = void 0;
 const class_transformer_1 = __webpack_require__(44);
-const class_validator_1 = __webpack_require__(14);
+const class_validator_1 = __webpack_require__(15);
 var NotificationType;
 (function (NotificationType) {
     NotificationType["APPOINTMENT_REQUESTED"] = "APPOINTMENT_REQUESTED";
@@ -5929,7 +6051,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NotificationService = void 0;
 const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(19);
+const database_service_1 = __webpack_require__(20);
 const notification_dto_1 = __webpack_require__(43);
 let NotificationService = NotificationService_1 = class NotificationService {
     constructor(db) {
@@ -6314,7 +6436,7 @@ var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PatientBookingService = void 0;
 const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(19);
+const database_service_1 = __webpack_require__(20);
 const notification_service_1 = __webpack_require__(45);
 let PatientBookingService = PatientBookingService_1 = class PatientBookingService {
     constructor(db, notificationService) {
@@ -6680,7 +6802,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SchedulingModule = void 0;
 const common_1 = __webpack_require__(1);
 const schedule_1 = __webpack_require__(50);
-const database_service_1 = __webpack_require__(19);
+const database_service_1 = __webpack_require__(20);
 const notifications_module_1 = __webpack_require__(41);
 const scheduling_controller_1 = __webpack_require__(51);
 const appointment_management_service_1 = __webpack_require__(54);
@@ -7163,7 +7285,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ScheduleAnalyticsDto = exports.TimeSlotAvailabilityDto = exports.UpdateAvailabilityDto = exports.GetAvailabilityDto = exports.UpdateAppointmentDto = exports.BookAppointmentDto = exports.AppointmentStatus = exports.AppointmentType = exports.CreateExceptionDto = exports.ExceptionType = exports.UpdateTimeSlotDto = exports.CreateTimeSlotDto = exports.UpdateScheduleTemplateDto = exports.CreateScheduleTemplateDto = void 0;
-const class_validator_1 = __webpack_require__(14);
+const class_validator_1 = __webpack_require__(15);
 const class_transformer_1 = __webpack_require__(44);
 class CreateScheduleTemplateDto {
 }
@@ -7511,7 +7633,7 @@ var _a, _b, _c, _d, _e;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SchedulingService = void 0;
 const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(19);
+const database_service_1 = __webpack_require__(20);
 const notification_service_1 = __webpack_require__(45);
 const appointment_management_service_1 = __webpack_require__(54);
 const doctor_availability_service_1 = __webpack_require__(56);
@@ -7927,7 +8049,18 @@ let SchedulingService = class SchedulingService {
         }
         if (status) {
             const statusArray = status.includes(',') ? status.split(',') : [status];
-            where.status = { in: statusArray };
+            const validStatuses = statusArray.map((s) => {
+                const trimmed = s.trim().toUpperCase();
+                if (trimmed === 'SCHEDULED') {
+                    return 'CONFIRMED';
+                }
+                return trimmed;
+            });
+            const validEnumValues = ['PENDING', 'CONFIRMED', 'CANCELLED', 'COMPLETED', 'NO_SHOW', 'RESCHEDULED', 'REJECTED'];
+            const filteredStatuses = validStatuses.filter((s) => validEnumValues.includes(s));
+            if (filteredStatuses.length > 0) {
+                where.status = { in: filteredStatuses };
+            }
         }
         const appointments = await this.db.appointment.findMany({
             where,
@@ -7973,21 +8106,18 @@ let SchedulingService = class SchedulingService {
                 : appointment.appointmentDate;
             const startTime = updateData.startTime || appointment.startTime;
             const endTime = updateData.endTime || appointment.endTime;
-            const availabilityCheck = await this.slotEngine.checkSlotAvailability(appointment.doctorId, appointmentDate.toISOString().split('T')[0], startTime, endTime);
-            if (!availabilityCheck.success) {
-                throw new common_1.BadRequestException('Time slot is no longer available. Please choose another time.');
-            }
             const conflicts = await this.db.appointment.findFirst({
                 where: {
                     doctorId: appointment.doctorId,
                     appointmentDate,
                     startTime,
                     id: { not: appointmentId },
-                    status: { notIn: ['CANCELLED', 'NO_SHOW'] },
+                    status: 'CONFIRMED',
                 },
             });
             if (conflicts) {
-                throw new common_1.BadRequestException('This time slot conflicts with another appointment');
+                throw new common_1.BadRequestException(`This time slot conflicts with another confirmed appointment. ` +
+                    `Please resolve the conflict or reschedule one of the appointments.`);
             }
             const updatedAppointment = await this.db.appointment.update({
                 where: { id: appointmentId },
@@ -8073,7 +8203,7 @@ var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppointmentManagementService = void 0;
 const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(19);
+const database_service_1 = __webpack_require__(20);
 const notification_service_1 = __webpack_require__(45);
 const slot_engine_service_1 = __webpack_require__(55);
 let AppointmentManagementService = AppointmentManagementService_1 = class AppointmentManagementService {
@@ -8432,7 +8562,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SlotEngineService = void 0;
 const common_1 = __webpack_require__(1);
 const schedule_1 = __webpack_require__(50);
-const database_service_1 = __webpack_require__(19);
+const database_service_1 = __webpack_require__(20);
 let SlotEngineService = class SlotEngineService {
     constructor(db) {
         this.db = db;
@@ -8737,7 +8867,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DoctorAvailabilityService = void 0;
 const common_1 = __webpack_require__(1);
 const schedule_1 = __webpack_require__(50);
-const database_service_1 = __webpack_require__(19);
+const database_service_1 = __webpack_require__(20);
 let DoctorAvailabilityService = class DoctorAvailabilityService {
     constructor(db) {
         this.db = db;

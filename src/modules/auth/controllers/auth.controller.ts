@@ -1,7 +1,8 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
-import { IsEmail, IsNotEmpty, IsOptional, IsString, Matches, MinLength } from 'class-validator';
+import { UserRole } from '@prisma/client';
+import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, Length, Matches, MinLength } from 'class-validator';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { AuthService } from '../services/auth.service';
 
@@ -33,15 +34,23 @@ export class RegisterDto {
 
   @IsString()
   @IsNotEmpty()
+  @Length(1, 50, { message: 'First name must be between 1 and 50 characters' })
+  @Matches(/^[a-zA-ZÀ-ÿ\s\-']+$/, {
+    message: 'First name can only contain letters, spaces, hyphens, and apostrophes'
+  })
   firstName!: string;
 
   @IsString()
   @IsNotEmpty()
+  @Length(1, 50, { message: 'Last name must be between 1 and 50 characters' })
+  @Matches(/^[a-zA-ZÀ-ÿ\s\-']+$/, {
+    message: 'Last name can only contain letters, spaces, hyphens, and apostrophes'
+  })
   lastName!: string;
 
   @IsOptional()
-  @IsString()
-  role?: string;
+  @IsEnum(UserRole, { message: 'Role must be one of: PATIENT, DOCTOR, NURSE, ADMIN, TECHNICIAN, RECEPTIONIST' })
+  role?: UserRole;
 }
 
 export class RefreshDto {
