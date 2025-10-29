@@ -31,7 +31,8 @@
     "src/**/*",
     "libs/**/*",
     "shared/**/*",
-    "test/**/*"
+    "test/**/*",
+    "prisma/**/*"
   ],
   "exclude": [
     "node_modules",

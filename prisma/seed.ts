@@ -230,7 +230,7 @@ async function main() {
   // Create additional doctors with complete profiles
   const doctorsData = [
     {
-      email: 'dr.sarah.johnson@ihosi.com',
+      email: 'sarah.johnson@ihosi.com',
       password: 'doctor123',
       firstName: 'Sarah',
       lastName: 'Johnson',
@@ -258,7 +258,7 @@ async function main() {
       ],
     },
     {
-      email: 'dr.michael.chen@ihosi.com',
+      email: 'michael.chen@ihosi.com',
       password: 'doctor123',
       firstName: 'Michael',
       lastName: 'Chen',
@@ -286,7 +286,7 @@ async function main() {
       ],
     },
     {
-      email: 'dr.amy.williams@ihosi.com',
+      email: 'amy.williams@ihosi.com',
       password: 'doctor123',
       firstName: 'Amy',
       lastName: 'Williams',
@@ -314,7 +314,7 @@ async function main() {
       ],
     },
     {
-      email: 'dr.james.odhiambo@ihosi.com',
+      email: 'james.odhiambo@ihosi.com',
       password: 'doctor123',
       firstName: 'James',
       lastName: 'Odhiambo',
@@ -342,7 +342,7 @@ async function main() {
       ],
     },
     {
-      email: 'dr.priya.patel@ihosi.com',
+      email: 'priya.patel@ihosi.com',
       password: 'doctor123',
       firstName: 'Priya',
       lastName: 'Patel',
@@ -476,7 +476,16 @@ async function main() {
   // Create sample appointment (PENDING status for testing booking workflow)
   const appointmentDate = new Date();
   appointmentDate.setDate(appointmentDate.getDate() + 2); // 2 days from now
-  appointmentDate.setHours(10, 0, 0, 0);
+  appointmentDate.setHours(0, 0, 0, 0); // Set to midnight for date comparison
+
+  // Delete any existing appointment with same doctor/date/time to avoid unique constraint
+  await prisma.appointment.deleteMany({
+    where: {
+      doctorId: doctor.id,
+      appointmentDate: appointmentDate,
+      startTime: '10:00',
+    },
+  });
 
   const appointment = await prisma.appointment.create({
     data: {
@@ -541,11 +550,11 @@ async function main() {
   console.log('   Patient: patient@ihosi.com / patient123');
   console.log('\n👨‍⚕️ Doctors (password: doctor123):');
   console.log('   1. Dr. John Smith (Cardiology): doctor@ihosi.com');
-  console.log('   2. Dr. Sarah Johnson (Pediatrics): dr.sarah.johnson@ihosi.com');
-  console.log('   3. Dr. Michael Chen (Orthopedics): dr.michael.chen@ihosi.com');
-  console.log('   4. Dr. Amy Williams (Dermatology): dr.amy.williams@ihosi.com');
-  console.log('   5. Dr. James Odhiambo (OB/GYN): dr.james.odhiambo@ihosi.com');
-  console.log('   6. Dr. Priya Patel (Endocrinology): dr.priya.patel@ihosi.com');
+  console.log('   2. Dr. Sarah Johnson (Pediatrics): sarah.johnson@ihosi.com');
+  console.log('   3. Dr. Michael Chen (Orthopedics): michael.chen@ihosi.com');
+  console.log('   4. Dr. Amy Williams (Dermatology): amy.williams@ihosi.com');
+  console.log('   5. Dr. James Odhiambo (OB/GYN): james.odhiambo@ihosi.com');
+  console.log('   6. Dr. Priya Patel (Endocrinology): priya.patel@ihosi.com');
   console.log('\n💡 All doctors have:');
   console.log('   ✓ Complete profiles with bio and education');
   console.log('   ✓ Consultation fees (KES 45-60)');

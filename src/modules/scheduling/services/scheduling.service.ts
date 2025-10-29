@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../../auth/services/database.service';
+import { NotificationService } from '../../notifications/services/notification.service';
 import {
     BookAppointmentDto,
     CreateExceptionDto,
@@ -20,6 +21,7 @@ export class SchedulingService {
     public doctorAvailability: DoctorAvailabilityService,
     public slotEngine: SlotEngineService,
     public appointmentManagement: AppointmentManagementService,
+    private notificationService: NotificationService,
   ) {}
 
   // ===========================================
@@ -529,7 +531,7 @@ export class SchedulingService {
     };
   }
 
-  async getAppointments(doctorId: string, startDate?: string, endDate?: string) {
+  async getAppointments(doctorId: string, startDate?: string, endDate?: string, status?: string, limit?: number) {
     const where: any = { doctorId };
     
     if (startDate && endDate) {
@@ -539,12 +541,35 @@ export class SchedulingService {
       };
     }
 
+    // Handle status filter - can be comma-separated or single value
+    if (status) {
+      const statusArray = status.includes(',') ? status.split(',') : [status];
+      where.status = { in: statusArray };
+    }
+
     const appointments = await this.db.appointment.findMany({
       where,
       include: {
-        patient: true,
+        patient: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+            phoneNumber: true,
+          },
+        },
+        doctor: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+          },
+        },
       },
       orderBy: { appointmentDate: 'desc' },
+      ...(limit && { take: limit }),
     });
 
     return {
@@ -555,17 +580,90 @@ export class SchedulingService {
   }
 
   async updateAppointment(appointmentId: string, updateData: UpdateAppointmentDto) {
-    const appointment = await this.db.appointment.findUnique({ where: { id: appointmentId } });
+    const appointment = await this.db.appointment.findUnique({ 
+      where: { id: appointmentId },
+      include: { patient: true, doctor: true },
+    });
 
     if (!appointment) {
       throw new NotFoundException('Appointment not found');
     }
 
+    // If confirming a PENDING appointment, validate slot availability first
+    if (updateData.status === 'CONFIRMED' && appointment.status === 'PENDING') {
+      const appointmentDate = updateData.date 
+        ? new Date(updateData.date) 
+        : appointment.appointmentDate;
+      const startTime = updateData.startTime || appointment.startTime;
+      const endTime = updateData.endTime || appointment.endTime;
+
+      // Check if slot is still available
+      const availabilityCheck = await this.slotEngine.checkSlotAvailability(
+        appointment.doctorId,
+        appointmentDate.toISOString().split('T')[0],
+        startTime,
+        endTime,
+      );
+
+      if (!availabilityCheck.success) {
+        throw new BadRequestException('Time slot is no longer available. Please choose another time.');
+      }
+
+      // Check for conflicts (excluding current appointment)
+      const conflicts = await this.db.appointment.findFirst({
+        where: {
+          doctorId: appointment.doctorId,
+          appointmentDate,
+          startTime,
+          id: { not: appointmentId },
+          status: { notIn: ['CANCELLED', 'NO_SHOW'] },
+        },
+      });
+
+      if (conflicts) {
+        throw new BadRequestException('This time slot conflicts with another appointment');
+      }
+
+      // Update appointment with confirmed status
+      const updatedAppointment = await this.db.appointment.update({
+        where: { id: appointmentId },
+        data: {
+          status: 'CONFIRMED',
+          confirmedAt: new Date(),
+          requiresConfirmation: false,
+          ...(updateData.date && { appointmentDate: new Date(updateData.date) }),
+          ...(updateData.startTime && { startTime: updateData.startTime }),
+          ...(updateData.endTime && { endTime: updateData.endTime }),
+          ...(updateData.notes && { notes: updateData.notes }),
+        } as any,
+        include: {
+          patient: true,
+          doctor: true,
+        },
+      });
+
+      // Send notification to patient
+      try {
+        await this.notificationService.notifyAppointmentScheduled(updatedAppointment);
+      } catch (error) {
+        // If notification fails, log but don't fail the update
+        console.error('Failed to send notification:', error);
+      }
+
+      return {
+        success: true,
+        data: updatedAppointment,
+        message: 'Appointment scheduled successfully. Patient has been notified.',
+      };
+    }
+
+    // For other updates, proceed normally
     const updatedAppointment = await this.db.appointment.update({
       where: { id: appointmentId },
       data: updateData as any,
       include: {
         patient: true,
+        doctor: true,
       },
     });
 

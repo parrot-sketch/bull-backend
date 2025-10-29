@@ -23,7 +23,7 @@ export class NotificationController {
    */
   @Get()
   async getNotifications(@Request() req, @Query() query: QueryNotificationsDto) {
-    const userId = req.user.id;
+    const userId = req.user.userId || req.user.id;
     const filters = {
       type: query.type,
       unreadOnly: query.unreadOnly || false,
@@ -32,7 +32,11 @@ export class NotificationController {
       limit: query.limit ? parseInt(query.limit) : 20,
     };
 
-    return this.notificationService.getUserNotifications(userId, filters);
+    const result = await this.notificationService.getUserNotifications(userId, filters);
+    return {
+      success: true,
+      data: result,
+    };
   }
 
   /**
@@ -40,7 +44,7 @@ export class NotificationController {
    */
   @Get('unread/count')
   async getUnreadCount(@Request() req) {
-    const userId = req.user.id;
+    const userId = req.user.userId || req.user.id;
     const count = await this.notificationService.getUnreadCount(userId);
     return { success: true, count };
   }
@@ -50,7 +54,7 @@ export class NotificationController {
    */
   @Patch(':id/read')
   async markAsRead(@Request() req, @Param('id') notificationId: string) {
-    const userId = req.user.id;
+    const userId = req.user.userId || req.user.id;
     await this.notificationService.markAsRead(notificationId, userId);
     return { success: true, message: 'Notification marked as read' };
   }
@@ -60,7 +64,7 @@ export class NotificationController {
    */
   @Post('read-all')
   async markAllAsRead(@Request() req) {
-    const userId = req.user.id;
+    const userId = req.user.userId || req.user.id;
     await this.notificationService.markAllAsRead(userId);
     return { success: true, message: 'All notifications marked as read' };
   }
@@ -70,7 +74,7 @@ export class NotificationController {
    */
   @Patch(':id/archive')
   async archiveNotification(@Request() req, @Param('id') notificationId: string) {
-    const userId = req.user.id;
+    const userId = req.user.userId || req.user.id;
     await this.notificationService.archiveNotification(notificationId, userId);
     return { success: true, message: 'Notification archived' };
   }
@@ -80,7 +84,7 @@ export class NotificationController {
    */
   @Delete(':id')
   async deleteNotification(@Request() req, @Param('id') notificationId: string) {
-    const userId = req.user.id;
+    const userId = req.user.userId || req.user.id;
     await this.notificationService.deleteNotification(notificationId, userId);
     return { success: true, message: 'Notification deleted' };
   }

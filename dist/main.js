@@ -5642,7 +5642,7 @@ let NotificationController = class NotificationController {
         this.notificationService = notificationService;
     }
     async getNotifications(req, query) {
-        const userId = req.user.id;
+        const userId = req.user.userId || req.user.id;
         const filters = {
             type: query.type,
             unreadOnly: query.unreadOnly || false,
@@ -5650,30 +5650,34 @@ let NotificationController = class NotificationController {
             page: query.page ? parseInt(query.page) : 1,
             limit: query.limit ? parseInt(query.limit) : 20,
         };
-        return this.notificationService.getUserNotifications(userId, filters);
+        const result = await this.notificationService.getUserNotifications(userId, filters);
+        return {
+            success: true,
+            data: result,
+        };
     }
     async getUnreadCount(req) {
-        const userId = req.user.id;
+        const userId = req.user.userId || req.user.id;
         const count = await this.notificationService.getUnreadCount(userId);
         return { success: true, count };
     }
     async markAsRead(req, notificationId) {
-        const userId = req.user.id;
+        const userId = req.user.userId || req.user.id;
         await this.notificationService.markAsRead(notificationId, userId);
         return { success: true, message: 'Notification marked as read' };
     }
     async markAllAsRead(req) {
-        const userId = req.user.id;
+        const userId = req.user.userId || req.user.id;
         await this.notificationService.markAllAsRead(userId);
         return { success: true, message: 'All notifications marked as read' };
     }
     async archiveNotification(req, notificationId) {
-        const userId = req.user.id;
+        const userId = req.user.userId || req.user.id;
         await this.notificationService.archiveNotification(notificationId, userId);
         return { success: true, message: 'Notification archived' };
     }
     async deleteNotification(req, notificationId) {
-        const userId = req.user.id;
+        const userId = req.user.userId || req.user.id;
         await this.notificationService.deleteNotification(notificationId, userId);
         return { success: true, message: 'Notification deleted' };
     }
@@ -6808,36 +6812,10 @@ let SchedulingController = class SchedulingController {
     async bookAppointment(bookAppointmentDto) {
         return this.schedulingService.bookAppointment(bookAppointmentDto);
     }
-    async getAppointments(req, startDate, endDate, status, limit) {
-        const mockAppointments = [
-            {
-                id: '1',
-                patientName: 'John Doe',
-                patientEmail: 'john@example.com',
-                appointmentDate: new Date().toISOString(),
-                startTime: '09:00',
-                endTime: '09:30',
-                status: 'SCHEDULED',
-                type: 'CONSULTATION',
-                notes: 'Regular checkup'
-            },
-            {
-                id: '2',
-                patientName: 'Jane Smith',
-                patientEmail: 'jane@example.com',
-                appointmentDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-                startTime: '10:00',
-                endTime: '10:30',
-                status: 'PENDING',
-                type: 'FOLLOW_UP',
-                notes: 'Follow-up appointment'
-            }
-        ];
-        return {
-            success: true,
-            data: mockAppointments,
-            message: 'Mock appointments data'
-        };
+    async getAppointments(req, startDate, endDate, status, limit, doctorId) {
+        const userId = req.user?.userId || req.user?.id;
+        const targetDoctorId = doctorId || userId;
+        return this.schedulingService.getAppointments(targetDoctorId, startDate, endDate, status, limit);
     }
     async getUpcomingAppointments(req, limit) {
         const doctorId = req.user.userId || req.user.id;
@@ -7064,8 +7042,9 @@ __decorate([
     __param(2, (0, common_1.Query)('endDate')),
     __param(3, (0, common_1.Query)('status')),
     __param(4, (0, common_1.Query)('limit')),
+    __param(5, (0, common_1.Query)('doctorId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String, String, String, Number]),
+    __metadata("design:paramtypes", [Object, String, String, String, Number, String]),
     __metadata("design:returntype", Promise)
 ], SchedulingController.prototype, "getAppointments", null);
 __decorate([
@@ -7528,20 +7507,22 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a, _b, _c, _d;
+var _a, _b, _c, _d, _e;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SchedulingService = void 0;
 const common_1 = __webpack_require__(1);
 const database_service_1 = __webpack_require__(19);
+const notification_service_1 = __webpack_require__(45);
 const appointment_management_service_1 = __webpack_require__(54);
 const doctor_availability_service_1 = __webpack_require__(56);
 const slot_engine_service_1 = __webpack_require__(55);
 let SchedulingService = class SchedulingService {
-    constructor(db, doctorAvailability, slotEngine, appointmentManagement) {
+    constructor(db, doctorAvailability, slotEngine, appointmentManagement, notificationService) {
         this.db = db;
         this.doctorAvailability = doctorAvailability;
         this.slotEngine = slotEngine;
         this.appointmentManagement = appointmentManagement;
+        this.notificationService = notificationService;
     }
     async createScheduleTemplate(doctorId, templateData) {
         const doctor = await this.db.user.findUnique({ where: { id: doctorId } });
@@ -7936,7 +7917,7 @@ let SchedulingService = class SchedulingService {
             message: 'Appointment booked successfully',
         };
     }
-    async getAppointments(doctorId, startDate, endDate) {
+    async getAppointments(doctorId, startDate, endDate, status, limit) {
         const where = { doctorId };
         if (startDate && endDate) {
             where.appointmentDate = {
@@ -7944,12 +7925,33 @@ let SchedulingService = class SchedulingService {
                 lte: new Date(endDate),
             };
         }
+        if (status) {
+            const statusArray = status.includes(',') ? status.split(',') : [status];
+            where.status = { in: statusArray };
+        }
         const appointments = await this.db.appointment.findMany({
             where,
             include: {
-                patient: true,
+                patient: {
+                    select: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                        email: true,
+                        phoneNumber: true,
+                    },
+                },
+                doctor: {
+                    select: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                        email: true,
+                    },
+                },
             },
             orderBy: { appointmentDate: 'desc' },
+            ...(limit && { take: limit }),
         });
         return {
             success: true,
@@ -7958,15 +7960,69 @@ let SchedulingService = class SchedulingService {
         };
     }
     async updateAppointment(appointmentId, updateData) {
-        const appointment = await this.db.appointment.findUnique({ where: { id: appointmentId } });
+        const appointment = await this.db.appointment.findUnique({
+            where: { id: appointmentId },
+            include: { patient: true, doctor: true },
+        });
         if (!appointment) {
             throw new common_1.NotFoundException('Appointment not found');
+        }
+        if (updateData.status === 'CONFIRMED' && appointment.status === 'PENDING') {
+            const appointmentDate = updateData.date
+                ? new Date(updateData.date)
+                : appointment.appointmentDate;
+            const startTime = updateData.startTime || appointment.startTime;
+            const endTime = updateData.endTime || appointment.endTime;
+            const availabilityCheck = await this.slotEngine.checkSlotAvailability(appointment.doctorId, appointmentDate.toISOString().split('T')[0], startTime, endTime);
+            if (!availabilityCheck.success) {
+                throw new common_1.BadRequestException('Time slot is no longer available. Please choose another time.');
+            }
+            const conflicts = await this.db.appointment.findFirst({
+                where: {
+                    doctorId: appointment.doctorId,
+                    appointmentDate,
+                    startTime,
+                    id: { not: appointmentId },
+                    status: { notIn: ['CANCELLED', 'NO_SHOW'] },
+                },
+            });
+            if (conflicts) {
+                throw new common_1.BadRequestException('This time slot conflicts with another appointment');
+            }
+            const updatedAppointment = await this.db.appointment.update({
+                where: { id: appointmentId },
+                data: {
+                    status: 'CONFIRMED',
+                    confirmedAt: new Date(),
+                    requiresConfirmation: false,
+                    ...(updateData.date && { appointmentDate: new Date(updateData.date) }),
+                    ...(updateData.startTime && { startTime: updateData.startTime }),
+                    ...(updateData.endTime && { endTime: updateData.endTime }),
+                    ...(updateData.notes && { notes: updateData.notes }),
+                },
+                include: {
+                    patient: true,
+                    doctor: true,
+                },
+            });
+            try {
+                await this.notificationService.notifyAppointmentScheduled(updatedAppointment);
+            }
+            catch (error) {
+                console.error('Failed to send notification:', error);
+            }
+            return {
+                success: true,
+                data: updatedAppointment,
+                message: 'Appointment scheduled successfully. Patient has been notified.',
+            };
         }
         const updatedAppointment = await this.db.appointment.update({
             where: { id: appointmentId },
             data: updateData,
             include: {
                 patient: true,
+                doctor: true,
             },
         });
         return {
@@ -7994,7 +8050,7 @@ let SchedulingService = class SchedulingService {
 exports.SchedulingService = SchedulingService;
 exports.SchedulingService = SchedulingService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof database_service_1.DatabaseService !== "undefined" && database_service_1.DatabaseService) === "function" ? _a : Object, typeof (_b = typeof doctor_availability_service_1.DoctorAvailabilityService !== "undefined" && doctor_availability_service_1.DoctorAvailabilityService) === "function" ? _b : Object, typeof (_c = typeof slot_engine_service_1.SlotEngineService !== "undefined" && slot_engine_service_1.SlotEngineService) === "function" ? _c : Object, typeof (_d = typeof appointment_management_service_1.AppointmentManagementService !== "undefined" && appointment_management_service_1.AppointmentManagementService) === "function" ? _d : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof database_service_1.DatabaseService !== "undefined" && database_service_1.DatabaseService) === "function" ? _a : Object, typeof (_b = typeof doctor_availability_service_1.DoctorAvailabilityService !== "undefined" && doctor_availability_service_1.DoctorAvailabilityService) === "function" ? _b : Object, typeof (_c = typeof slot_engine_service_1.SlotEngineService !== "undefined" && slot_engine_service_1.SlotEngineService) === "function" ? _c : Object, typeof (_d = typeof appointment_management_service_1.AppointmentManagementService !== "undefined" && appointment_management_service_1.AppointmentManagementService) === "function" ? _d : Object, typeof (_e = typeof notification_service_1.NotificationService !== "undefined" && notification_service_1.NotificationService) === "function" ? _e : Object])
 ], SchedulingService);
 
 

@@ -251,38 +251,12 @@ export class SchedulingController {
     @Query('endDate') endDate?: string,
     @Query('status') status?: string,
     @Query('limit') limit?: number,
+    @Query('doctorId') doctorId?: string,
   ) {
-    // Return mock data for development
-    const mockAppointments = [
-      {
-        id: '1',
-        patientName: 'John Doe',
-        patientEmail: 'john@example.com',
-        appointmentDate: new Date().toISOString(),
-        startTime: '09:00',
-        endTime: '09:30',
-        status: 'SCHEDULED',
-        type: 'CONSULTATION',
-        notes: 'Regular checkup'
-      },
-      {
-        id: '2',
-        patientName: 'Jane Smith',
-        patientEmail: 'jane@example.com',
-        appointmentDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-        startTime: '10:00',
-        endTime: '10:30',
-        status: 'PENDING',
-        type: 'FOLLOW_UP',
-        notes: 'Follow-up appointment'
-      }
-    ];
-
-    return {
-      success: true,
-      data: mockAppointments,
-      message: 'Mock appointments data'
-    };
+    const userId = req.user?.userId || req.user?.id;
+    const targetDoctorId = doctorId || userId;
+    
+    return this.schedulingService.getAppointments(targetDoctorId, startDate, endDate, status, limit);
   }
 
   @Get('appointments/upcoming')
