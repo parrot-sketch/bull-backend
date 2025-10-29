@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
 import { DatabaseService } from '../auth/services/database.service';
+import { NotificationsModule } from '../notifications/notifications.module';
 import { SchedulingController } from './controllers/scheduling.controller';
 import { AppointmentManagementService } from './services/appointment-management.service';
 import { DoctorAvailabilityService } from './services/doctor-availability.service';
@@ -8,7 +9,7 @@ import { SchedulingService } from './services/scheduling.service';
 import { SlotEngineService } from './services/slot-engine.service';
 
 @Module({
-  imports: [ScheduleModule.forRoot()],
+  imports: [ScheduleModule.forRoot(), NotificationsModule],
   controllers: [SchedulingController],
   providers: [
     SchedulingService,

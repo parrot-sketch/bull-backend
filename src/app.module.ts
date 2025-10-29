@@ -5,6 +5,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AuthModule } from './modules/auth/auth.module';
 import { DoctorProfileModule } from './modules/doctor-profile/doctor-profile.module';
 import { EmrModule } from './modules/emr/emr.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 import { PatientBookingModule } from './modules/patient-booking/patient-booking.module';
 import { SchedulingModule } from './modules/scheduling/scheduling.module';
 
@@ -19,6 +20,7 @@ import { SchedulingModule } from './modules/scheduling/scheduling.module';
     SchedulingModule,
     PatientBookingModule,
     EmrModule,
+    NotificationsModule,
   ],
   controllers: [],
   providers: [

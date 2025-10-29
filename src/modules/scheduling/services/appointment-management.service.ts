@@ -1,12 +1,16 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../../auth/services/database.service';
+import { NotificationService } from '../../notifications/services/notification.service';
 import { SlotEngineService } from './slot-engine.service';
 
 @Injectable()
 export class AppointmentManagementService {
+  private readonly logger = new Logger(AppointmentManagementService.name);
+
   constructor(
     private db: DatabaseService,
     private slotEngine: SlotEngineService,
+    private notificationService: NotificationService,
   ) {}
 
   // ===========================================
@@ -115,9 +119,21 @@ export class AppointmentManagementService {
 
     const updatedAppointment = await this.db.appointment.update({
       where: { id: appointmentId },
-      data: { status: 'CONFIRMED' },
+      data: { 
+        status: 'CONFIRMED',
+        confirmedAt: new Date(),
+      },
       include: { patient: true },
     });
+
+    // Notify patient about appointment confirmation
+    try {
+      await this.notificationService.notifyAppointmentScheduled(updatedAppointment);
+      this.logger.log(`Notification sent to patient ${updatedAppointment.patientId} for appointment ${appointmentId}`);
+    } catch (error) {
+      this.logger.error(`Failed to send notification: ${error.message}`, error.stack);
+      // Don't fail the confirmation if notification fails
+    }
 
     return {
       success: true,

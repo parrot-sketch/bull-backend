@@ -1,9 +1,15 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../../auth/services/database.service';
+import { NotificationService } from '../../notifications/services/notification.service';
 
 @Injectable()
 export class PatientBookingService {
-  constructor(private db: DatabaseService) {}
+  private readonly logger = new Logger(PatientBookingService.name);
+
+  constructor(
+    private db: DatabaseService,
+    private notificationService: NotificationService,
+  ) {}
 
   /**
    * Find doctors available for booking
@@ -184,6 +190,12 @@ export class PatientBookingService {
       throw new BadRequestException('Time slot is no longer available');
     }
 
+    // Disallow booking in the past (date + startTime earlier than now)
+    const slotStart = new Date(`${bookingData.date}T${bookingData.startTime}:00`);
+    if (slotStart.getTime() < Date.now()) {
+      throw new BadRequestException('Cannot book a past time slot');
+    }
+
     // Check for existing appointment at this time
     const existingAppointment = await this.db.appointment.findFirst({
       where: {
@@ -238,6 +250,15 @@ export class PatientBookingService {
         },
       },
     });
+
+    // Notify doctor about the new appointment request
+    try {
+      await this.notificationService.notifyAppointmentRequested(appointment);
+      this.logger.log(`Notification sent to doctor ${bookingData.doctorId} for appointment ${appointment.id}`);
+    } catch (error) {
+      this.logger.error(`Failed to send notification: ${error.message}`, error.stack);
+      // Don't fail the booking if notification fails
+    }
 
     return {
       success: true,
@@ -349,10 +370,13 @@ export class PatientBookingService {
   // ===========================================
 
   private mapDoctorForBooking(doctor: any) {
-    // Normalize consultation fee (pick first/current active if multiple)
-    const firstFee = Array.isArray(doctor?.doctorProfile?.consultationFees)
-      ? doctor.doctorProfile.consultationFees[0]
-      : undefined;
+    // Normalize consultation fee: pick the most recently updated active fee
+    const fees = Array.isArray(doctor?.doctorProfile?.consultationFees)
+      ? doctor.doctorProfile.consultationFees
+      : [];
+    const activeFees = fees.filter((f: any) => f?.isActive !== false);
+    const mostRecent = activeFees.sort((a: any, b: any) => new Date(b.updatedAt || b.createdAt || 0).getTime() - new Date(a.updatedAt || a.createdAt || 0).getTime())[0];
+    const normalizedAmount = mostRecent?.amount ?? mostRecent?.fee ?? mostRecent?.baseFee ?? null;
 
     return {
       id: doctor.id,
@@ -383,8 +407,8 @@ export class PatientBookingService {
         education: doctor.doctorProfile.education,
         services: doctor.doctorProfile.services || [],
         insurances: doctor.doctorProfile.insurances || [],
-        consultationFee: firstFee?.amount ?? firstFee?.fee ?? null,
-        currency: firstFee?.currency ?? 'KES',
+        consultationFee: normalizedAmount,
+        currency: mostRecent?.currency ?? 'KES',
         location: doctor.doctorProfile.practiceAddress,
         city: doctor.doctorProfile.practiceCity,
       } : null,

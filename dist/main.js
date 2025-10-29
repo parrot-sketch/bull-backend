@@ -45,8 +45,9 @@ const throttler_1 = __webpack_require__(7);
 const auth_module_1 = __webpack_require__(8);
 const doctor_profile_module_1 = __webpack_require__(23);
 const emr_module_1 = __webpack_require__(26);
-const patient_booking_module_1 = __webpack_require__(41);
-const scheduling_module_1 = __webpack_require__(44);
+const notifications_module_1 = __webpack_require__(41);
+const patient_booking_module_1 = __webpack_require__(46);
+const scheduling_module_1 = __webpack_require__(49);
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -62,6 +63,7 @@ exports.AppModule = AppModule = __decorate([
             scheduling_module_1.SchedulingModule,
             patient_booking_module_1.PatientBookingModule,
             emr_module_1.EmrModule,
+            notifications_module_1.NotificationsModule,
         ],
         controllers: [],
         providers: [
@@ -5594,17 +5596,560 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NotificationsModule = void 0;
+const common_1 = __webpack_require__(1);
+const database_service_1 = __webpack_require__(19);
+const notification_controller_1 = __webpack_require__(42);
+const notification_service_1 = __webpack_require__(45);
+let NotificationsModule = class NotificationsModule {
+};
+exports.NotificationsModule = NotificationsModule;
+exports.NotificationsModule = NotificationsModule = __decorate([
+    (0, common_1.Module)({
+        controllers: [notification_controller_1.NotificationController],
+        providers: [notification_service_1.NotificationService, database_service_1.DatabaseService],
+        exports: [notification_service_1.NotificationService],
+    })
+], NotificationsModule);
+
+
+/***/ }),
+/* 42 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NotificationController = void 0;
+const common_1 = __webpack_require__(1);
+const jwt_auth_guard_1 = __webpack_require__(12);
+const notification_dto_1 = __webpack_require__(43);
+const notification_service_1 = __webpack_require__(45);
+let NotificationController = class NotificationController {
+    constructor(notificationService) {
+        this.notificationService = notificationService;
+    }
+    async getNotifications(req, query) {
+        const userId = req.user.id;
+        const filters = {
+            type: query.type,
+            unreadOnly: query.unreadOnly || false,
+            includeArchived: query.includeArchived || false,
+            page: query.page ? parseInt(query.page) : 1,
+            limit: query.limit ? parseInt(query.limit) : 20,
+        };
+        return this.notificationService.getUserNotifications(userId, filters);
+    }
+    async getUnreadCount(req) {
+        const userId = req.user.id;
+        const count = await this.notificationService.getUnreadCount(userId);
+        return { success: true, count };
+    }
+    async markAsRead(req, notificationId) {
+        const userId = req.user.id;
+        await this.notificationService.markAsRead(notificationId, userId);
+        return { success: true, message: 'Notification marked as read' };
+    }
+    async markAllAsRead(req) {
+        const userId = req.user.id;
+        await this.notificationService.markAllAsRead(userId);
+        return { success: true, message: 'All notifications marked as read' };
+    }
+    async archiveNotification(req, notificationId) {
+        const userId = req.user.id;
+        await this.notificationService.archiveNotification(notificationId, userId);
+        return { success: true, message: 'Notification archived' };
+    }
+    async deleteNotification(req, notificationId) {
+        const userId = req.user.id;
+        await this.notificationService.deleteNotification(notificationId, userId);
+        return { success: true, message: 'Notification deleted' };
+    }
+};
+exports.NotificationController = NotificationController;
+__decorate([
+    (0, common_1.Get)(),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, typeof (_b = typeof notification_dto_1.QueryNotificationsDto !== "undefined" && notification_dto_1.QueryNotificationsDto) === "function" ? _b : Object]),
+    __metadata("design:returntype", Promise)
+], NotificationController.prototype, "getNotifications", null);
+__decorate([
+    (0, common_1.Get)('unread/count'),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], NotificationController.prototype, "getUnreadCount", null);
+__decorate([
+    (0, common_1.Patch)(':id/read'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], NotificationController.prototype, "markAsRead", null);
+__decorate([
+    (0, common_1.Post)('read-all'),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], NotificationController.prototype, "markAllAsRead", null);
+__decorate([
+    (0, common_1.Patch)(':id/archive'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], NotificationController.prototype, "archiveNotification", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], NotificationController.prototype, "deleteNotification", null);
+exports.NotificationController = NotificationController = __decorate([
+    (0, common_1.Controller)('notifications'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    __metadata("design:paramtypes", [typeof (_a = typeof notification_service_1.NotificationService !== "undefined" && notification_service_1.NotificationService) === "function" ? _a : Object])
+], NotificationController);
+
+
+/***/ }),
+/* 43 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.QueryNotificationsDto = exports.UpdateNotificationDto = exports.CreateNotificationDto = exports.NotificationChannel = exports.NotificationPriority = exports.NotificationType = void 0;
+const class_transformer_1 = __webpack_require__(44);
+const class_validator_1 = __webpack_require__(14);
+var NotificationType;
+(function (NotificationType) {
+    NotificationType["APPOINTMENT_REQUESTED"] = "APPOINTMENT_REQUESTED";
+    NotificationType["APPOINTMENT_SCHEDULED"] = "APPOINTMENT_SCHEDULED";
+    NotificationType["APPOINTMENT_CONFIRMED"] = "APPOINTMENT_CONFIRMED";
+    NotificationType["APPOINTMENT_CANCELLED"] = "APPOINTMENT_CANCELLED";
+    NotificationType["APPOINTMENT_REMINDER"] = "APPOINTMENT_REMINDER";
+    NotificationType["APPOINTMENT_RESCHEDULED"] = "APPOINTMENT_RESCHEDULED";
+    NotificationType["SYSTEM_ALERT"] = "SYSTEM_ALERT";
+    NotificationType["SYSTEM_MAINTENANCE"] = "SYSTEM_MAINTENANCE";
+    NotificationType["WELCOME"] = "WELCOME";
+    NotificationType["PROFILE_UPDATE"] = "PROFILE_UPDATE";
+    NotificationType["PRESCRIPTION_READY"] = "PRESCRIPTION_READY";
+    NotificationType["LAB_RESULT_AVAILABLE"] = "LAB_RESULT_AVAILABLE";
+    NotificationType["IMAGING_RESULT_AVAILABLE"] = "IMAGING_RESULT_AVAILABLE";
+    NotificationType["MESSAGE_RECEIVED"] = "MESSAGE_RECEIVED";
+    NotificationType["FILE_SHARED"] = "FILE_SHARED";
+})(NotificationType || (exports.NotificationType = NotificationType = {}));
+var NotificationPriority;
+(function (NotificationPriority) {
+    NotificationPriority["LOW"] = "LOW";
+    NotificationPriority["NORMAL"] = "NORMAL";
+    NotificationPriority["HIGH"] = "HIGH";
+    NotificationPriority["URGENT"] = "URGENT";
+})(NotificationPriority || (exports.NotificationPriority = NotificationPriority = {}));
+var NotificationChannel;
+(function (NotificationChannel) {
+    NotificationChannel["IN_APP"] = "IN_APP";
+    NotificationChannel["PUSH"] = "PUSH";
+    NotificationChannel["EMAIL"] = "EMAIL";
+    NotificationChannel["SMS"] = "SMS";
+})(NotificationChannel || (exports.NotificationChannel = NotificationChannel = {}));
+class CreateNotificationDto {
+}
+exports.CreateNotificationDto = CreateNotificationDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateNotificationDto.prototype, "userId", void 0);
+__decorate([
+    (0, class_validator_1.IsEnum)(NotificationType),
+    __metadata("design:type", String)
+], CreateNotificationDto.prototype, "type", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateNotificationDto.prototype, "title", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateNotificationDto.prototype, "message", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateNotificationDto.prototype, "body", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsEnum)(NotificationPriority),
+    __metadata("design:type", String)
+], CreateNotificationDto.prototype, "priority", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateNotificationDto.prototype, "actionUrl", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateNotificationDto.prototype, "actionLabel", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsObject)(),
+    __metadata("design:type", typeof (_a = typeof Record !== "undefined" && Record) === "function" ? _a : Object)
+], CreateNotificationDto.prototype, "metadata", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsEnum)(NotificationChannel, { each: true }),
+    __metadata("design:type", Array)
+], CreateNotificationDto.prototype, "channels", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateNotificationDto.prototype, "relatedEntityType", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateNotificationDto.prototype, "relatedEntityId", void 0);
+class UpdateNotificationDto {
+}
+exports.UpdateNotificationDto = UpdateNotificationDto;
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], UpdateNotificationDto.prototype, "isRead", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], UpdateNotificationDto.prototype, "isArchived", void 0);
+class QueryNotificationsDto {
+}
+exports.QueryNotificationsDto = QueryNotificationsDto;
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], QueryNotificationsDto.prototype, "type", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Transform)(({ value }) => {
+        if (value === 'true' || value === true)
+            return true;
+        if (value === 'false' || value === false)
+            return false;
+        return undefined;
+    }),
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], QueryNotificationsDto.prototype, "unreadOnly", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Transform)(({ value }) => {
+        if (value === 'true' || value === true)
+            return true;
+        if (value === 'false' || value === false)
+            return false;
+        return undefined;
+    }),
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], QueryNotificationsDto.prototype, "includeArchived", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], QueryNotificationsDto.prototype, "page", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], QueryNotificationsDto.prototype, "limit", void 0);
+
+
+/***/ }),
+/* 44 */
+/***/ ((module) => {
+
+module.exports = require("class-transformer");
+
+/***/ }),
+/* 45 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var NotificationService_1;
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NotificationService = void 0;
+const common_1 = __webpack_require__(1);
+const database_service_1 = __webpack_require__(19);
+const notification_dto_1 = __webpack_require__(43);
+let NotificationService = NotificationService_1 = class NotificationService {
+    constructor(db) {
+        this.db = db;
+        this.logger = new common_1.Logger(NotificationService_1.name);
+    }
+    async createAndDispatch(dto) {
+        try {
+            const channels = dto.channels || [notification_dto_1.NotificationChannel.IN_APP];
+            const notification = await this.db.notification.create({
+                data: {
+                    userId: dto.userId,
+                    type: dto.type,
+                    title: dto.title,
+                    message: dto.message,
+                    body: dto.body,
+                    priority: dto.priority || notification_dto_1.NotificationPriority.NORMAL,
+                    actionUrl: dto.actionUrl,
+                    actionLabel: dto.actionLabel,
+                    metadata: dto.metadata || {},
+                    channels: channels,
+                    relatedEntityType: dto.relatedEntityType,
+                    relatedEntityId: dto.relatedEntityId,
+                },
+                include: {
+                    user: {
+                        select: {
+                            id: true,
+                            email: true,
+                            firstName: true,
+                            lastName: true,
+                        },
+                    },
+                },
+            });
+            this.logger.log(`Notification created: ${notification.id} for user ${dto.userId}`);
+            return notification;
+        }
+        catch (error) {
+            this.logger.error(`Error creating notification: ${error.message}`, error.stack);
+            throw error;
+        }
+    }
+    async getUserNotifications(userId, filters) {
+        const where = { userId };
+        if (filters?.type) {
+            where.type = filters.type;
+        }
+        if (filters?.unreadOnly) {
+            where.isRead = false;
+        }
+        if (!filters?.includeArchived) {
+            where.isArchived = false;
+        }
+        const page = filters?.page || 1;
+        const limit = filters?.limit || 20;
+        const skip = (page - 1) * limit;
+        const [notifications, total] = await Promise.all([
+            this.db.notification.findMany({
+                where,
+                orderBy: { createdAt: 'desc' },
+                skip: skip,
+                take: limit,
+            }),
+            this.db.notification.count({ where }),
+        ]);
+        return {
+            notifications,
+            pagination: {
+                page,
+                limit,
+                total,
+                totalPages: Math.ceil(total / limit),
+            },
+        };
+    }
+    async getUnreadCount(userId) {
+        return this.db.notification.count({
+            where: {
+                userId,
+                isRead: false,
+                isArchived: false,
+            },
+        });
+    }
+    async markAsRead(notificationId, userId) {
+        return this.db.notification.updateMany({
+            where: {
+                id: notificationId,
+                userId,
+            },
+            data: {
+                isRead: true,
+                readAt: new Date(),
+            },
+        });
+    }
+    async markAllAsRead(userId) {
+        return this.db.notification.updateMany({
+            where: {
+                userId,
+                isRead: false,
+            },
+            data: {
+                isRead: true,
+                readAt: new Date(),
+            },
+        });
+    }
+    async archiveNotification(notificationId, userId) {
+        return this.db.notification.updateMany({
+            where: {
+                id: notificationId,
+                userId,
+            },
+            data: {
+                isArchived: true,
+                archivedAt: new Date(),
+            },
+        });
+    }
+    async deleteNotification(notificationId, userId) {
+        return this.db.notification.deleteMany({
+            where: {
+                id: notificationId,
+                userId,
+            },
+        });
+    }
+    async notifyAppointmentRequested(appointment) {
+        const doctor = await this.db.user.findUnique({
+            where: { id: appointment.doctorId },
+            select: { firstName: true, lastName: true },
+        });
+        const patient = await this.db.user.findUnique({
+            where: { id: appointment.patientId },
+            select: { firstName: true, lastName: true },
+        });
+        const patientName = patient ? `${patient.firstName} ${patient.lastName}` : 'Patient';
+        const dateStr = new Date(appointment.appointmentDate).toLocaleDateString();
+        const timeStr = appointment.startTime || '';
+        return this.createAndDispatch({
+            userId: appointment.doctorId,
+            type: notification_dto_1.NotificationType.APPOINTMENT_REQUESTED,
+            title: 'New Appointment Request',
+            message: `${patientName} requested an appointment on ${dateStr} at ${timeStr}`,
+            body: appointment.reasonForVisit || 'No reason provided',
+            priority: notification_dto_1.NotificationPriority.NORMAL,
+            actionUrl: `/appointments/${appointment.id}`,
+            actionLabel: 'View Request',
+            metadata: {
+                appointmentId: appointment.id,
+                patientId: appointment.patientId,
+                patientName,
+                date: appointment.appointmentDate,
+                time: appointment.startTime,
+                reasonForVisit: appointment.reasonForVisit,
+            },
+            relatedEntityType: 'APPOINTMENT',
+            relatedEntityId: appointment.id,
+            channels: [notification_dto_1.NotificationChannel.IN_APP, notification_dto_1.NotificationChannel.PUSH],
+        });
+    }
+    async notifyAppointmentScheduled(appointment) {
+        const doctor = await this.db.user.findUnique({
+            where: { id: appointment.doctorId },
+            select: { firstName: true, lastName: true },
+        });
+        const doctorName = doctor ? `Dr. ${doctor.firstName} ${doctor.lastName}` : 'Doctor';
+        const dateStr = new Date(appointment.appointmentDate).toLocaleDateString();
+        const timeStr = appointment.startTime || '';
+        return this.createAndDispatch({
+            userId: appointment.patientId,
+            type: notification_dto_1.NotificationType.APPOINTMENT_SCHEDULED,
+            title: 'Appointment Scheduled',
+            message: `Your appointment with ${doctorName} is scheduled for ${dateStr} at ${timeStr}`,
+            body: `Appointment confirmed. Please arrive 10 minutes early.`,
+            priority: notification_dto_1.NotificationPriority.NORMAL,
+            actionUrl: `/appointments/${appointment.id}`,
+            actionLabel: 'View Appointment',
+            metadata: {
+                appointmentId: appointment.id,
+                doctorId: appointment.doctorId,
+                doctorName,
+                date: appointment.appointmentDate,
+                time: appointment.startTime,
+            },
+            relatedEntityType: 'APPOINTMENT',
+            relatedEntityId: appointment.id,
+            channels: [notification_dto_1.NotificationChannel.IN_APP, notification_dto_1.NotificationChannel.PUSH, notification_dto_1.NotificationChannel.EMAIL],
+        });
+    }
+};
+exports.NotificationService = NotificationService;
+exports.NotificationService = NotificationService = NotificationService_1 = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof database_service_1.DatabaseService !== "undefined" && database_service_1.DatabaseService) === "function" ? _a : Object])
+], NotificationService);
+
+
+/***/ }),
+/* 46 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PatientBookingModule = void 0;
 const common_1 = __webpack_require__(1);
 const auth_module_1 = __webpack_require__(8);
-const patient_booking_controller_1 = __webpack_require__(42);
-const patient_booking_service_1 = __webpack_require__(43);
+const notifications_module_1 = __webpack_require__(41);
+const patient_booking_controller_1 = __webpack_require__(47);
+const patient_booking_service_1 = __webpack_require__(48);
 let PatientBookingModule = class PatientBookingModule {
 };
 exports.PatientBookingModule = PatientBookingModule;
 exports.PatientBookingModule = PatientBookingModule = __decorate([
     (0, common_1.Module)({
-        imports: [auth_module_1.AuthModule],
+        imports: [auth_module_1.AuthModule, notifications_module_1.NotificationsModule],
         controllers: [patient_booking_controller_1.PatientBookingController],
         providers: [patient_booking_service_1.PatientBookingService],
         exports: [patient_booking_service_1.PatientBookingService],
@@ -5613,7 +6158,7 @@ exports.PatientBookingModule = PatientBookingModule = __decorate([
 
 
 /***/ }),
-/* 42 */
+/* 47 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5635,7 +6180,7 @@ exports.PatientBookingController = void 0;
 const common_1 = __webpack_require__(1);
 const swagger_1 = __webpack_require__(4);
 const jwt_auth_guard_1 = __webpack_require__(12);
-const patient_booking_service_1 = __webpack_require__(43);
+const patient_booking_service_1 = __webpack_require__(48);
 let PatientBookingController = class PatientBookingController {
     constructor(patientBookingService) {
         this.patientBookingService = patientBookingService;
@@ -5747,7 +6292,7 @@ exports.PatientBookingController = PatientBookingController = __decorate([
 
 
 /***/ }),
-/* 43 */
+/* 48 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5760,14 +6305,18 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a;
+var PatientBookingService_1;
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PatientBookingService = void 0;
 const common_1 = __webpack_require__(1);
 const database_service_1 = __webpack_require__(19);
-let PatientBookingService = class PatientBookingService {
-    constructor(db) {
+const notification_service_1 = __webpack_require__(45);
+let PatientBookingService = PatientBookingService_1 = class PatientBookingService {
+    constructor(db, notificationService) {
         this.db = db;
+        this.notificationService = notificationService;
+        this.logger = new common_1.Logger(PatientBookingService_1.name);
     }
     async findDoctors(filters) {
         const where = {
@@ -5891,6 +6440,10 @@ let PatientBookingService = class PatientBookingService {
         if (!slotAvailable) {
             throw new common_1.BadRequestException('Time slot is no longer available');
         }
+        const slotStart = new Date(`${bookingData.date}T${bookingData.startTime}:00`);
+        if (slotStart.getTime() < Date.now()) {
+            throw new common_1.BadRequestException('Cannot book a past time slot');
+        }
         const existingAppointment = await this.db.appointment.findFirst({
             where: {
                 doctorId: bookingData.doctorId,
@@ -5939,6 +6492,13 @@ let PatientBookingService = class PatientBookingService {
                 },
             },
         });
+        try {
+            await this.notificationService.notifyAppointmentRequested(appointment);
+            this.logger.log(`Notification sent to doctor ${bookingData.doctorId} for appointment ${appointment.id}`);
+        }
+        catch (error) {
+            this.logger.error(`Failed to send notification: ${error.message}`, error.stack);
+        }
         return {
             success: true,
             data: appointment,
@@ -6022,9 +6582,12 @@ let PatientBookingService = class PatientBookingService {
         };
     }
     mapDoctorForBooking(doctor) {
-        const firstFee = Array.isArray(doctor?.doctorProfile?.consultationFees)
-            ? doctor.doctorProfile.consultationFees[0]
-            : undefined;
+        const fees = Array.isArray(doctor?.doctorProfile?.consultationFees)
+            ? doctor.doctorProfile.consultationFees
+            : [];
+        const activeFees = fees.filter((f) => f?.isActive !== false);
+        const mostRecent = activeFees.sort((a, b) => new Date(b.updatedAt || b.createdAt || 0).getTime() - new Date(a.updatedAt || a.createdAt || 0).getTime())[0];
+        const normalizedAmount = mostRecent?.amount ?? mostRecent?.fee ?? mostRecent?.baseFee ?? null;
         return {
             id: doctor.id,
             name: `${doctor.firstName} ${doctor.lastName}`,
@@ -6052,8 +6615,8 @@ let PatientBookingService = class PatientBookingService {
                 education: doctor.doctorProfile.education,
                 services: doctor.doctorProfile.services || [],
                 insurances: doctor.doctorProfile.insurances || [],
-                consultationFee: firstFee?.amount ?? firstFee?.fee ?? null,
-                currency: firstFee?.currency ?? 'KES',
+                consultationFee: normalizedAmount,
+                currency: mostRecent?.currency ?? 'KES',
                 location: doctor.doctorProfile.practiceAddress,
                 city: doctor.doctorProfile.practiceCity,
             } : null,
@@ -6092,14 +6655,14 @@ let PatientBookingService = class PatientBookingService {
     }
 };
 exports.PatientBookingService = PatientBookingService;
-exports.PatientBookingService = PatientBookingService = __decorate([
+exports.PatientBookingService = PatientBookingService = PatientBookingService_1 = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof database_service_1.DatabaseService !== "undefined" && database_service_1.DatabaseService) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof database_service_1.DatabaseService !== "undefined" && database_service_1.DatabaseService) === "function" ? _a : Object, typeof (_b = typeof notification_service_1.NotificationService !== "undefined" && notification_service_1.NotificationService) === "function" ? _b : Object])
 ], PatientBookingService);
 
 
 /***/ }),
-/* 44 */
+/* 49 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6112,19 +6675,20 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SchedulingModule = void 0;
 const common_1 = __webpack_require__(1);
-const schedule_1 = __webpack_require__(45);
+const schedule_1 = __webpack_require__(50);
 const database_service_1 = __webpack_require__(19);
-const scheduling_controller_1 = __webpack_require__(46);
-const appointment_management_service_1 = __webpack_require__(50);
-const doctor_availability_service_1 = __webpack_require__(52);
-const scheduling_service_1 = __webpack_require__(49);
-const slot_engine_service_1 = __webpack_require__(51);
+const notifications_module_1 = __webpack_require__(41);
+const scheduling_controller_1 = __webpack_require__(51);
+const appointment_management_service_1 = __webpack_require__(54);
+const doctor_availability_service_1 = __webpack_require__(56);
+const scheduling_service_1 = __webpack_require__(53);
+const slot_engine_service_1 = __webpack_require__(55);
 let SchedulingModule = class SchedulingModule {
 };
 exports.SchedulingModule = SchedulingModule;
 exports.SchedulingModule = SchedulingModule = __decorate([
     (0, common_1.Module)({
-        imports: [schedule_1.ScheduleModule.forRoot()],
+        imports: [schedule_1.ScheduleModule.forRoot(), notifications_module_1.NotificationsModule],
         controllers: [scheduling_controller_1.SchedulingController],
         providers: [
             scheduling_service_1.SchedulingService,
@@ -6144,13 +6708,13 @@ exports.SchedulingModule = SchedulingModule = __decorate([
 
 
 /***/ }),
-/* 45 */
+/* 50 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/schedule");
 
 /***/ }),
-/* 46 */
+/* 51 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6172,8 +6736,8 @@ exports.SchedulingController = void 0;
 const common_1 = __webpack_require__(1);
 const swagger_1 = __webpack_require__(4);
 const jwt_auth_guard_1 = __webpack_require__(12);
-const scheduling_dto_1 = __webpack_require__(47);
-const scheduling_service_1 = __webpack_require__(49);
+const scheduling_dto_1 = __webpack_require__(52);
+const scheduling_service_1 = __webpack_require__(53);
 let SchedulingController = class SchedulingController {
     constructor(schedulingService) {
         this.schedulingService = schedulingService;
@@ -6605,7 +7169,7 @@ exports.SchedulingController = SchedulingController = __decorate([
 
 
 /***/ }),
-/* 47 */
+/* 52 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6621,7 +7185,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ScheduleAnalyticsDto = exports.TimeSlotAvailabilityDto = exports.UpdateAvailabilityDto = exports.GetAvailabilityDto = exports.UpdateAppointmentDto = exports.BookAppointmentDto = exports.AppointmentStatus = exports.AppointmentType = exports.CreateExceptionDto = exports.ExceptionType = exports.UpdateTimeSlotDto = exports.CreateTimeSlotDto = exports.UpdateScheduleTemplateDto = exports.CreateScheduleTemplateDto = void 0;
 const class_validator_1 = __webpack_require__(14);
-const class_transformer_1 = __webpack_require__(48);
+const class_transformer_1 = __webpack_require__(44);
 class CreateScheduleTemplateDto {
 }
 exports.CreateScheduleTemplateDto = CreateScheduleTemplateDto;
@@ -6951,13 +7515,7 @@ __decorate([
 
 
 /***/ }),
-/* 48 */
-/***/ ((module) => {
-
-module.exports = require("class-transformer");
-
-/***/ }),
-/* 49 */
+/* 53 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6975,9 +7533,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SchedulingService = void 0;
 const common_1 = __webpack_require__(1);
 const database_service_1 = __webpack_require__(19);
-const appointment_management_service_1 = __webpack_require__(50);
-const doctor_availability_service_1 = __webpack_require__(52);
-const slot_engine_service_1 = __webpack_require__(51);
+const appointment_management_service_1 = __webpack_require__(54);
+const doctor_availability_service_1 = __webpack_require__(56);
+const slot_engine_service_1 = __webpack_require__(55);
 let SchedulingService = class SchedulingService {
     constructor(db, doctorAvailability, slotEngine, appointmentManagement) {
         this.db = db;
@@ -7441,7 +7999,7 @@ exports.SchedulingService = SchedulingService = __decorate([
 
 
 /***/ }),
-/* 50 */
+/* 54 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7454,16 +8012,20 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a, _b;
+var AppointmentManagementService_1;
+var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppointmentManagementService = void 0;
 const common_1 = __webpack_require__(1);
 const database_service_1 = __webpack_require__(19);
-const slot_engine_service_1 = __webpack_require__(51);
-let AppointmentManagementService = class AppointmentManagementService {
-    constructor(db, slotEngine) {
+const notification_service_1 = __webpack_require__(45);
+const slot_engine_service_1 = __webpack_require__(55);
+let AppointmentManagementService = AppointmentManagementService_1 = class AppointmentManagementService {
+    constructor(db, slotEngine, notificationService) {
         this.db = db;
         this.slotEngine = slotEngine;
+        this.notificationService = notificationService;
+        this.logger = new common_1.Logger(AppointmentManagementService_1.name);
     }
     async createAppointment(appointmentData) {
         const availabilityCheck = await this.slotEngine.checkSlotAvailability(appointmentData.doctorId, appointmentData.date, appointmentData.startTime, appointmentData.endTime);
@@ -7517,9 +8079,19 @@ let AppointmentManagementService = class AppointmentManagementService {
         }
         const updatedAppointment = await this.db.appointment.update({
             where: { id: appointmentId },
-            data: { status: 'CONFIRMED' },
+            data: {
+                status: 'CONFIRMED',
+                confirmedAt: new Date(),
+            },
             include: { patient: true },
         });
+        try {
+            await this.notificationService.notifyAppointmentScheduled(updatedAppointment);
+            this.logger.log(`Notification sent to patient ${updatedAppointment.patientId} for appointment ${appointmentId}`);
+        }
+        catch (error) {
+            this.logger.error(`Failed to send notification: ${error.message}`, error.stack);
+        }
         return {
             success: true,
             data: updatedAppointment,
@@ -7779,14 +8351,14 @@ let AppointmentManagementService = class AppointmentManagementService {
     }
 };
 exports.AppointmentManagementService = AppointmentManagementService;
-exports.AppointmentManagementService = AppointmentManagementService = __decorate([
+exports.AppointmentManagementService = AppointmentManagementService = AppointmentManagementService_1 = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof database_service_1.DatabaseService !== "undefined" && database_service_1.DatabaseService) === "function" ? _a : Object, typeof (_b = typeof slot_engine_service_1.SlotEngineService !== "undefined" && slot_engine_service_1.SlotEngineService) === "function" ? _b : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof database_service_1.DatabaseService !== "undefined" && database_service_1.DatabaseService) === "function" ? _a : Object, typeof (_b = typeof slot_engine_service_1.SlotEngineService !== "undefined" && slot_engine_service_1.SlotEngineService) === "function" ? _b : Object, typeof (_c = typeof notification_service_1.NotificationService !== "undefined" && notification_service_1.NotificationService) === "function" ? _c : Object])
 ], AppointmentManagementService);
 
 
 /***/ }),
-/* 51 */
+/* 55 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7803,7 +8375,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SlotEngineService = void 0;
 const common_1 = __webpack_require__(1);
-const schedule_1 = __webpack_require__(45);
+const schedule_1 = __webpack_require__(50);
 const database_service_1 = __webpack_require__(19);
 let SlotEngineService = class SlotEngineService {
     constructor(db) {
@@ -8091,7 +8663,7 @@ exports.SlotEngineService = SlotEngineService = __decorate([
 
 
 /***/ }),
-/* 52 */
+/* 56 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8108,7 +8680,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DoctorAvailabilityService = void 0;
 const common_1 = __webpack_require__(1);
-const schedule_1 = __webpack_require__(45);
+const schedule_1 = __webpack_require__(50);
 const database_service_1 = __webpack_require__(19);
 let DoctorAvailabilityService = class DoctorAvailabilityService {
     constructor(db) {
