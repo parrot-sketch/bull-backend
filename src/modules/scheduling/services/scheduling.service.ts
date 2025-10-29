@@ -544,7 +544,25 @@ export class SchedulingService {
     // Handle status filter - can be comma-separated or single value
     if (status) {
       const statusArray = status.includes(',') ? status.split(',') : [status];
-      where.status = { in: statusArray };
+      
+      // Map frontend status values to Prisma enum values
+      // Frontend uses "SCHEDULED" but Prisma uses "CONFIRMED"
+      const validStatuses = statusArray.map((s: string) => {
+        const trimmed = s.trim().toUpperCase();
+        // Map SCHEDULED to CONFIRMED for Prisma compatibility
+        if (trimmed === 'SCHEDULED') {
+          return 'CONFIRMED';
+        }
+        return trimmed;
+      });
+      
+      // Validate status values match Prisma enum
+      const validEnumValues = ['PENDING', 'CONFIRMED', 'CANCELLED', 'COMPLETED', 'NO_SHOW', 'RESCHEDULED', 'REJECTED'];
+      const filteredStatuses = validStatuses.filter((s: string) => validEnumValues.includes(s));
+      
+      if (filteredStatuses.length > 0) {
+        where.status = { in: filteredStatuses as any };
+      }
     }
 
     const appointments = await this.db.appointment.findMany({
