@@ -349,6 +349,11 @@ export class PatientBookingService {
   // ===========================================
 
   private mapDoctorForBooking(doctor: any) {
+    // Normalize consultation fee (pick first/current active if multiple)
+    const firstFee = Array.isArray(doctor?.doctorProfile?.consultationFees)
+      ? doctor.doctorProfile.consultationFees[0]
+      : undefined;
+
     return {
       id: doctor.id,
       name: `${doctor.firstName} ${doctor.lastName}`,
@@ -357,6 +362,7 @@ export class PatientBookingService {
       avatar: doctor.avatar,
       department: doctor.department,
       specialization: doctor.specialization,
+      // Legacy field kept for backward compatibility with older clients
       profile: doctor.doctorProfile ? {
         specialties: doctor.doctorProfile.specialties,
         practiceName: doctor.doctorProfile.practiceName,
@@ -368,6 +374,19 @@ export class PatientBookingService {
         services: doctor.doctorProfile.services || [],
         insurances: doctor.doctorProfile.insurances || [],
         consultationFees: doctor.doctorProfile.consultationFees || [],
+      } : null,
+      // New normalized shape expected by the patient app
+      doctorProfile: doctor.doctorProfile ? {
+        specialization: doctor.specialization,
+        bio: doctor.doctorProfile.professionalBio,
+        experience: doctor.doctorProfile.yearsExperience,
+        education: doctor.doctorProfile.education,
+        services: doctor.doctorProfile.services || [],
+        insurances: doctor.doctorProfile.insurances || [],
+        consultationFee: firstFee?.amount ?? firstFee?.fee ?? null,
+        currency: firstFee?.currency ?? 'KES',
+        location: doctor.doctorProfile.practiceAddress,
+        city: doctor.doctorProfile.practiceCity,
       } : null,
     };
   }

@@ -6022,6 +6022,9 @@ let PatientBookingService = class PatientBookingService {
         };
     }
     mapDoctorForBooking(doctor) {
+        const firstFee = Array.isArray(doctor?.doctorProfile?.consultationFees)
+            ? doctor.doctorProfile.consultationFees[0]
+            : undefined;
         return {
             id: doctor.id,
             name: `${doctor.firstName} ${doctor.lastName}`,
@@ -6041,6 +6044,18 @@ let PatientBookingService = class PatientBookingService {
                 services: doctor.doctorProfile.services || [],
                 insurances: doctor.doctorProfile.insurances || [],
                 consultationFees: doctor.doctorProfile.consultationFees || [],
+            } : null,
+            doctorProfile: doctor.doctorProfile ? {
+                specialization: doctor.specialization,
+                bio: doctor.doctorProfile.professionalBio,
+                experience: doctor.doctorProfile.yearsExperience,
+                education: doctor.doctorProfile.education,
+                services: doctor.doctorProfile.services || [],
+                insurances: doctor.doctorProfile.insurances || [],
+                consultationFee: firstFee?.amount ?? firstFee?.fee ?? null,
+                currency: firstFee?.currency ?? 'KES',
+                location: doctor.doctorProfile.practiceAddress,
+                city: doctor.doctorProfile.practiceCity,
             } : null,
         };
     }
