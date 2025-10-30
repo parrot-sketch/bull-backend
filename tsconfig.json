@@ -31,12 +31,15 @@
     "src/**/*",
     "libs/**/*",
     "shared/**/*",
-    "test/**/*",
     "prisma/**/*"
   ],
   "exclude": [
     "node_modules",
     "dist",
-    "coverage"
+    "coverage",
+    "test/**/*",
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "jest.config.ts"
   ]
 }
