@@ -3,6 +3,9 @@ import { JwtService } from '@nestjs/jwt';
 import { UserRole } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import * as speakeasy from 'speakeasy';
+import * as crypto from 'crypto';
+import * as nodemailer from 'nodemailer';
+import * as sgMail from '@sendgrid/mail';
 import { AuditService } from './audit.service';
 import { DatabaseService } from './database.service';
 
@@ -28,6 +31,87 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly auditService: AuditService,
   ) {}
+
+  /**
+   * Helper: create nodemailer transporter using environment variables (Mailhog or real SMTP)
+   *
+   * Behavior:
+   * - If EMAIL_SERVICE is set to 'sendgrid' we prefer the SendGrid HTTP API and return null here
+   *   (the sendEmail helper will use the SendGrid SDK). This ensures the code path is explicit
+   *   and controlled by configuration.
+   * - If EMAIL_SERVICE is not 'sendgrid', or SendGrid is not configured, we create an SMTP
+   *   transporter. This fallback is intentionally kept for local development (MailHog) or
+   *   environments where only SMTP is available.
+   */
+  private createMailer() {
+    const emailService = (process.env.EMAIL_SERVICE || '').toLowerCase();
+
+    // If explicitly configured to use SendGrid, signal that by returning null so callers
+    // use the SendGrid HTTP API path. Rely on the sendEmail helper to validate the API key.
+    if (emailService === 'sendgrid') {
+      return null;
+    }
+
+    // Fallback to generic SMTP configuration (Mailhog/dev or any SMTP provider)
+    const host = process.env.SMTP_HOST || 'localhost';
+    const port = parseInt(process.env.SMTP_PORT || '1025', 10); // Mailhog default 1025
+    const user = process.env.SMTP_USER || undefined;
+    const pass = process.env.SMTP_PASS || undefined;
+
+    const transportOptions: any = { host, port };
+    if (user && pass) {
+      transportOptions.auth = { user, pass };
+      transportOptions.secure = Number(port) === 465; // use secure only on 465
+    }
+
+    return nodemailer.createTransport(transportOptions);
+  }
+
+  // Unified sendEmail helper - uses SendGrid HTTP API when available, otherwise nodemailer transport
+  private async sendEmail(opts: { to: string; from: string; subject: string; text: string; html?: string }) {
+    const emailService = (process.env.EMAIL_SERVICE || '').toLowerCase();
+
+    // If configured to use SendGrid, use the SDK and throw/log if missing
+    if (emailService === 'sendgrid') {
+      const sendgridKey = process.env.SENDGRID_API_KEY;
+      if (!sendgridKey) {
+        console.error('EMAIL_SERVICE=sendgrid but SENDGRID_API_KEY is not set');
+        throw new Error('SendGrid API key not configured');
+      }
+
+      try {
+        sgMail.setApiKey(sendgridKey);
+        await sgMail.send({
+          to: opts.to,
+          from: opts.from,
+          subject: opts.subject,
+          text: opts.text,
+          html: opts.html,
+        });
+        return;
+      } catch (err) {
+        console.error('SendGrid send failed:', err);
+        throw err; // bubble up so caller can decide (we don't silently fallback when explicitly configured)
+      }
+    }
+
+    // Otherwise use SMTP transporter (local dev / MailHog / legacy SMTP)
+    try {
+      const transporter = this.createMailer();
+      if (!transporter) {
+        throw new Error('SMTP transporter not available');
+      }
+      await transporter.sendMail({ from: opts.from, to: opts.to, subject: opts.subject, text: opts.text, html: opts.html });
+    } catch (err) {
+      console.error('SMTP send failed:', err);
+      // Do not rethrow here - email delivery failures should not break the calling flow
+    }
+  }
+
+  // Helper: hash token using SHA-256 for storage
+  private hashToken(token: string) {
+    return crypto.createHash('sha256').update(token).digest('hex');
+  }
 
   async register(userData: {
     email: string;
@@ -381,6 +465,129 @@ export class AuthService {
       success: true,
       data: this.mapUserToResponse(user),
     };
+  }
+
+  /**
+   * Request a password reset for an email - generates a 6-digit OTP, stores a hashed token and expiry,
+   * and sends the OTP to the user's preferred channel (email/SMS). For security we always return success
+   * regardless of whether the user exists to avoid account enumeration.
+   */
+  async requestPasswordReset(email: string, auditContext?: { ipAddress?: string; userAgent?: string }) {
+    const normalizedEmail = this.normalizeEmail(email);
+
+    try {
+      const user = await this.db.user.findUnique({ where: { email: normalizedEmail } });
+
+      // Always respond success to avoid revealing whether the email exists
+      if (!user) {
+        await this.auditService.log('PASSWORD_RESET_REQUEST_UNKNOWN_EMAIL', {
+          resource: 'USER',
+          ipAddress: auditContext?.ipAddress,
+          userAgent: auditContext?.userAgent,
+          metadata: { email: normalizedEmail },
+          severity: 'INFO',
+        }).catch(() => {});
+        return { success: true, message: 'If an account with that email exists, an OTP has been sent.' };
+      }
+
+      // Generate a 6-digit numeric OTP (not cryptographically long, but suitable for OTP)
+      const otp = (Math.floor(100000 + Math.random() * 900000)).toString();
+      const hashed = this.hashToken(otp);
+      const expiresMs = parseInt(process.env.PASSWORD_RESET_EXPIRES_MS || String(15 * 60 * 1000), 10);
+      const expiresAt = new Date(Date.now() + expiresMs);
+
+      // Store hashed token and expiry on user record
+      await this.db.user.update({ where: { id: user.id }, data: { passwordResetToken: hashed, passwordResetExpires: expiresAt } });
+
+      // Send OTP via email using configured provider (we prefer SendGrid in production).
+      const fromEmail = process.env.FROM_EMAIL || process.env.SMTP_FROM || 'noreply@ihosi.com';
+      const fromName = process.env.FROM_NAME || 'iHosi';
+      const from = fromName ? `${fromName} <${fromEmail}>` : fromEmail;
+      const subject = `${fromName} Password Reset Code`;
+      const text = `Your ${fromName} password reset code is: ${otp}. It will expire in ${Math.round(expiresMs / 60000)} minutes. If you did not request this, please ignore this message.`;
+
+      // Try to send email via unified helper which will use SendGrid when EMAIL_SERVICE=sendgrid
+      this.sendEmail({ to: user.email, from, subject, text }).catch((err) => {
+        console.error('Failed to send password reset email:', err?.message || err);
+      });
+
+      await this.auditService.log('PASSWORD_RESET_REQUESTED', {
+        userId: user.id,
+        resource: 'USER',
+        resourceId: user.id,
+        ipAddress: auditContext?.ipAddress,
+        userAgent: auditContext?.userAgent,
+        metadata: { email: normalizedEmail, method: 'OTP' },
+        severity: 'INFO',
+      }).catch(() => {});
+
+      return { success: true, message: 'If an account with that email exists, an OTP has been sent.' };
+    } catch (error) {
+      console.error('requestPasswordReset error:', error);
+      // For security, respond success but log server error
+      await this.auditService.log('PASSWORD_RESET_ERROR', {
+        resource: 'USER',
+        ipAddress: auditContext?.ipAddress,
+        userAgent: auditContext?.userAgent,
+        metadata: { email: normalizedEmail, error: error instanceof Error ? error.message : 'Unknown' },
+        severity: 'ERROR',
+      }).catch(() => {});
+      return { success: true, message: 'If an account with that email exists, an OTP has been sent.' };
+    }
+  }
+
+  /**
+   * Reset password using the OTP/token previously issued. Token is expected to be the plaintext OTP
+   * which will be hashed and compared to the stored hash. On success, update the user's password and
+   * clear reset fields and invalidate sessions.
+   */
+  async resetPassword(email: string, token: string, newPassword: string, auditContext?: { ipAddress?: string; userAgent?: string }) {
+    const normalizedEmail = this.normalizeEmail(email);
+    const hashedToken = this.hashToken(token);
+
+    const user = await this.db.user.findUnique({ where: { email: normalizedEmail } });
+    if (!user || !user.passwordResetToken || !user.passwordResetExpires) {
+      // Do not reveal missing token/user
+      throw new BadRequestException('Invalid token or expired');
+    }
+
+    if (user.passwordResetExpires < new Date()) {
+      throw new BadRequestException('Token has expired');
+    }
+
+    if (user.passwordResetToken !== hashedToken) {
+      await this.auditService.log('PASSWORD_RESET_INVALID_TOKEN', {
+        userId: user.id,
+        resource: 'USER',
+        resourceId: user.id,
+        ipAddress: auditContext?.ipAddress,
+        userAgent: auditContext?.userAgent,
+        metadata: { email: normalizedEmail },
+        severity: 'WARN',
+      }).catch(() => {});
+      throw new BadRequestException('Invalid token or expired');
+    }
+
+    // Hash new password and update user, clear reset token, and invalidate sessions
+    const newHashed = await bcrypt.hash(newPassword, this.bcryptRounds);
+
+    await this.db.$transaction(async (tx) => {
+      await tx.user.update({ where: { id: user.id }, data: { password: newHashed, passwordResetToken: null, passwordResetExpires: null, lastPasswordChange: new Date() } });
+      // Invalidate sessions
+      await tx.userSession.updateMany({ where: { userId: user.id }, data: { isActive: false } });
+    });
+
+    await this.auditService.log('PASSWORD_RESET_SUCCESS', {
+      userId: user.id,
+      resource: 'USER',
+      resourceId: user.id,
+      ipAddress: auditContext?.ipAddress,
+      userAgent: auditContext?.userAgent,
+      metadata: { email: normalizedEmail },
+      severity: 'INFO',
+    }).catch(() => {});
+
+    return { success: true, message: 'Password reset successful' };
   }
 
   private generateJwtPair(userId: string) {

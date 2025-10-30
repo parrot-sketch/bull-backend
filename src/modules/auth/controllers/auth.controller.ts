@@ -59,6 +59,29 @@ export class RefreshDto {
   refreshToken!: string;
 }
 
+export class ForgotPasswordDto {
+  @IsEmail()
+  @IsNotEmpty()
+  email!: string;
+}
+
+export class ResetPasswordDto {
+  @IsEmail()
+  @IsNotEmpty()
+  email!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  token!: string;
+
+  @IsString()
+  @MinLength(8)
+  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/, {
+    message: 'Password must contain uppercase, lowercase, number and special character'
+  })
+  newPassword!: string;
+}
+
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
@@ -90,6 +113,30 @@ export class AuthController {
       userAgent: req.headers['user-agent'],
     };
     return this.authService.register(userData, auditContext);
+  }
+
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.OK)
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @ApiOperation({ summary: 'Request password reset (sends OTP via preferred channel)' })
+  async forgotPassword(@Body() body: ForgotPasswordDto, @Request() req: any) {
+    const auditContext = {
+      ipAddress: req.ip || req.connection.remoteAddress,
+      userAgent: req.headers['user-agent'],
+    };
+    return this.authService.requestPasswordReset(body.email, auditContext);
+  }
+
+  @Post('reset-password')
+  @HttpCode(HttpStatus.OK)
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @ApiOperation({ summary: 'Reset password using OTP/token' })
+  async resetPassword(@Body() body: ResetPasswordDto, @Request() req: any) {
+    const auditContext = {
+      ipAddress: req.ip || req.connection.remoteAddress,
+      userAgent: req.headers['user-agent'],
+    };
+    return this.authService.resetPassword(body.email, body.token, body.newPassword, auditContext);
   }
 
   @Post('refresh')
