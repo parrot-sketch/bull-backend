@@ -8,9 +8,9 @@
     "npm": ">=8.0.0"
   },
   "scripts": {
-    "build": "npx @nestjs/cli build",
+   "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
+    "start": "node -r tsconfig-paths/register dist/main.js",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
@@ -40,6 +40,7 @@
   "dependencies": {
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.0.0",
+    "tsconfig-paths": "^4.2.0",
     "@nestjs/core": "^10.0.0",
     "@nestjs/jwt": "^10.0.0",
     "@nestjs/microservices": "^10.0.0",
@@ -124,7 +125,7 @@
     "ts-jest": "^29.1.0",
     "ts-loader": "^9.4.3",
     "ts-node": "^10.9.1",
-    "tsconfig-paths": "^4.2.0",
+    
     "typescript": "^5.1.3"
   },
   "jest": {
