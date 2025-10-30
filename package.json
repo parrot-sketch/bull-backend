@@ -3,8 +3,12 @@
   "version": "1.0.0",
   "description": "iHosi Healthcare Backend - Enterprise Healthcare API",
   "main": "dist/main.js",
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
   "scripts": {
-    "build": "nest build",
+    "build": "npm ci && prisma generate && nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -28,6 +32,9 @@
     "k8s:apply": "kubectl apply -f infrastructure/kubernetes/",
     "k8s:delete": "kubectl delete -f infrastructure/kubernetes/",
     "security:audit": "npm audit",
+    "postinstall": "prisma generate",
+    "production:start": "node dist/main.js",
+    "production:migrate": "prisma migrate deploy",
     "security:scan": "snyk test"
   },
   "dependencies": {
