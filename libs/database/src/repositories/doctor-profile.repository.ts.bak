@@ -1,0 +1,161 @@
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from '../prisma.service';
+import { CreateDoctorProfileDto, CreateDoctorServiceDto, CreateDoctorInsuranceDto } from '../types';
+
+@Injectable()
+export class DoctorProfileRepository {
+  constructor(private readonly prisma: PrismaService) {}
+
+  private get doctorProfile() { return this.prisma.doctorProfile; }
+  private get doctorService() { return this.prisma.doctorService; }
+  private get doctorInsurance() { return this.prisma.doctorInsurance; }
+  private get consultationFee() { return this.prisma.consultationFee; }
+
+  async createProfile(doctorId: string, data: {
+    specialization?: string;
+    specialties?: string[];
+    bio?: string;
+    experience?: string;
+    education?: string;
+    consultationFee: number;
+  }) {
+    return this.prisma.doctorProfile.create({
+      data: {
+        ...data,
+        doctor: { connect: { id: doctorId } }
+      },
+      include: {
+        services: true,
+        insurances: true,
+        consultationFees: true
+      }
+    });
+  }
+
+  async findProfileById(doctorId: string) {
+    const profile = await this.prisma.doctorProfile.findUnique({
+      where: { doctorId },
+      include: {
+        services: true,
+        insurances: true,
+        consultationFees: true,
+        schedules: true
+      }
+    });
+
+    if (!profile) {
+      throw new NotFoundException(`Doctor profile not found for ID: ${doctorId}`);
+    }
+
+    return profile;
+  }
+
+  async updateProfile(doctorId: string, data: {
+    specialization?: string;
+    specialties?: string[];
+    bio?: string;
+    experience?: string;
+    education?: string;
+    consultationFee?: number;
+  }) {
+    return this.prisma.doctorProfile.update({
+      where: { doctorId },
+      data,
+      include: {
+        services: true,
+        insurances: true,
+        schedules: true
+      }
+    });
+  }
+
+  async updateServices(doctorId: string, services: Prisma.DoctorServiceCreateInput[]) {
+    // First delete existing services
+    await this.prisma.doctorService.deleteMany({
+      where: { doctorId }
+    });
+
+    // Then create new ones
+    const createPromises = services.map(service =>
+      this.prisma.doctorService.create({
+        data: {
+          ...service,
+          doctor: { connect: { id: doctorId } }
+        }
+      })
+    );
+
+    return this.prisma.$transaction(createPromises);
+  }
+
+  async removeService(serviceId: string) {
+    const service = await this.prisma.doctorService.findUnique({
+      where: { id: serviceId }
+    });
+
+    if (!service) {
+      throw new NotFoundException(`Service not found: ${serviceId}`);
+    }
+
+    return this.prisma.doctorService.delete({
+      where: { id: serviceId }
+    });
+  }
+
+  async updateInsurance(doctorId: string, providers: Prisma.DoctorInsuranceCreateInput[]) {
+    // First delete existing providers
+    await this.prisma.doctorInsurance.deleteMany({
+      where: { doctorId }
+    });
+
+    // Then create new ones
+    const createPromises = providers.map(provider =>
+      this.prisma.doctorInsurance.create({
+        data: {
+          ...provider,
+          doctor: { connect: { id: doctorId } }
+        }
+      })
+    );
+
+    return this.prisma.$transaction(createPromises);
+  }
+
+  async removeInsurance(id: string) {
+    const insurance = await this.prisma.doctorInsurance.findUnique({
+      where: { id }
+    });
+
+    if (!insurance) {
+      throw new NotFoundException(`Insurance provider not found: ${id}`);
+    }
+
+    return this.prisma.doctorInsurance.delete({
+      where: { id }
+    });
+  }
+        doctor: true,
+        services: true,
+        insurances: true,
+        consultationFees: true,
+        schedules: true
+      }
+    });
+  }
+
+  async createProfile(doctorId: string, data: any) {
+    return this.doctorProfile.create({
+      data: {
+        doctorId,
+        ...data
+      }
+    });
+  }
+
+  async updateProfile(doctorId: string, data: any) {
+    return this.doctorProfile.update({
+      where: { doctorId },
+      data
+    });
+  }
+}

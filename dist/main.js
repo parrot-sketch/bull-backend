@@ -43,11 +43,11 @@ const config_1 = __webpack_require__(6);
 const core_1 = __webpack_require__(3);
 const throttler_1 = __webpack_require__(7);
 const auth_module_1 = __webpack_require__(8);
-const doctor_profile_module_1 = __webpack_require__(26);
-const emr_module_1 = __webpack_require__(29);
-const notifications_module_1 = __webpack_require__(44);
-const patient_booking_module_1 = __webpack_require__(49);
-const scheduling_module_1 = __webpack_require__(52);
+const doctor_profile_module_1 = __webpack_require__(43);
+const emr_module_1 = __webpack_require__(46);
+const notifications_module_1 = __webpack_require__(62);
+const patient_booking_module_1 = __webpack_require__(67);
+const scheduling_module_1 = __webpack_require__(70);
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -101,16 +101,17 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AuthModule = void 0;
+const database_1 = __webpack_require__(9);
 const common_1 = __webpack_require__(1);
 const config_1 = __webpack_require__(6);
-const jwt_1 = __webpack_require__(9);
-const passport_1 = __webpack_require__(10);
-const appointments_controller_1 = __webpack_require__(11);
-const auth_controller_1 = __webpack_require__(13);
-const auth_service_1 = __webpack_require__(16);
-const database_service_1 = __webpack_require__(23);
-const audit_service_1 = __webpack_require__(22);
-const jwt_strategy_1 = __webpack_require__(24);
+const jwt_1 = __webpack_require__(20);
+const passport_1 = __webpack_require__(21);
+const appointments_controller_1 = __webpack_require__(22);
+const auth_controller_1 = __webpack_require__(24);
+const audit_service_1 = __webpack_require__(34);
+const email_service_1 = __webpack_require__(35);
+const auth_service_1 = __webpack_require__(33);
+const jwt_strategy_1 = __webpack_require__(41);
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
@@ -120,6 +121,7 @@ exports.AuthModule = AuthModule = __decorate([
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
             }),
+            database_1.DatabaseModule,
             passport_1.PassportModule,
             jwt_1.JwtModule.registerAsync({
                 inject: [config_1.ConfigService],
@@ -139,29 +141,762 @@ exports.AuthModule = AuthModule = __decorate([
         controllers: [auth_controller_1.AuthController, appointments_controller_1.AppointmentsController],
         providers: [
             auth_service_1.AuthService,
-            database_service_1.DatabaseService,
             audit_service_1.AuditService,
+            email_service_1.EmailService,
             jwt_strategy_1.JwtStrategy,
         ],
-        exports: [auth_service_1.AuthService, database_service_1.DatabaseService],
+        exports: [auth_service_1.AuthService],
     })
 ], AuthModule);
 
 
 /***/ }),
 /* 9 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(10), exports);
+__exportStar(__webpack_require__(11), exports);
+__exportStar(__webpack_require__(13), exports);
+__exportStar(__webpack_require__(14), exports);
+__exportStar(__webpack_require__(15), exports);
+__exportStar(__webpack_require__(16), exports);
+__exportStar(__webpack_require__(17), exports);
+__exportStar(__webpack_require__(18), exports);
+__exportStar(__webpack_require__(19), exports);
+
+
+/***/ }),
+/* 10 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DatabaseModule = void 0;
+const common_1 = __webpack_require__(1);
+const prisma_service_1 = __webpack_require__(11);
+const booking_repository_1 = __webpack_require__(13);
+const doctor_profile_repository_1 = __webpack_require__(14);
+const emr_repository_1 = __webpack_require__(15);
+const notification_repository_1 = __webpack_require__(16);
+const scheduling_repository_1 = __webpack_require__(17);
+const user_repository_1 = __webpack_require__(18);
+let DatabaseModule = class DatabaseModule {
+};
+exports.DatabaseModule = DatabaseModule;
+exports.DatabaseModule = DatabaseModule = __decorate([
+    (0, common_1.Global)(),
+    (0, common_1.Module)({
+        providers: [
+            prisma_service_1.PrismaService,
+            user_repository_1.UserRepository,
+            doctor_profile_repository_1.DoctorProfileRepository,
+            emr_repository_1.EMRRepository,
+            notification_repository_1.NotificationRepository,
+            booking_repository_1.BookingRepository,
+            scheduling_repository_1.SchedulingRepository,
+        ],
+        exports: [
+            prisma_service_1.PrismaService,
+            user_repository_1.UserRepository,
+            doctor_profile_repository_1.DoctorProfileRepository,
+            emr_repository_1.EMRRepository,
+            notification_repository_1.NotificationRepository,
+            booking_repository_1.BookingRepository,
+            scheduling_repository_1.SchedulingRepository,
+        ],
+    })
+], DatabaseModule);
+
+
+/***/ }),
+/* 11 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var PrismaService_1;
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PrismaService = void 0;
+const common_1 = __webpack_require__(1);
+const config_1 = __webpack_require__(6);
+const client_1 = __webpack_require__(12);
+let PrismaService = PrismaService_1 = class PrismaService extends client_1.PrismaClient {
+    constructor(configService) {
+        super({
+            datasources: {
+                db: {
+                    url: configService.get('DATABASE_URL'),
+                },
+            },
+            log: [
+                {
+                    emit: 'event',
+                    level: 'query',
+                },
+                {
+                    emit: 'event',
+                    level: 'error',
+                },
+                {
+                    emit: 'event',
+                    level: 'info',
+                },
+                {
+                    emit: 'event',
+                    level: 'warn',
+                },
+            ],
+        });
+        this.configService = configService;
+        this.logger = new common_1.Logger(PrismaService_1.name);
+        this.logger.log('Database connection established');
+    }
+    async onModuleInit() {
+        try {
+            await this.$connect();
+            this.logger.log('Database connected successfully');
+        }
+        catch (error) {
+            this.logger.error('Failed to connect to database', error);
+            throw error;
+        }
+    }
+    async onModuleDestroy() {
+        try {
+            await this.$disconnect();
+            this.logger.log('Database disconnected successfully');
+        }
+        catch (error) {
+            this.logger.error('Failed to disconnect from database', error);
+        }
+    }
+    async isHealthy() {
+        try {
+            await this.$queryRaw `SELECT 1`;
+            return true;
+        }
+        catch (error) {
+            this.logger.error('Database health check failed', error);
+            return false;
+        }
+    }
+    async getStats() {
+        try {
+            const [userCount, sessionCount, auditLogCount, consentRecordCount,] = await Promise.all([
+                this.user.count(),
+                this.userSession.count(),
+                this.auditLog.count(),
+                this.consentRecord.count(),
+            ]);
+            return {
+                users: userCount,
+                sessions: sessionCount,
+                auditLogs: auditLogCount,
+                consentRecords: consentRecordCount,
+                timestamp: new Date().toISOString(),
+            };
+        }
+        catch (error) {
+            this.logger.error('Failed to get database statistics', error);
+            throw error;
+        }
+    }
+    async cleanupExpiredSessions() {
+        try {
+            const result = await this.userSession.deleteMany({
+                where: {
+                    expiresAt: {
+                        lt: new Date(),
+                    },
+                },
+            });
+            this.logger.log(`Cleaned up ${result.count} expired sessions`);
+            return result.count;
+        }
+        catch (error) {
+            this.logger.error('Failed to cleanup expired sessions', error);
+            throw error;
+        }
+    }
+    async cleanupOldAuditLogs() {
+        try {
+            const cutoffDate = new Date();
+            cutoffDate.setDate(cutoffDate.getDate() - 90);
+            const result = await this.auditLog.deleteMany({
+                where: {
+                    timestamp: {
+                        lt: cutoffDate,
+                    },
+                },
+            });
+            this.logger.log(`Cleaned up ${result.count} old audit logs`);
+            return result.count;
+        }
+        catch (error) {
+            this.logger.error('Failed to cleanup old audit logs', error);
+            throw error;
+        }
+    }
+    async createBackup() {
+        try {
+            const backup = {
+                timestamp: new Date().toISOString(),
+                users: await this.user.findMany({
+                    include: {
+                        profile: true,
+                        sessions: true,
+                        mfaSettings: true,
+                        permissions: {
+                            include: {
+                                permission: true,
+                            },
+                        },
+                        consentRecords: true,
+                    },
+                }),
+                auditLogs: await this.auditLog.findMany({
+                    take: 1000,
+                }),
+            };
+            this.logger.log('Database backup created');
+            return backup;
+        }
+        catch (error) {
+            this.logger.error('Failed to create database backup', error);
+            throw error;
+        }
+    }
+    async transactionWithRetry(fn, maxRetries = 3) {
+        let lastError;
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+                return await this.$transaction(fn);
+            }
+            catch (error) {
+                lastError = error;
+                if (attempt === maxRetries) {
+                    this.logger.error(`Transaction failed after ${maxRetries} attempts`, error);
+                    throw lastError;
+                }
+                this.logger.warn(`Transaction attempt ${attempt} failed, retrying...`, error);
+                await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+            }
+        }
+        throw lastError;
+    }
+};
+exports.PrismaService = PrismaService;
+exports.PrismaService = PrismaService = PrismaService_1 = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _a : Object])
+], PrismaService);
+
+
+/***/ }),
+/* 12 */
+/***/ ((module) => {
+
+module.exports = require("@prisma/client");
+
+/***/ }),
+/* 13 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.BookingRepository = void 0;
+const common_1 = __webpack_require__(1);
+const prisma_service_1 = __webpack_require__(11);
+let BookingRepository = class BookingRepository {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    get patientBooking() { return this.prisma.patientBooking; }
+    async createBooking(patientId, doctorId, appointmentDate, data) {
+        return this.patientBooking.create({
+            data: {
+                patientId,
+                doctorId,
+                appointmentDate,
+                ...data
+            }
+        });
+    }
+    async findBookingsByPatientId(patientId) {
+        return this.patientBooking.findMany({
+            where: { patientId },
+            include: {
+                patient: true
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+    }
+    async findBookingsByDoctorId(doctorId, fromDate) {
+        return this.patientBooking.findMany({
+            where: {
+                doctorId,
+                createdAt: {
+                    gte: fromDate
+                }
+            },
+            include: {
+                patient: true
+            },
+            orderBy: { createdAt: 'asc' }
+        });
+    }
+};
+exports.BookingRepository = BookingRepository;
+exports.BookingRepository = BookingRepository = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_service_1.PrismaService !== "undefined" && prisma_service_1.PrismaService) === "function" ? _a : Object])
+], BookingRepository);
+
+
+/***/ }),
+/* 14 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DoctorProfileRepository = void 0;
+const common_1 = __webpack_require__(1);
+const prisma_service_1 = __webpack_require__(11);
+let DoctorProfileRepository = class DoctorProfileRepository {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    get doctorProfile() { return this.prisma.doctorProfile; }
+    get doctorService() { return this.prisma.doctorService; }
+    get doctorInsurance() { return this.prisma.doctorInsurance; }
+    get consultationFee() { return this.prisma.consultationFee; }
+    async createProfile(doctorId, data) {
+        return this.doctorProfile.create({
+            data: {
+                ...data,
+                doctorId
+            },
+            include: {
+                services: true,
+                insurances: true,
+                consultationFees: true
+            }
+        });
+    }
+    async findProfileById(doctorId) {
+        const profile = await this.doctorProfile.findUnique({
+            where: { doctorId },
+            include: {
+                services: true,
+                insurances: true,
+                consultationFees: true,
+                schedules: true
+            }
+        });
+        if (!profile) {
+            throw new common_1.NotFoundException(`Doctor profile not found for ID: ${doctorId}`);
+        }
+        return profile;
+    }
+    async updateProfile(doctorId, data) {
+        return this.doctorProfile.update({
+            where: { doctorId },
+            data,
+            include: {
+                services: true,
+                insurances: true,
+                schedules: true
+            }
+        });
+    }
+    async updateServices(doctorId, services) {
+        await this.doctorService.deleteMany({
+            where: { doctorId }
+        });
+        return this.prisma.$transaction(services.map(service => this.doctorService.create({
+            data: {
+                ...service,
+                doctorId,
+            }
+        })));
+    }
+    async removeService(serviceId) {
+        const service = await this.doctorService.findUnique({
+            where: { id: serviceId }
+        });
+        if (!service) {
+            throw new common_1.NotFoundException(`Service not found: ${serviceId}`);
+        }
+        return this.doctorService.delete({
+            where: { id: serviceId }
+        });
+    }
+    async updateInsurance(doctorId, providers) {
+        await this.doctorInsurance.deleteMany({
+            where: { doctorId }
+        });
+        return this.prisma.$transaction(providers.map(provider => this.doctorInsurance.create({
+            data: {
+                ...provider,
+                doctorId,
+            }
+        })));
+    }
+    async removeInsurance(id) {
+        const insurance = await this.doctorInsurance.findUnique({
+            where: { id }
+        });
+        if (!insurance) {
+            throw new common_1.NotFoundException(`Insurance provider not found: ${id}`);
+        }
+        return this.doctorInsurance.delete({
+            where: { id }
+        });
+    }
+};
+exports.DoctorProfileRepository = DoctorProfileRepository;
+exports.DoctorProfileRepository = DoctorProfileRepository = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_service_1.PrismaService !== "undefined" && prisma_service_1.PrismaService) === "function" ? _a : Object])
+], DoctorProfileRepository);
+
+
+/***/ }),
+/* 15 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EMRRepository = void 0;
+const common_1 = __webpack_require__(1);
+const prisma_service_1 = __webpack_require__(11);
+let EMRRepository = class EMRRepository {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    get patientVisit() { return this.prisma.patientVisit; }
+    get prescription() { return this.prisma.prescription; }
+    get labOrder() { return this.prisma.labOrder; }
+    get imagingOrder() { return this.prisma.imagingOrder; }
+    get clinicalTemplate() { return this.prisma.clinicalTemplate; }
+    get labResult() { return this.prisma.labResult; }
+    get imagingResult() { return this.prisma.imagingResult; }
+    async findVisitById(id) {
+        return this.patientVisit.findUnique({
+            where: { id },
+            include: {
+                prescriptions: true,
+                labOrders: true,
+                imagingOrders: true
+            }
+        });
+    }
+    async findVisitsByPatientId(patientId) {
+        return this.patientVisit.findMany({
+            where: { patientId },
+            orderBy: { createdAt: 'desc' },
+            include: {
+                prescriptions: true,
+                labOrders: true,
+                imagingOrders: true
+            }
+        });
+    }
+};
+exports.EMRRepository = EMRRepository;
+exports.EMRRepository = EMRRepository = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_service_1.PrismaService !== "undefined" && prisma_service_1.PrismaService) === "function" ? _a : Object])
+], EMRRepository);
+
+
+/***/ }),
+/* 16 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NotificationRepository = void 0;
+const common_1 = __webpack_require__(1);
+const prisma_service_1 = __webpack_require__(11);
+let NotificationRepository = class NotificationRepository {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    get notification() { return this.prisma.notification; }
+    async createNotification(userId, type, title, body) {
+        return this.notification.create({
+            data: {
+                userId,
+                type: type,
+                title,
+                body,
+                isRead: false
+            }
+        });
+    }
+    async markAsRead(id) {
+        return this.notification.update({
+            where: { id },
+            data: { isRead: true }
+        });
+    }
+    async findUnreadByUserId(userId) {
+        return this.notification.findMany({
+            where: {
+                userId,
+                isRead: false
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+    }
+};
+exports.NotificationRepository = NotificationRepository;
+exports.NotificationRepository = NotificationRepository = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_service_1.PrismaService !== "undefined" && prisma_service_1.PrismaService) === "function" ? _a : Object])
+], NotificationRepository);
+
+
+/***/ }),
+/* 17 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SchedulingRepository = void 0;
+const common_1 = __webpack_require__(1);
+const prisma_service_1 = __webpack_require__(11);
+let SchedulingRepository = class SchedulingRepository {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    get doctorSchedule() { return this.prisma.doctorSchedule; }
+    get doctorAvailability() { return this.prisma.doctorAvailability; }
+    get doctorScheduleException() { return this.prisma.doctorScheduleException; }
+    get doctorScheduleTemplate() { return this.prisma.doctorScheduleTemplate; }
+    async findAvailableSlots(doctorId, fromDate, toDate) {
+        const [schedule, exceptions] = await Promise.all([
+            this.doctorSchedule.findMany({
+                where: { doctorId }
+            }),
+            this.doctorScheduleException.findMany({
+                where: {
+                    doctorId,
+                    date: {
+                        gte: fromDate,
+                        lte: toDate
+                    }
+                }
+            })
+        ]);
+        return {
+            schedule,
+            exceptions
+        };
+    }
+    async createException(doctorId, date, reason) {
+        return this.doctorScheduleException.create({
+            data: {
+                doctorId,
+                date,
+                reason
+            }
+        });
+    }
+    async getTemplate(doctorId) {
+        return this.doctorScheduleTemplate.findFirst({
+            where: { doctorId }
+        });
+    }
+};
+exports.SchedulingRepository = SchedulingRepository;
+exports.SchedulingRepository = SchedulingRepository = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_service_1.PrismaService !== "undefined" && prisma_service_1.PrismaService) === "function" ? _a : Object])
+], SchedulingRepository);
+
+
+/***/ }),
+/* 18 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UserRepository = void 0;
+const common_1 = __webpack_require__(1);
+const prisma_service_1 = __webpack_require__(11);
+let UserRepository = class UserRepository {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    get user() { return this.prisma.user; }
+    get userSession() { return this.prisma.userSession; }
+    get mfaSettings() { return this.prisma.mfaSettings; }
+    get auditLog() { return this.prisma.auditLog; }
+    get consentRecord() { return this.prisma.consentRecord; }
+    async findByEmail(email) {
+        return this.user.findUnique({ where: { email } });
+    }
+    async findById(id) {
+        return this.user.findUnique({ where: { id } });
+    }
+    async createSession(userId, refreshToken, expiresAt, opts = {}) {
+        return this.userSession.create({
+            data: {
+                userId,
+                refreshToken,
+                expiresAt,
+                accessToken: undefined,
+                deviceInfo: opts.deviceInfo ?? null,
+                ipAddress: opts.ipAddress ?? null,
+                userAgent: opts.userAgent ?? null,
+                isActive: true
+            }
+        });
+    }
+    async deleteSessionByRefreshToken(refreshToken) {
+        return this.userSession.deleteMany({ where: { refreshToken } });
+    }
+    async invalidateSessions(userId) {
+        return this.userSession.updateMany({ where: { userId, isActive: true }, data: { isActive: false } });
+    }
+    async createUser(data) {
+        return this.user.create({ data: data });
+    }
+    async updateUser(id, data) {
+        return this.user.update({ where: { id }, data: data });
+    }
+    async logAudit(userId, action, details) {
+        return this.auditLog.create({
+            data: {
+                userId: userId,
+                action: action,
+                metadata: typeof details !== 'undefined' ? details : null
+            }
+        });
+    }
+};
+exports.UserRepository = UserRepository;
+exports.UserRepository = UserRepository = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_service_1.PrismaService !== "undefined" && prisma_service_1.PrismaService) === "function" ? _a : Object])
+], UserRepository);
+
+
+/***/ }),
+/* 19 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+
+/***/ }),
+/* 20 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/jwt");
 
 /***/ }),
-/* 10 */
+/* 21 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/passport");
 
 /***/ }),
-/* 11 */
+/* 22 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -181,7 +916,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppointmentsController = void 0;
 const common_1 = __webpack_require__(1);
 const swagger_1 = __webpack_require__(4);
-const jwt_auth_guard_1 = __webpack_require__(12);
+const jwt_auth_guard_1 = __webpack_require__(23);
 let AppointmentsController = class AppointmentsController {
     async getAppointments(req, startDate, endDate, status, limit) {
         try {
@@ -248,7 +983,7 @@ exports.AppointmentsController = AppointmentsController = __decorate([
 
 
 /***/ }),
-/* 12 */
+/* 23 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -265,7 +1000,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.JwtAuthGuard = void 0;
 const common_1 = __webpack_require__(1);
-const passport_1 = __webpack_require__(10);
+const passport_1 = __webpack_require__(21);
 const core_1 = __webpack_require__(3);
 let JwtAuthGuard = class JwtAuthGuard extends (0, passport_1.AuthGuard)('jwt') {
     constructor(reflector) {
@@ -297,7 +1032,7 @@ exports.JwtAuthGuard = JwtAuthGuard = __decorate([
 
 
 /***/ }),
-/* 13 */
+/* 24 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -313,110 +1048,15 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b;
+var _a, _b, _c, _d, _e, _f;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AuthController = exports.ResetPasswordDto = exports.ForgotPasswordDto = exports.RefreshDto = exports.RegisterDto = exports.LoginDto = void 0;
+exports.AuthController = void 0;
 const common_1 = __webpack_require__(1);
 const swagger_1 = __webpack_require__(4);
 const throttler_1 = __webpack_require__(7);
-const client_1 = __webpack_require__(14);
-const class_validator_1 = __webpack_require__(15);
-const jwt_auth_guard_1 = __webpack_require__(12);
-const auth_service_1 = __webpack_require__(16);
-class LoginDto {
-}
-exports.LoginDto = LoginDto;
-__decorate([
-    (0, class_validator_1.IsEmail)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], LoginDto.prototype, "email", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], LoginDto.prototype, "password", void 0);
-__decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], LoginDto.prototype, "mfaCode", void 0);
-class RegisterDto {
-}
-exports.RegisterDto = RegisterDto;
-__decorate([
-    (0, class_validator_1.IsEmail)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], RegisterDto.prototype, "email", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.MinLength)(8),
-    (0, class_validator_1.Matches)(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/, {
-        message: 'Password must contain uppercase, lowercase, number and special character'
-    }),
-    __metadata("design:type", String)
-], RegisterDto.prototype, "password", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.Length)(1, 50, { message: 'First name must be between 1 and 50 characters' }),
-    (0, class_validator_1.Matches)(/^[a-zA-ZÀ-ÿ\s\-']+$/, {
-        message: 'First name can only contain letters, spaces, hyphens, and apostrophes'
-    }),
-    __metadata("design:type", String)
-], RegisterDto.prototype, "firstName", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.Length)(1, 50, { message: 'Last name must be between 1 and 50 characters' }),
-    (0, class_validator_1.Matches)(/^[a-zA-ZÀ-ÿ\s\-']+$/, {
-        message: 'Last name can only contain letters, spaces, hyphens, and apostrophes'
-    }),
-    __metadata("design:type", String)
-], RegisterDto.prototype, "lastName", void 0);
-__decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsEnum)(client_1.UserRole, { message: 'Role must be one of: PATIENT, DOCTOR, NURSE, ADMIN, TECHNICIAN, RECEPTIONIST' }),
-    __metadata("design:type", typeof (_a = typeof client_1.UserRole !== "undefined" && client_1.UserRole) === "function" ? _a : Object)
-], RegisterDto.prototype, "role", void 0);
-class RefreshDto {
-}
-exports.RefreshDto = RefreshDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], RefreshDto.prototype, "refreshToken", void 0);
-class ForgotPasswordDto {
-}
-exports.ForgotPasswordDto = ForgotPasswordDto;
-__decorate([
-    (0, class_validator_1.IsEmail)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], ForgotPasswordDto.prototype, "email", void 0);
-class ResetPasswordDto {
-}
-exports.ResetPasswordDto = ResetPasswordDto;
-__decorate([
-    (0, class_validator_1.IsEmail)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], ResetPasswordDto.prototype, "email", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], ResetPasswordDto.prototype, "token", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.MinLength)(8),
-    (0, class_validator_1.Matches)(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/, {
-        message: 'Password must contain uppercase, lowercase, number and special character'
-    }),
-    __metadata("design:type", String)
-], ResetPasswordDto.prototype, "newPassword", void 0);
+const dto_1 = __webpack_require__(25);
+const jwt_auth_guard_1 = __webpack_require__(23);
+const auth_service_1 = __webpack_require__(33);
 let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
@@ -508,7 +1148,7 @@ __decorate([
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [LoginDto, Object]),
+    __metadata("design:paramtypes", [typeof (_b = typeof dto_1.LoginDto !== "undefined" && dto_1.LoginDto) === "function" ? _b : Object, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
 __decorate([
@@ -521,7 +1161,7 @@ __decorate([
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [RegisterDto, Object]),
+    __metadata("design:paramtypes", [typeof (_c = typeof dto_1.RegisterDto !== "undefined" && dto_1.RegisterDto) === "function" ? _c : Object, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "register", null);
 __decorate([
@@ -532,7 +1172,7 @@ __decorate([
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [ForgotPasswordDto, Object]),
+    __metadata("design:paramtypes", [typeof (_d = typeof dto_1.ForgotPasswordDto !== "undefined" && dto_1.ForgotPasswordDto) === "function" ? _d : Object, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "forgotPassword", null);
 __decorate([
@@ -543,7 +1183,7 @@ __decorate([
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [ResetPasswordDto, Object]),
+    __metadata("design:paramtypes", [typeof (_e = typeof dto_1.ResetPasswordDto !== "undefined" && dto_1.ResetPasswordDto) === "function" ? _e : Object, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "resetPassword", null);
 __decorate([
@@ -554,7 +1194,7 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Token refreshed successfully' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [RefreshDto]),
+    __metadata("design:paramtypes", [typeof (_f = typeof dto_1.RefreshDto !== "undefined" && dto_1.RefreshDto) === "function" ? _f : Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "refreshToken", null);
 __decorate([
@@ -622,24 +1262,39 @@ __decorate([
 exports.AuthController = AuthController = __decorate([
     (0, swagger_1.ApiTags)('Authentication'),
     (0, common_1.Controller)('auth'),
-    __metadata("design:paramtypes", [typeof (_b = typeof auth_service_1.AuthService !== "undefined" && auth_service_1.AuthService) === "function" ? _b : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof auth_service_1.AuthService !== "undefined" && auth_service_1.AuthService) === "function" ? _a : Object])
 ], AuthController);
 
 
 /***/ }),
-/* 14 */
-/***/ ((module) => {
+/* 25 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-module.exports = require("@prisma/client");
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(26), exports);
+__exportStar(__webpack_require__(28), exports);
+__exportStar(__webpack_require__(29), exports);
+__exportStar(__webpack_require__(30), exports);
+__exportStar(__webpack_require__(32), exports);
+
 
 /***/ }),
-/* 15 */
-/***/ ((module) => {
-
-module.exports = require("class-validator");
-
-/***/ }),
-/* 16 */
+/* 26 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -652,35 +1307,253 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a, _b, _c;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ForgotPasswordDto = void 0;
+const class_validator_1 = __webpack_require__(27);
+class ForgotPasswordDto {
+}
+exports.ForgotPasswordDto = ForgotPasswordDto;
+__decorate([
+    (0, class_validator_1.IsEmail)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], ForgotPasswordDto.prototype, "email", void 0);
+
+
+/***/ }),
+/* 27 */
+/***/ ((module) => {
+
+module.exports = require("class-validator");
+
+/***/ }),
+/* 28 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LoginDto = void 0;
+const class_validator_1 = __webpack_require__(27);
+class LoginDto {
+}
+exports.LoginDto = LoginDto;
+__decorate([
+    (0, class_validator_1.IsEmail)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], LoginDto.prototype, "email", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], LoginDto.prototype, "password", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], LoginDto.prototype, "mfaCode", void 0);
+
+
+/***/ }),
+/* 29 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.RefreshDto = void 0;
+const class_validator_1 = __webpack_require__(27);
+class RefreshDto {
+}
+exports.RefreshDto = RefreshDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], RefreshDto.prototype, "refreshToken", void 0);
+
+
+/***/ }),
+/* 30 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.RegisterDto = void 0;
+const class_validator_1 = __webpack_require__(27);
+const user_role_enum_1 = __webpack_require__(31);
+class RegisterDto {
+}
+exports.RegisterDto = RegisterDto;
+__decorate([
+    (0, class_validator_1.IsEmail)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], RegisterDto.prototype, "email", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.Length)(8, 128),
+    (0, class_validator_1.Matches)(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/, {
+        message: 'Password must contain uppercase, lowercase, number and special character'
+    }),
+    __metadata("design:type", String)
+], RegisterDto.prototype, "password", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], RegisterDto.prototype, "firstName", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], RegisterDto.prototype, "lastName", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", typeof (_a = typeof user_role_enum_1.UserRole !== "undefined" && user_role_enum_1.UserRole) === "function" ? _a : Object)
+], RegisterDto.prototype, "role", void 0);
+
+
+/***/ }),
+/* 31 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UserRole = void 0;
+var UserRole;
+(function (UserRole) {
+    UserRole["DOCTOR"] = "DOCTOR";
+    UserRole["NURSE"] = "NURSE";
+    UserRole["PATIENT"] = "PATIENT";
+    UserRole["ADMIN"] = "ADMIN";
+    UserRole["TECHNICIAN"] = "TECHNICIAN";
+    UserRole["RECEPTIONIST"] = "RECEPTIONIST";
+})(UserRole || (exports.UserRole = UserRole = {}));
+
+
+/***/ }),
+/* 32 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ResetPasswordDto = void 0;
+const class_validator_1 = __webpack_require__(27);
+class ResetPasswordDto {
+}
+exports.ResetPasswordDto = ResetPasswordDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], ResetPasswordDto.prototype, "email", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], ResetPasswordDto.prototype, "token", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.Length)(8, 128),
+    (0, class_validator_1.Matches)(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/, {
+        message: 'Password must contain uppercase, lowercase, number and special character'
+    }),
+    __metadata("design:type", String)
+], ResetPasswordDto.prototype, "newPassword", void 0);
+
+
+/***/ }),
+/* 33 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var AuthService_1;
+var _a, _b, _c, _d, _e;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AuthService = void 0;
 const common_1 = __webpack_require__(1);
-const jwt_1 = __webpack_require__(9);
-const bcrypt = __webpack_require__(17);
-const speakeasy = __webpack_require__(18);
-const crypto = __webpack_require__(19);
-const nodemailer = __webpack_require__(20);
-const sgMail = __webpack_require__(21);
-const audit_service_1 = __webpack_require__(22);
-const database_service_1 = __webpack_require__(23);
-let AuthService = class AuthService {
-    constructor(db, jwtService, auditService) {
-        this.db = db;
+const jwt_1 = __webpack_require__(20);
+const prisma_service_1 = __webpack_require__(11);
+const user_repository_1 = __webpack_require__(18);
+const audit_service_1 = __webpack_require__(34);
+const email_service_1 = __webpack_require__(35);
+const user_role_enum_1 = __webpack_require__(31);
+const sgMail = __webpack_require__(36);
+const bcrypt = __webpack_require__(38);
+const crypto = __webpack_require__(39);
+const nodemailer = __webpack_require__(37);
+const speakeasy = __webpack_require__(40);
+let AuthService = AuthService_1 = class AuthService {
+    constructor(userRepo, prisma, jwtService, auditService, emailService) {
+        this.userRepo = userRepo;
+        this.prisma = prisma;
         this.jwtService = jwtService;
         this.auditService = auditService;
+        this.emailService = emailService;
+        this.logger = new common_1.Logger(AuthService_1.name);
         this.jwtSecret = process.env.JWT_SECRET;
         this.jwtExpiresIn = process.env.JWT_EXPIRES_IN || '15m';
         this.refreshTokenExpiresIn = process.env.REFRESH_TOKEN_EXPIRES_IN || '7d';
         this.bcryptRounds = parseInt(process.env.BCRYPT_ROUNDS || '12', 10);
+        this.fromEmail = process.env.FROM_EMAIL || process.env.SMTP_FROM || 'noreply@ihosi.com';
+        this.fromName = process.env.FROM_NAME || 'iHosi';
         this.VALID_ROLES = [
-            'PATIENT',
-            'DOCTOR',
-            'NURSE',
-            'ADMIN',
-            'TECHNICIAN',
-            'RECEPTIONIST',
+            user_role_enum_1.UserRole.PATIENT,
+            user_role_enum_1.UserRole.DOCTOR,
+            user_role_enum_1.UserRole.NURSE,
+            user_role_enum_1.UserRole.ADMIN,
+            user_role_enum_1.UserRole.TECHNICIAN,
+            user_role_enum_1.UserRole.RECEPTIONIST,
         ];
+        this.logger.log('AuthService initialized with email sender:', this.fromEmail);
     }
     createMailer() {
         const emailService = (process.env.EMAIL_SERVICE || '').toLowerCase();
@@ -742,9 +1615,7 @@ let AuthService = class AuthService {
             const sanitizedFirstName = this.sanitizeName(userData.firstName);
             const sanitizedLastName = this.sanitizeName(userData.lastName);
             const validatedRole = this.validateRole(userData.role);
-            const existingUser = await this.db.user.findUnique({
-                where: { email: normalizedEmail },
-            });
+            const existingUser = await this.userRepo.findByEmail(normalizedEmail);
             if (existingUser) {
                 await this.auditService.log('REGISTER_FAILED', {
                     resource: 'USER',
@@ -771,7 +1642,7 @@ let AuthService = class AuthService {
                 throw new common_1.BadRequestException('Registration failed. Please try again.');
             }
             const refreshTokenExpiryMs = this.parseExpiryToMilliseconds(this.refreshTokenExpiresIn);
-            const result = await this.db.$transaction(async (tx) => {
+            const result = await this.prisma.$transaction(async (tx) => {
                 const user = await tx.user.create({
                     data: {
                         email: normalizedEmail,
@@ -836,9 +1707,7 @@ let AuthService = class AuthService {
     async login(credentials, auditContext) {
         console.log('🔐 Login attempt for:', credentials.email);
         const normalizedEmail = this.normalizeEmail(credentials.email);
-        const user = await this.db.user.findUnique({
-            where: { email: normalizedEmail },
-        });
+        const user = await this.userRepo.findByEmail(normalizedEmail);
         console.log('👤 User found:', !!user);
         console.log('👤 User active:', user?.isActive);
         console.log('👤 User verified:', user?.isVerified);
@@ -869,7 +1738,7 @@ let AuthService = class AuthService {
             });
             throw new common_1.UnauthorizedException('Invalid credentials');
         }
-        const mfaSettings = await this.db.mfaSettings.findUnique({ where: { userId: user.id } });
+        const mfaSettings = await this.prisma.mfaSettings.findUnique({ where: { userId: user.id } });
         if (mfaSettings?.isEnabled) {
             if (!credentials.mfaCode) {
                 await this.auditService.log('LOGIN_MFA_REQUIRED', {
@@ -907,15 +1776,9 @@ let AuthService = class AuthService {
         }
         const tokens = this.generateJwtPair(user.id);
         const refreshTokenExpiryMs = this.parseExpiryToMilliseconds(this.refreshTokenExpiresIn);
-        await this.db.userSession.create({
-            data: {
-                userId: user.id,
-                refreshToken: tokens.refreshToken,
-                expiresAt: new Date(Date.now() + refreshTokenExpiryMs),
-                isActive: true,
-                ipAddress: auditContext?.ipAddress,
-                userAgent: auditContext?.userAgent,
-            },
+        await this.userRepo.createSession(user.id, tokens.refreshToken, new Date(Date.now() + refreshTokenExpiryMs), {
+            ipAddress: auditContext?.ipAddress,
+            userAgent: auditContext?.userAgent,
         });
         await this.auditService.log('LOGIN_SUCCESS', {
             userId: user.id,
@@ -933,12 +1796,12 @@ let AuthService = class AuthService {
         };
     }
     async setupMfa(userId) {
-        const user = await this.db.user.findUnique({ where: { id: userId } });
+        const user = await this.userRepo.findById(userId);
         if (!user) {
             throw new common_1.UnauthorizedException('User not found');
         }
         const secret = speakeasy.generateSecret({ name: `iHosi (${user.email})`, length: 20 });
-        await this.db.mfaSettings.upsert({
+        await this.prisma.mfaSettings.upsert({
             where: { userId },
             update: { secret: secret.base32, method: 'TOTP', isEnabled: false },
             create: { userId, secret: secret.base32, method: 'TOTP', isEnabled: false },
@@ -947,7 +1810,7 @@ let AuthService = class AuthService {
         return { success: true, data: { secret: secret.base32, otpauthUrl: secret.otpauth_url } };
     }
     async verifyMfa(userId, code) {
-        const settings = await this.db.mfaSettings.findUnique({ where: { userId } });
+        const settings = await this.prisma.mfaSettings.findUnique({ where: { userId } });
         if (!settings || !settings.secret) {
             throw new common_1.BadRequestException('MFA not initialized');
         }
@@ -956,12 +1819,12 @@ let AuthService = class AuthService {
             throw new common_1.UnauthorizedException('Invalid MFA code');
         }
         const backupCodes = Array.from({ length: 8 }).map(() => Math.random().toString(36).slice(2, 10));
-        await this.db.mfaSettings.update({ where: { userId }, data: { isEnabled: true, backupCodes } });
+        await this.prisma.mfaSettings.update({ where: { userId }, data: { isEnabled: true, backupCodes } });
         await this.auditService.log('MFA_ENABLED', { userId, resource: 'USER', resourceId: userId, severity: 'INFO' });
         return { success: true, data: { backupCodes } };
     }
     async refreshToken(refreshToken) {
-        const session = await this.db.userSession.findUnique({
+        const session = await this.prisma.userSession.findUnique({
             where: { refreshToken },
             include: { user: true },
         });
@@ -970,7 +1833,7 @@ let AuthService = class AuthService {
         }
         const tokens = this.generateJwtPair(session.userId);
         const refreshTokenExpiryMs = this.parseExpiryToMilliseconds(this.refreshTokenExpiresIn);
-        await this.db.userSession.update({
+        await this.prisma.userSession.update({
             where: { id: session.id },
             data: {
                 refreshToken: tokens.refreshToken,
@@ -987,10 +1850,7 @@ let AuthService = class AuthService {
         };
     }
     async logout(userId, auditContext) {
-        await this.db.userSession.updateMany({
-            where: { userId },
-            data: { isActive: false },
-        });
+        await this.userRepo.invalidateSessions(userId);
         await this.auditService.log('LOGOUT_SUCCESS', {
             userId,
             resource: 'USER',
@@ -1006,9 +1866,7 @@ let AuthService = class AuthService {
         };
     }
     async getCurrentUser(userId) {
-        const user = await this.db.user.findUnique({
-            where: { id: userId },
-        });
+        const user = await this.userRepo.findById(userId);
         if (!user) {
             throw new common_1.UnauthorizedException('User not found');
         }
@@ -1020,7 +1878,7 @@ let AuthService = class AuthService {
     async requestPasswordReset(email, auditContext) {
         const normalizedEmail = this.normalizeEmail(email);
         try {
-            const user = await this.db.user.findUnique({ where: { email: normalizedEmail } });
+            const user = await this.userRepo.findByEmail(normalizedEmail);
             if (!user) {
                 await this.auditService.log('PASSWORD_RESET_REQUEST_UNKNOWN_EMAIL', {
                     resource: 'USER',
@@ -1035,15 +1893,26 @@ let AuthService = class AuthService {
             const hashed = this.hashToken(otp);
             const expiresMs = parseInt(process.env.PASSWORD_RESET_EXPIRES_MS || String(15 * 60 * 1000), 10);
             const expiresAt = new Date(Date.now() + expiresMs);
-            await this.db.user.update({ where: { id: user.id }, data: { passwordResetToken: hashed, passwordResetExpires: expiresAt } });
-            const fromEmail = process.env.FROM_EMAIL || process.env.SMTP_FROM || 'noreply@ihosi.com';
-            const fromName = process.env.FROM_NAME || 'iHosi';
-            const from = fromName ? `${fromName} <${fromEmail}>` : fromEmail;
-            const subject = `${fromName} Password Reset Code`;
-            const text = `Your ${fromName} password reset code is: ${otp}. It will expire in ${Math.round(expiresMs / 60000)} minutes. If you did not request this, please ignore this message.`;
-            this.sendEmail({ to: user.email, from, subject, text }).catch((err) => {
-                console.error('Failed to send password reset email:', err?.message || err);
-            });
+            await this.userRepo.updateUser(user.id, { passwordResetToken: hashed, passwordResetExpires: expiresAt });
+            const from = this.fromName ? `${this.fromName} <${this.fromEmail}>` : this.fromEmail;
+            const subject = `${this.fromName} Password Reset Code`;
+            const text = `Your ${this.fromName} password reset code is: ${otp}. It will expire in ${Math.round(expiresMs / 60000)} minutes. If you did not request this, please ignore this message.`;
+            const html = `<p>Your ${this.fromName} password reset code is: <strong>${otp}</strong></p>
+                  <p>It will expire in ${Math.round(expiresMs / 60000)} minutes.</p>
+                  <p>If you did not request this, please ignore this message.</p>`;
+            try {
+                await this.emailService.sendEmail({
+                    to: user.email,
+                    from,
+                    subject,
+                    text,
+                    html,
+                });
+                this.logger.debug(`Password reset email sent to ${user.email}`);
+            }
+            catch (err) {
+                this.logger.error('Failed to send password reset email:', err);
+            }
             await this.auditService.log('PASSWORD_RESET_REQUESTED', {
                 userId: user.id,
                 resource: 'USER',
@@ -1070,7 +1939,7 @@ let AuthService = class AuthService {
     async resetPassword(email, token, newPassword, auditContext) {
         const normalizedEmail = this.normalizeEmail(email);
         const hashedToken = this.hashToken(token);
-        const user = await this.db.user.findUnique({ where: { email: normalizedEmail } });
+        const user = await this.userRepo.findByEmail(normalizedEmail);
         if (!user || !user.passwordResetToken || !user.passwordResetExpires) {
             throw new common_1.BadRequestException('Invalid token or expired');
         }
@@ -1090,7 +1959,7 @@ let AuthService = class AuthService {
             throw new common_1.BadRequestException('Invalid token or expired');
         }
         const newHashed = await bcrypt.hash(newPassword, this.bcryptRounds);
-        await this.db.$transaction(async (tx) => {
+        await this.prisma.$transaction(async (tx) => {
             await tx.user.update({ where: { id: user.id }, data: { password: newHashed, passwordResetToken: null, passwordResetExpires: null, lastPasswordChange: new Date() } });
             await tx.userSession.updateMany({ where: { userId: user.id }, data: { isActive: false } });
         });
@@ -1132,7 +2001,7 @@ let AuthService = class AuthService {
     }
     validateRole(role) {
         if (!role) {
-            return 'PATIENT';
+            return user_role_enum_1.UserRole.PATIENT;
         }
         const upperRole = role.toUpperCase();
         if (!this.VALID_ROLES.includes(upperRole)) {
@@ -1176,44 +2045,14 @@ let AuthService = class AuthService {
     }
 };
 exports.AuthService = AuthService;
-exports.AuthService = AuthService = __decorate([
+exports.AuthService = AuthService = AuthService_1 = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof database_service_1.DatabaseService !== "undefined" && database_service_1.DatabaseService) === "function" ? _a : Object, typeof (_b = typeof jwt_1.JwtService !== "undefined" && jwt_1.JwtService) === "function" ? _b : Object, typeof (_c = typeof audit_service_1.AuditService !== "undefined" && audit_service_1.AuditService) === "function" ? _c : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof user_repository_1.UserRepository !== "undefined" && user_repository_1.UserRepository) === "function" ? _a : Object, typeof (_b = typeof prisma_service_1.PrismaService !== "undefined" && prisma_service_1.PrismaService) === "function" ? _b : Object, typeof (_c = typeof jwt_1.JwtService !== "undefined" && jwt_1.JwtService) === "function" ? _c : Object, typeof (_d = typeof audit_service_1.AuditService !== "undefined" && audit_service_1.AuditService) === "function" ? _d : Object, typeof (_e = typeof email_service_1.EmailService !== "undefined" && email_service_1.EmailService) === "function" ? _e : Object])
 ], AuthService);
 
 
 /***/ }),
-/* 17 */
-/***/ ((module) => {
-
-module.exports = require("bcrypt");
-
-/***/ }),
-/* 18 */
-/***/ ((module) => {
-
-module.exports = require("speakeasy");
-
-/***/ }),
-/* 19 */
-/***/ ((module) => {
-
-module.exports = require("crypto");
-
-/***/ }),
-/* 20 */
-/***/ ((module) => {
-
-module.exports = require("nodemailer");
-
-/***/ }),
-/* 21 */
-/***/ ((module) => {
-
-module.exports = require("@sendgrid/mail");
-
-/***/ }),
-/* 22 */
+/* 34 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1226,43 +2065,42 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var AuditService_1;
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AuditService = void 0;
+const database_1 = __webpack_require__(9);
 const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(23);
-let AuditService = class AuditService {
-    constructor(db) {
-        this.db = db;
+let AuditService = AuditService_1 = class AuditService {
+    constructor(userRepository) {
+        this.userRepository = userRepository;
+        this.logger = new common_1.Logger(AuditService_1.name);
     }
     async log(action, params = {}) {
         try {
-            await this.db.auditLog.create({
-                data: {
-                    userId: params.userId ?? null,
-                    action,
-                    resource: params.resource,
-                    resourceId: params.resourceId,
-                    ipAddress: params.ipAddress,
-                    userAgent: params.userAgent,
-                    metadata: params.metadata ?? {},
-                    severity: params.severity || 'INFO',
-                },
+            await this.userRepository.logAudit(params.userId ?? null, action, {
+                resource: params.resource,
+                resourceId: params.resourceId,
+                ipAddress: params.ipAddress,
+                userAgent: params.userAgent,
+                metadata: params.metadata ?? {},
+                severity: params.severity ?? 'INFO'
             });
         }
-        catch (e) {
+        catch (error) {
+            this.logger.error(`Failed to log audit event: ${action}`, error instanceof Error ? error.stack : undefined);
         }
     }
 };
 exports.AuditService = AuditService;
-exports.AuditService = AuditService = __decorate([
+exports.AuditService = AuditService = AuditService_1 = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof database_service_1.DatabaseService !== "undefined" && database_service_1.DatabaseService) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof database_1.UserRepository !== "undefined" && database_1.UserRepository) === "function" ? _a : Object])
 ], AuditService);
 
 
 /***/ }),
-/* 23 */
+/* 35 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1272,28 +2110,111 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var EmailService_1;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DatabaseService = void 0;
+exports.EmailService = void 0;
 const common_1 = __webpack_require__(1);
-const client_1 = __webpack_require__(14);
-let DatabaseService = class DatabaseService extends client_1.PrismaClient {
-    async onModuleInit() {
-        await this.$connect();
-        console.log('📊 Database connected successfully');
+const sgMail = __webpack_require__(36);
+const nodemailer = __webpack_require__(37);
+let EmailService = EmailService_1 = class EmailService {
+    constructor() {
+        this.logger = new common_1.Logger(EmailService_1.name);
     }
-    async onModuleDestroy() {
-        await this.$disconnect();
-        console.log('📊 Database disconnected');
+    createMailer() {
+        const emailService = (process.env.EMAIL_SERVICE || '').toLowerCase();
+        if (emailService === 'sendgrid') {
+            return null;
+        }
+        const host = process.env.SMTP_HOST || 'localhost';
+        const port = parseInt(process.env.SMTP_PORT || '1025', 10);
+        const user = process.env.SMTP_USER;
+        const pass = process.env.SMTP_PASS;
+        const transportOptions = { host, port };
+        if (user && pass) {
+            transportOptions.auth = { user, pass };
+            transportOptions.secure = Number(port) === 465;
+        }
+        this.logger.debug(`Creating SMTP transport for ${host}:${port}`);
+        return nodemailer.createTransport(transportOptions);
+    }
+    async sendEmail(opts) {
+        const emailService = (process.env.EMAIL_SERVICE || '').toLowerCase();
+        this.logger.debug(`Sending email using ${emailService} service`);
+        if (emailService === 'sendgrid') {
+            const sendgridKey = process.env.SENDGRID_API_KEY;
+            if (!sendgridKey) {
+                this.logger.error('EMAIL_SERVICE=sendgrid but SENDGRID_API_KEY is not set');
+                throw new Error('SendGrid API key not configured');
+            }
+            try {
+                sgMail.setApiKey(sendgridKey);
+                await sgMail.send({
+                    to: opts.to,
+                    from: opts.from,
+                    subject: opts.subject,
+                    text: opts.text,
+                    html: opts.html,
+                });
+                this.logger.debug('SendGrid email sent successfully');
+                return;
+            }
+            catch (err) {
+                this.logger.error('SendGrid send failed:', err);
+                throw err;
+            }
+        }
+        try {
+            const transporter = this.createMailer();
+            if (!transporter) {
+                throw new Error('SMTP transporter not available');
+            }
+            await transporter.sendMail(opts);
+            this.logger.debug('SMTP email sent successfully');
+        }
+        catch (err) {
+            this.logger.error('SMTP send failed:', err);
+            throw err;
+        }
     }
 };
-exports.DatabaseService = DatabaseService;
-exports.DatabaseService = DatabaseService = __decorate([
+exports.EmailService = EmailService;
+exports.EmailService = EmailService = EmailService_1 = __decorate([
     (0, common_1.Injectable)()
-], DatabaseService);
+], EmailService);
 
 
 /***/ }),
-/* 24 */
+/* 36 */
+/***/ ((module) => {
+
+module.exports = require("@sendgrid/mail");
+
+/***/ }),
+/* 37 */
+/***/ ((module) => {
+
+module.exports = require("nodemailer");
+
+/***/ }),
+/* 38 */
+/***/ ((module) => {
+
+module.exports = require("bcrypt");
+
+/***/ }),
+/* 39 */
+/***/ ((module) => {
+
+module.exports = require("crypto");
+
+/***/ }),
+/* 40 */
+/***/ ((module) => {
+
+module.exports = require("speakeasy");
+
+/***/ }),
+/* 41 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1311,11 +2232,11 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.JwtStrategy = void 0;
 const common_1 = __webpack_require__(1);
 const config_1 = __webpack_require__(6);
-const passport_1 = __webpack_require__(10);
-const passport_jwt_1 = __webpack_require__(25);
-const database_service_1 = __webpack_require__(23);
+const passport_1 = __webpack_require__(21);
+const passport_jwt_1 = __webpack_require__(42);
+const database_1 = __webpack_require__(9);
 let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy) {
-    constructor(configService, db) {
+    constructor(configService, userRepository) {
         super({
             jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
@@ -1328,22 +2249,10 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
             })(),
         });
         this.configService = configService;
-        this.db = db;
+        this.userRepository = userRepository;
     }
     async validate(payload) {
-        const user = await this.db.user.findUnique({
-            where: { id: payload.userId },
-            select: {
-                id: true,
-                email: true,
-                firstName: true,
-                lastName: true,
-                role: true,
-                isActive: true,
-                isLocked: true,
-                lockedUntil: true,
-            },
-        });
+        const user = await this.userRepository.findById(payload.userId);
         if (!user || !user.isActive) {
             throw new common_1.UnauthorizedException('User not found or inactive');
         }
@@ -1362,18 +2271,18 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
 exports.JwtStrategy = JwtStrategy;
 exports.JwtStrategy = JwtStrategy = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _a : Object, typeof (_b = typeof database_service_1.DatabaseService !== "undefined" && database_service_1.DatabaseService) === "function" ? _b : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _a : Object, typeof (_b = typeof database_1.UserRepository !== "undefined" && database_1.UserRepository) === "function" ? _b : Object])
 ], JwtStrategy);
 
 
 /***/ }),
-/* 25 */
+/* 42 */
 /***/ ((module) => {
 
 module.exports = require("passport-jwt");
 
 /***/ }),
-/* 26 */
+/* 43 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1386,23 +2295,24 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DoctorProfileModule = void 0;
 const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(23);
-const doctor_profile_controller_1 = __webpack_require__(27);
-const doctor_profile_service_1 = __webpack_require__(28);
+const database_1 = __webpack_require__(9);
+const doctor_profile_controller_1 = __webpack_require__(44);
+const doctor_profile_service_1 = __webpack_require__(45);
 let DoctorProfileModule = class DoctorProfileModule {
 };
 exports.DoctorProfileModule = DoctorProfileModule;
 exports.DoctorProfileModule = DoctorProfileModule = __decorate([
     (0, common_1.Module)({
+        imports: [database_1.DatabaseModule],
         controllers: [doctor_profile_controller_1.DoctorProfileController],
-        providers: [doctor_profile_service_1.DoctorProfileService, database_service_1.DatabaseService],
+        providers: [doctor_profile_service_1.DoctorProfileService],
         exports: [doctor_profile_service_1.DoctorProfileService],
     })
 ], DoctorProfileModule);
 
 
 /***/ }),
-/* 27 */
+/* 44 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1423,8 +2333,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DoctorProfileController = void 0;
 const common_1 = __webpack_require__(1);
 const swagger_1 = __webpack_require__(4);
-const jwt_auth_guard_1 = __webpack_require__(12);
-const doctor_profile_service_1 = __webpack_require__(28);
+const jwt_auth_guard_1 = __webpack_require__(23);
+const doctor_profile_service_1 = __webpack_require__(45);
 let DoctorProfileController = class DoctorProfileController {
     constructor(doctorProfileService) {
         this.doctorProfileService = doctorProfileService;
@@ -1604,7 +2514,7 @@ exports.DoctorProfileController = DoctorProfileController = __decorate([
 
 
 /***/ }),
-/* 28 */
+/* 45 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1621,7 +2531,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DoctorProfileService = void 0;
 const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(23);
+const database_1 = __webpack_require__(9);
 let DoctorProfileService = class DoctorProfileService {
     constructor(db) {
         this.db = db;
@@ -1861,12 +2771,12 @@ let DoctorProfileService = class DoctorProfileService {
 exports.DoctorProfileService = DoctorProfileService;
 exports.DoctorProfileService = DoctorProfileService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof database_service_1.DatabaseService !== "undefined" && database_service_1.DatabaseService) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof database_1.PrismaService !== "undefined" && database_1.PrismaService) === "function" ? _a : Object])
 ], DoctorProfileService);
 
 
 /***/ }),
-/* 29 */
+/* 46 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1879,27 +2789,29 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.EmrModule = void 0;
 const common_1 = __webpack_require__(1);
+const database_1 = __webpack_require__(9);
+const database_service_1 = __webpack_require__(47);
 const auth_module_1 = __webpack_require__(8);
-const emr_controller_1 = __webpack_require__(30);
-const imaging_controller_1 = __webpack_require__(32);
-const lab_controller_1 = __webpack_require__(34);
-const patient_profile_controller_1 = __webpack_require__(36);
-const prescription_controller_1 = __webpack_require__(38);
-const visit_controller_1 = __webpack_require__(40);
-const clinical_template_service_1 = __webpack_require__(42);
-const drug_interaction_service_1 = __webpack_require__(43);
-const emr_service_1 = __webpack_require__(31);
-const imaging_service_1 = __webpack_require__(33);
-const lab_service_1 = __webpack_require__(35);
-const patient_profile_service_1 = __webpack_require__(37);
-const prescription_service_1 = __webpack_require__(39);
-const visit_service_1 = __webpack_require__(41);
+const emr_controller_1 = __webpack_require__(48);
+const imaging_controller_1 = __webpack_require__(50);
+const lab_controller_1 = __webpack_require__(52);
+const patient_profile_controller_1 = __webpack_require__(54);
+const prescription_controller_1 = __webpack_require__(56);
+const visit_controller_1 = __webpack_require__(58);
+const clinical_template_service_1 = __webpack_require__(60);
+const drug_interaction_service_1 = __webpack_require__(61);
+const emr_service_1 = __webpack_require__(49);
+const imaging_service_1 = __webpack_require__(51);
+const lab_service_1 = __webpack_require__(53);
+const patient_profile_service_1 = __webpack_require__(55);
+const prescription_service_1 = __webpack_require__(57);
+const visit_service_1 = __webpack_require__(59);
 let EmrModule = class EmrModule {
 };
 exports.EmrModule = EmrModule;
 exports.EmrModule = EmrModule = __decorate([
     (0, common_1.Module)({
-        imports: [auth_module_1.AuthModule],
+        imports: [auth_module_1.AuthModule, database_1.DatabaseModule],
         controllers: [
             emr_controller_1.EmrController,
             patient_profile_controller_1.PatientProfileController,
@@ -1909,6 +2821,7 @@ exports.EmrModule = EmrModule = __decorate([
             imaging_controller_1.ImagingController,
         ],
         providers: [
+            { provide: database_service_1.DatabaseService, useExisting: database_1.PrismaService },
             emr_service_1.EmrService,
             patient_profile_service_1.PatientProfileService,
             visit_service_1.VisitService,
@@ -1933,7 +2846,39 @@ exports.EmrModule = EmrModule = __decorate([
 
 
 /***/ }),
-/* 30 */
+/* 47 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DatabaseService = void 0;
+const common_1 = __webpack_require__(1);
+const config_1 = __webpack_require__(6);
+const prisma_service_1 = __webpack_require__(11);
+let DatabaseService = class DatabaseService extends prisma_service_1.PrismaService {
+    constructor(configService) {
+        super(configService);
+    }
+};
+exports.DatabaseService = DatabaseService;
+exports.DatabaseService = DatabaseService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _a : Object])
+], DatabaseService);
+
+
+/***/ }),
+/* 48 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1954,8 +2899,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.EmrController = void 0;
 const common_1 = __webpack_require__(1);
 const swagger_1 = __webpack_require__(4);
-const jwt_auth_guard_1 = __webpack_require__(12);
-const emr_service_1 = __webpack_require__(31);
+const jwt_auth_guard_1 = __webpack_require__(23);
+const emr_service_1 = __webpack_require__(49);
 let EmrController = class EmrController {
     constructor(emrService) {
         this.emrService = emrService;
@@ -2055,7 +3000,7 @@ exports.EmrController = EmrController = __decorate([
 
 
 /***/ }),
-/* 31 */
+/* 49 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2072,7 +3017,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.EmrService = void 0;
 const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(23);
+const database_service_1 = __webpack_require__(47);
 let EmrService = class EmrService {
     constructor(db) {
         this.db = db;
@@ -2350,7 +3295,7 @@ exports.EmrService = EmrService = __decorate([
 
 
 /***/ }),
-/* 32 */
+/* 50 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2371,8 +3316,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ImagingController = void 0;
 const common_1 = __webpack_require__(1);
 const swagger_1 = __webpack_require__(4);
-const jwt_auth_guard_1 = __webpack_require__(12);
-const imaging_service_1 = __webpack_require__(33);
+const jwt_auth_guard_1 = __webpack_require__(23);
+const imaging_service_1 = __webpack_require__(51);
 let ImagingController = class ImagingController {
     constructor(imagingService) {
         this.imagingService = imagingService;
@@ -2562,7 +3507,7 @@ exports.ImagingController = ImagingController = __decorate([
 
 
 /***/ }),
-/* 33 */
+/* 51 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2579,7 +3524,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ImagingService = void 0;
 const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(23);
+const database_service_1 = __webpack_require__(47);
 let ImagingService = class ImagingService {
     constructor(db) {
         this.db = db;
@@ -2988,7 +3933,7 @@ exports.ImagingService = ImagingService = __decorate([
 
 
 /***/ }),
-/* 34 */
+/* 52 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3009,8 +3954,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LabController = void 0;
 const common_1 = __webpack_require__(1);
 const swagger_1 = __webpack_require__(4);
-const jwt_auth_guard_1 = __webpack_require__(12);
-const lab_service_1 = __webpack_require__(35);
+const jwt_auth_guard_1 = __webpack_require__(23);
+const lab_service_1 = __webpack_require__(53);
 let LabController = class LabController {
     constructor(labService) {
         this.labService = labService;
@@ -3185,7 +4130,7 @@ exports.LabController = LabController = __decorate([
 
 
 /***/ }),
-/* 35 */
+/* 53 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3202,7 +4147,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LabService = void 0;
 const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(23);
+const database_service_1 = __webpack_require__(47);
 let LabService = class LabService {
     constructor(db) {
         this.db = db;
@@ -3584,7 +4529,7 @@ exports.LabService = LabService = __decorate([
 
 
 /***/ }),
-/* 36 */
+/* 54 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3605,8 +4550,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PatientProfileController = void 0;
 const common_1 = __webpack_require__(1);
 const swagger_1 = __webpack_require__(4);
-const jwt_auth_guard_1 = __webpack_require__(12);
-const patient_profile_service_1 = __webpack_require__(37);
+const jwt_auth_guard_1 = __webpack_require__(23);
+const patient_profile_service_1 = __webpack_require__(55);
 let PatientProfileController = class PatientProfileController {
     constructor(patientProfileService) {
         this.patientProfileService = patientProfileService;
@@ -3766,7 +4711,7 @@ exports.PatientProfileController = PatientProfileController = __decorate([
 
 
 /***/ }),
-/* 37 */
+/* 55 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3783,7 +4728,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PatientProfileService = void 0;
 const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(23);
+const database_service_1 = __webpack_require__(47);
 let PatientProfileService = class PatientProfileService {
     constructor(db) {
         this.db = db;
@@ -4070,7 +5015,7 @@ exports.PatientProfileService = PatientProfileService = __decorate([
 
 
 /***/ }),
-/* 38 */
+/* 56 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4091,8 +5036,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PrescriptionController = void 0;
 const common_1 = __webpack_require__(1);
 const swagger_1 = __webpack_require__(4);
-const jwt_auth_guard_1 = __webpack_require__(12);
-const prescription_service_1 = __webpack_require__(39);
+const jwt_auth_guard_1 = __webpack_require__(23);
+const prescription_service_1 = __webpack_require__(57);
 let PrescriptionController = class PrescriptionController {
     constructor(prescriptionService) {
         this.prescriptionService = prescriptionService;
@@ -4265,7 +5210,7 @@ exports.PrescriptionController = PrescriptionController = __decorate([
 
 
 /***/ }),
-/* 39 */
+/* 57 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4282,7 +5227,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PrescriptionService = void 0;
 const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(23);
+const database_service_1 = __webpack_require__(47);
 let PrescriptionService = class PrescriptionService {
     constructor(db) {
         this.db = db;
@@ -4641,7 +5586,7 @@ exports.PrescriptionService = PrescriptionService = __decorate([
 
 
 /***/ }),
-/* 40 */
+/* 58 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4662,8 +5607,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.VisitController = void 0;
 const common_1 = __webpack_require__(1);
 const swagger_1 = __webpack_require__(4);
-const jwt_auth_guard_1 = __webpack_require__(12);
-const visit_service_1 = __webpack_require__(41);
+const jwt_auth_guard_1 = __webpack_require__(23);
+const visit_service_1 = __webpack_require__(59);
 let VisitController = class VisitController {
     constructor(visitService) {
         this.visitService = visitService;
@@ -4836,7 +5781,7 @@ exports.VisitController = VisitController = __decorate([
 
 
 /***/ }),
-/* 41 */
+/* 59 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4853,7 +5798,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.VisitService = void 0;
 const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(23);
+const database_service_1 = __webpack_require__(47);
 let VisitService = class VisitService {
     constructor(db) {
         this.db = db;
@@ -5176,7 +6121,7 @@ exports.VisitService = VisitService = __decorate([
 
 
 /***/ }),
-/* 42 */
+/* 60 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5193,7 +6138,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ClinicalTemplateService = void 0;
 const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(23);
+const database_service_1 = __webpack_require__(47);
 let ClinicalTemplateService = class ClinicalTemplateService {
     constructor(db) {
         this.db = db;
@@ -5570,7 +6515,7 @@ exports.ClinicalTemplateService = ClinicalTemplateService = __decorate([
 
 
 /***/ }),
-/* 43 */
+/* 61 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5587,7 +6532,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DrugInteractionService = void 0;
 const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(23);
+const database_service_1 = __webpack_require__(47);
 let DrugInteractionService = class DrugInteractionService {
     constructor(db) {
         this.db = db;
@@ -5935,7 +6880,7 @@ exports.DrugInteractionService = DrugInteractionService = __decorate([
 
 
 /***/ }),
-/* 44 */
+/* 62 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5948,23 +6893,25 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NotificationsModule = void 0;
 const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(23);
-const notification_controller_1 = __webpack_require__(45);
-const notification_service_1 = __webpack_require__(48);
+const database_1 = __webpack_require__(9);
+const database_service_1 = __webpack_require__(47);
+const notification_controller_1 = __webpack_require__(63);
+const notification_service_1 = __webpack_require__(66);
 let NotificationsModule = class NotificationsModule {
 };
 exports.NotificationsModule = NotificationsModule;
 exports.NotificationsModule = NotificationsModule = __decorate([
     (0, common_1.Module)({
+        imports: [database_1.DatabaseModule],
         controllers: [notification_controller_1.NotificationController],
-        providers: [notification_service_1.NotificationService, database_service_1.DatabaseService],
+        providers: [notification_service_1.NotificationService, { provide: database_service_1.DatabaseService, useExisting: database_1.PrismaService }],
         exports: [notification_service_1.NotificationService],
     })
 ], NotificationsModule);
 
 
 /***/ }),
-/* 45 */
+/* 63 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5984,9 +6931,9 @@ var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NotificationController = void 0;
 const common_1 = __webpack_require__(1);
-const jwt_auth_guard_1 = __webpack_require__(12);
-const notification_dto_1 = __webpack_require__(46);
-const notification_service_1 = __webpack_require__(48);
+const jwt_auth_guard_1 = __webpack_require__(23);
+const notification_dto_1 = __webpack_require__(64);
+const notification_service_1 = __webpack_require__(66);
 let NotificationController = class NotificationController {
     constructor(notificationService) {
         this.notificationService = notificationService;
@@ -6087,7 +7034,7 @@ exports.NotificationController = NotificationController = __decorate([
 
 
 /***/ }),
-/* 46 */
+/* 64 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6103,8 +7050,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.QueryNotificationsDto = exports.UpdateNotificationDto = exports.CreateNotificationDto = exports.NotificationChannel = exports.NotificationPriority = exports.NotificationType = void 0;
-const class_transformer_1 = __webpack_require__(47);
-const class_validator_1 = __webpack_require__(15);
+const class_transformer_1 = __webpack_require__(65);
+const class_validator_1 = __webpack_require__(27);
 var NotificationType;
 (function (NotificationType) {
     NotificationType["APPOINTMENT_REQUESTED"] = "APPOINTMENT_REQUESTED";
@@ -6255,13 +7202,13 @@ __decorate([
 
 
 /***/ }),
-/* 47 */
+/* 65 */
 /***/ ((module) => {
 
 module.exports = require("class-transformer");
 
 /***/ }),
-/* 48 */
+/* 66 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6279,8 +7226,8 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NotificationService = void 0;
 const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(23);
-const notification_dto_1 = __webpack_require__(46);
+const database_service_1 = __webpack_require__(47);
+const notification_dto_1 = __webpack_require__(64);
 let NotificationService = NotificationService_1 = class NotificationService {
     constructor(db) {
         this.db = db;
@@ -6481,7 +7428,7 @@ exports.NotificationService = NotificationService = NotificationService_1 = __de
 
 
 /***/ }),
-/* 49 */
+/* 67 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6494,25 +7441,27 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PatientBookingModule = void 0;
 const common_1 = __webpack_require__(1);
+const database_1 = __webpack_require__(9);
+const database_service_1 = __webpack_require__(47);
 const auth_module_1 = __webpack_require__(8);
-const notifications_module_1 = __webpack_require__(44);
-const patient_booking_controller_1 = __webpack_require__(50);
-const patient_booking_service_1 = __webpack_require__(51);
+const notifications_module_1 = __webpack_require__(62);
+const patient_booking_controller_1 = __webpack_require__(68);
+const patient_booking_service_1 = __webpack_require__(69);
 let PatientBookingModule = class PatientBookingModule {
 };
 exports.PatientBookingModule = PatientBookingModule;
 exports.PatientBookingModule = PatientBookingModule = __decorate([
     (0, common_1.Module)({
-        imports: [auth_module_1.AuthModule, notifications_module_1.NotificationsModule],
+        imports: [auth_module_1.AuthModule, notifications_module_1.NotificationsModule, database_1.DatabaseModule],
         controllers: [patient_booking_controller_1.PatientBookingController],
-        providers: [patient_booking_service_1.PatientBookingService],
+        providers: [patient_booking_service_1.PatientBookingService, { provide: database_service_1.DatabaseService, useExisting: database_1.PrismaService }],
         exports: [patient_booking_service_1.PatientBookingService],
     })
 ], PatientBookingModule);
 
 
 /***/ }),
-/* 50 */
+/* 68 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6533,8 +7482,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PatientBookingController = void 0;
 const common_1 = __webpack_require__(1);
 const swagger_1 = __webpack_require__(4);
-const jwt_auth_guard_1 = __webpack_require__(12);
-const patient_booking_service_1 = __webpack_require__(51);
+const jwt_auth_guard_1 = __webpack_require__(23);
+const patient_booking_service_1 = __webpack_require__(69);
 let PatientBookingController = class PatientBookingController {
     constructor(patientBookingService) {
         this.patientBookingService = patientBookingService;
@@ -6646,7 +7595,7 @@ exports.PatientBookingController = PatientBookingController = __decorate([
 
 
 /***/ }),
-/* 51 */
+/* 69 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6664,8 +7613,8 @@ var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PatientBookingService = void 0;
 const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(23);
-const notification_service_1 = __webpack_require__(48);
+const database_service_1 = __webpack_require__(47);
+const notification_service_1 = __webpack_require__(66);
 let PatientBookingService = PatientBookingService_1 = class PatientBookingService {
     constructor(db, notificationService) {
         this.db = db;
@@ -7016,7 +7965,7 @@ exports.PatientBookingService = PatientBookingService = PatientBookingService_1 
 
 
 /***/ }),
-/* 52 */
+/* 70 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7029,27 +7978,28 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SchedulingModule = void 0;
 const common_1 = __webpack_require__(1);
-const schedule_1 = __webpack_require__(53);
-const database_service_1 = __webpack_require__(23);
-const notifications_module_1 = __webpack_require__(44);
-const scheduling_controller_1 = __webpack_require__(54);
-const appointment_management_service_1 = __webpack_require__(57);
-const doctor_availability_service_1 = __webpack_require__(59);
-const scheduling_service_1 = __webpack_require__(56);
-const slot_engine_service_1 = __webpack_require__(58);
+const database_1 = __webpack_require__(9);
+const schedule_1 = __webpack_require__(71);
+const database_service_1 = __webpack_require__(47);
+const notifications_module_1 = __webpack_require__(62);
+const scheduling_controller_1 = __webpack_require__(72);
+const appointment_management_service_1 = __webpack_require__(75);
+const doctor_availability_service_1 = __webpack_require__(77);
+const scheduling_service_1 = __webpack_require__(74);
+const slot_engine_service_1 = __webpack_require__(76);
 let SchedulingModule = class SchedulingModule {
 };
 exports.SchedulingModule = SchedulingModule;
 exports.SchedulingModule = SchedulingModule = __decorate([
     (0, common_1.Module)({
-        imports: [schedule_1.ScheduleModule.forRoot(), notifications_module_1.NotificationsModule],
+        imports: [schedule_1.ScheduleModule.forRoot(), notifications_module_1.NotificationsModule, database_1.DatabaseModule],
         controllers: [scheduling_controller_1.SchedulingController],
         providers: [
             scheduling_service_1.SchedulingService,
             doctor_availability_service_1.DoctorAvailabilityService,
             slot_engine_service_1.SlotEngineService,
             appointment_management_service_1.AppointmentManagementService,
-            database_service_1.DatabaseService,
+            { provide: database_service_1.DatabaseService, useExisting: database_1.PrismaService },
         ],
         exports: [
             scheduling_service_1.SchedulingService,
@@ -7062,13 +8012,13 @@ exports.SchedulingModule = SchedulingModule = __decorate([
 
 
 /***/ }),
-/* 53 */
+/* 71 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/schedule");
 
 /***/ }),
-/* 54 */
+/* 72 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7089,9 +8039,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SchedulingController = void 0;
 const common_1 = __webpack_require__(1);
 const swagger_1 = __webpack_require__(4);
-const jwt_auth_guard_1 = __webpack_require__(12);
-const scheduling_dto_1 = __webpack_require__(55);
-const scheduling_service_1 = __webpack_require__(56);
+const jwt_auth_guard_1 = __webpack_require__(23);
+const scheduling_dto_1 = __webpack_require__(73);
+const scheduling_service_1 = __webpack_require__(74);
 let SchedulingController = class SchedulingController {
     constructor(schedulingService) {
         this.schedulingService = schedulingService;
@@ -7498,7 +8448,7 @@ exports.SchedulingController = SchedulingController = __decorate([
 
 
 /***/ }),
-/* 55 */
+/* 73 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7513,8 +8463,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ScheduleAnalyticsDto = exports.TimeSlotAvailabilityDto = exports.UpdateAvailabilityDto = exports.GetAvailabilityDto = exports.UpdateAppointmentDto = exports.BookAppointmentDto = exports.AppointmentStatus = exports.AppointmentType = exports.CreateExceptionDto = exports.ExceptionType = exports.UpdateTimeSlotDto = exports.CreateTimeSlotDto = exports.UpdateScheduleTemplateDto = exports.CreateScheduleTemplateDto = void 0;
-const class_validator_1 = __webpack_require__(15);
-const class_transformer_1 = __webpack_require__(47);
+const class_validator_1 = __webpack_require__(27);
+const class_transformer_1 = __webpack_require__(65);
 class CreateScheduleTemplateDto {
 }
 exports.CreateScheduleTemplateDto = CreateScheduleTemplateDto;
@@ -7844,7 +8794,7 @@ __decorate([
 
 
 /***/ }),
-/* 56 */
+/* 74 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7861,11 +8811,11 @@ var _a, _b, _c, _d, _e;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SchedulingService = void 0;
 const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(23);
-const notification_service_1 = __webpack_require__(48);
-const appointment_management_service_1 = __webpack_require__(57);
-const doctor_availability_service_1 = __webpack_require__(59);
-const slot_engine_service_1 = __webpack_require__(58);
+const database_service_1 = __webpack_require__(47);
+const notification_service_1 = __webpack_require__(66);
+const appointment_management_service_1 = __webpack_require__(75);
+const doctor_availability_service_1 = __webpack_require__(77);
+const slot_engine_service_1 = __webpack_require__(76);
 let SchedulingService = class SchedulingService {
     constructor(db, doctorAvailability, slotEngine, appointmentManagement, notificationService) {
         this.db = db;
@@ -8413,7 +9363,7 @@ exports.SchedulingService = SchedulingService = __decorate([
 
 
 /***/ }),
-/* 57 */
+/* 75 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8431,9 +9381,9 @@ var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppointmentManagementService = void 0;
 const common_1 = __webpack_require__(1);
-const database_service_1 = __webpack_require__(23);
-const notification_service_1 = __webpack_require__(48);
-const slot_engine_service_1 = __webpack_require__(58);
+const database_service_1 = __webpack_require__(47);
+const notification_service_1 = __webpack_require__(66);
+const slot_engine_service_1 = __webpack_require__(76);
 let AppointmentManagementService = AppointmentManagementService_1 = class AppointmentManagementService {
     constructor(db, slotEngine, notificationService) {
         this.db = db;
@@ -8772,7 +9722,7 @@ exports.AppointmentManagementService = AppointmentManagementService = Appointmen
 
 
 /***/ }),
-/* 58 */
+/* 76 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8789,8 +9739,8 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SlotEngineService = void 0;
 const common_1 = __webpack_require__(1);
-const schedule_1 = __webpack_require__(53);
-const database_service_1 = __webpack_require__(23);
+const schedule_1 = __webpack_require__(71);
+const database_service_1 = __webpack_require__(47);
 let SlotEngineService = class SlotEngineService {
     constructor(db) {
         this.db = db;
@@ -9077,7 +10027,7 @@ exports.SlotEngineService = SlotEngineService = __decorate([
 
 
 /***/ }),
-/* 59 */
+/* 77 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9094,8 +10044,8 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DoctorAvailabilityService = void 0;
 const common_1 = __webpack_require__(1);
-const schedule_1 = __webpack_require__(53);
-const database_service_1 = __webpack_require__(23);
+const schedule_1 = __webpack_require__(71);
+const database_service_1 = __webpack_require__(47);
 let DoctorAvailabilityService = class DoctorAvailabilityService {
     constructor(db) {
         this.db = db;

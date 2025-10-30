@@ -141,7 +141,11 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^@/database$": "<rootDir>/__mocks__/database.ts",
+      "^@/(.*)": "<rootDir>/$1"
+    }
   },
   "lint-staged": {
     "*.{ts,js}": [

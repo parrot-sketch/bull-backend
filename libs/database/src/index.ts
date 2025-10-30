@@ -1,0 +1,14 @@
+// Module and service exports
+export * from './database.module';
+export * from './prisma.service';
+
+// Repository exports
+export * from './repositories/booking.repository';
+export * from './repositories/doctor-profile.repository';
+export * from './repositories/emr.repository';
+export * from './repositories/notification.repository';
+export * from './repositories/scheduling.repository';
+export * from './repositories/user.repository';
+
+// Type exports
+export * from './types';

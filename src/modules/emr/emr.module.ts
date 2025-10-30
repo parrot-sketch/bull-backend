@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { DatabaseModule, PrismaService } from '@/database';
+import { DatabaseService } from '../auth/services/database.service';
 import { AuthModule } from '../auth/auth.module';
 import { EmrController } from './controllers/emr.controller';
 import { ImagingController } from './controllers/imaging.controller';
@@ -16,7 +18,7 @@ import { PrescriptionService } from './services/prescription.service';
 import { VisitService } from './services/visit.service';
 
 @Module({
-  imports: [AuthModule],
+  imports: [AuthModule, DatabaseModule],
   controllers: [
     EmrController,
     PatientProfileController,
@@ -26,6 +28,7 @@ import { VisitService } from './services/visit.service';
     ImagingController,
   ],
   providers: [
+    { provide: DatabaseService, useExisting: PrismaService },
     EmrService,
     PatientProfileService,
     VisitService,

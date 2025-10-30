@@ -1,12 +1,13 @@
+import { DatabaseModule } from '@/database';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { AppointmentsController } from './controllers/appointments.controller';
 import { AuthController } from './controllers/auth.controller';
-import { AuthService } from './services/auth.service';
-import { DatabaseService } from './services/database.service';
 import { AuditService } from './services/audit.service';
+import { EmailService } from './services/email.service';
+import { AuthService } from './services/auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
@@ -14,6 +15,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    DatabaseModule,
     PassportModule,
     JwtModule.registerAsync({
       inject: [ConfigService],
@@ -33,11 +35,11 @@ import { JwtStrategy } from './strategies/jwt.strategy';
   controllers: [AuthController, AppointmentsController],
   providers: [
     AuthService,
-    DatabaseService,
     AuditService,
+    EmailService,
     JwtStrategy,
   ],
-  exports: [AuthService, DatabaseService],
+  exports: [AuthService],
 })
 export class AuthModule {}
 

@@ -1,9 +1,9 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-import { DatabaseService } from '../../auth/services/database.service';
+import { PrismaService } from '@/database';
 
 @Injectable()
 export class DoctorProfileService {
-  constructor(private readonly db: DatabaseService) {}
+  constructor(private readonly db: PrismaService) {}
 
   // ===========================================
   // SIMPLIFIED DOCTOR PROFILE CRUD

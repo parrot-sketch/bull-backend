@@ -147,7 +147,11 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
   /**
    * Backup database (for development/testing)
    */
-  async createBackup() {
+  async createBackup(): Promise<{ 
+    users: any[],
+    auditLogs: any[],
+    timestamp: string
+  }> {
     try {
       // This is a simplified backup - in production, use proper backup tools
       const backup = {

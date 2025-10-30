@@ -1,36 +1,67 @@
-import { BadRequestException, ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+// Core NestJS imports
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  Logger,
+  UnauthorizedException
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserRole } from '@prisma/client';
+
+// Database and services
+import { PrismaService } from '../../../../libs/database/src/prisma.service';
+import { UserRepository } from '../../../../libs/database/src/repositories/user.repository';
+import { AuditService } from './audit.service';
+import { EmailService } from './email.service';
+
+// Domain types
+import { UserRole } from '../../../common/enums/user-role.enum';
+
+// Third party dependencies
+import * as sgMail from '@sendgrid/mail';
 import * as bcrypt from 'bcrypt';
-import * as speakeasy from 'speakeasy';
 import * as crypto from 'crypto';
 import * as nodemailer from 'nodemailer';
-import * as sgMail from '@sendgrid/mail';
-import { AuditService } from './audit.service';
-import { DatabaseService } from './database.service';
+import * as speakeasy from 'speakeasy';
+
+// Type definitions
+import {
+  IAuthService
+} from './types';
 
 @Injectable()
-export class AuthService {
+export class AuthService implements IAuthService {
+  private readonly logger = new Logger(AuthService.name);
+  
+  // Authentication settings
   private readonly jwtSecret = process.env.JWT_SECRET!; // required via module
   private readonly jwtExpiresIn = process.env.JWT_EXPIRES_IN || '15m';
   private readonly refreshTokenExpiresIn = process.env.REFRESH_TOKEN_EXPIRES_IN || '7d';
   private readonly bcryptRounds = parseInt(process.env.BCRYPT_ROUNDS || '12', 10);
 
+  // Email settings
+  private readonly fromEmail = process.env.FROM_EMAIL || process.env.SMTP_FROM || 'noreply@ihosi.com';
+  private readonly fromName = process.env.FROM_NAME || 'iHosi';
+
   // Valid user roles
   private readonly VALID_ROLES: UserRole[] = [
-    'PATIENT',
-    'DOCTOR',
-    'NURSE',
-    'ADMIN',
-    'TECHNICIAN',
-    'RECEPTIONIST',
+    UserRole.PATIENT,
+    UserRole.DOCTOR,
+    UserRole.NURSE,
+    UserRole.ADMIN,
+    UserRole.TECHNICIAN,
+    UserRole.RECEPTIONIST,
   ];
 
   constructor(
-    private readonly db: DatabaseService,
+    private readonly userRepo: UserRepository,
+    private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
     private readonly auditService: AuditService,
-  ) {}
+    private readonly emailService: EmailService,
+  ) {
+    this.logger.log('AuthService initialized with email sender:', this.fromEmail);
+  }
 
   /**
    * Helper: create nodemailer transporter using environment variables (Mailhog or real SMTP)
@@ -132,9 +163,7 @@ export class AuthService {
       const validatedRole = this.validateRole(userData.role);
 
       // Check if user already exists (with normalized email)
-      const existingUser = await this.db.user.findUnique({
-        where: { email: normalizedEmail },
-      });
+      const existingUser = await this.userRepo.findByEmail(normalizedEmail);
 
       if (existingUser) {
         await this.auditService.log('REGISTER_FAILED', {
@@ -166,8 +195,8 @@ export class AuthService {
       // Calculate refresh token expiry from environment variable
       const refreshTokenExpiryMs = this.parseExpiryToMilliseconds(this.refreshTokenExpiresIn);
 
-      // Create user and session atomically in a transaction
-      const result = await this.db.$transaction(async (tx) => {
+  // Create user and session atomically in a transaction
+  const result = await this.prisma.$transaction(async (tx) => {
         // Create user
         const user = await tx.user.create({
           data: {
@@ -253,9 +282,7 @@ export class AuthService {
     const normalizedEmail = this.normalizeEmail(credentials.email);
     
     // Find user
-    const user = await this.db.user.findUnique({
-      where: { email: normalizedEmail },
-    });
+    const user = await this.userRepo.findByEmail(normalizedEmail);
 
     console.log('👤 User found:', !!user);
     console.log('👤 User active:', user?.isActive);
@@ -293,7 +320,7 @@ export class AuthService {
     }
 
     // MFA check
-    const mfaSettings = await this.db.mfaSettings.findUnique({ where: { userId: user.id } });
+  const mfaSettings = await this.prisma.mfaSettings.findUnique({ where: { userId: user.id } });
     if (mfaSettings?.isEnabled) {
       if (!credentials.mfaCode) {
         await this.auditService.log('LOGIN_MFA_REQUIRED', {
@@ -333,15 +360,9 @@ export class AuthService {
     // Generate tokens and create session explicitly
     const tokens = this.generateJwtPair(user.id);
     const refreshTokenExpiryMs = this.parseExpiryToMilliseconds(this.refreshTokenExpiresIn);
-    await this.db.userSession.create({
-      data: {
-        userId: user.id,
-        refreshToken: tokens.refreshToken,
-        expiresAt: new Date(Date.now() + refreshTokenExpiryMs),
-        isActive: true,
-        ipAddress: auditContext?.ipAddress,
-        userAgent: auditContext?.userAgent,
-      },
+    await this.userRepo.createSession(user.id, tokens.refreshToken, new Date(Date.now() + refreshTokenExpiryMs), {
+      ipAddress: auditContext?.ipAddress,
+      userAgent: auditContext?.userAgent,
     });
 
     // Audit successful login
@@ -364,12 +385,12 @@ export class AuthService {
 
   // MFA: Setup TOTP
   async setupMfa(userId: string) {
-    const user = await this.db.user.findUnique({ where: { id: userId } });
+    const user = await this.userRepo.findById(userId);
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
     const secret = speakeasy.generateSecret({ name: `iHosi (${user.email})`, length: 20 });
-    await this.db.mfaSettings.upsert({
+    await this.prisma.mfaSettings.upsert({
       where: { userId },
       update: { secret: secret.base32, method: 'TOTP', isEnabled: false },
       create: { userId, secret: secret.base32, method: 'TOTP', isEnabled: false },
@@ -380,7 +401,7 @@ export class AuthService {
 
   // MFA: Verify and enable
   async verifyMfa(userId: string, code: string) {
-    const settings = await this.db.mfaSettings.findUnique({ where: { userId } });
+    const settings = await this.prisma.mfaSettings.findUnique({ where: { userId } });
     if (!settings || !settings.secret) {
       throw new BadRequestException('MFA not initialized');
     }
@@ -389,14 +410,14 @@ export class AuthService {
       throw new UnauthorizedException('Invalid MFA code');
     }
     const backupCodes = Array.from({ length: 8 }).map(() => Math.random().toString(36).slice(2, 10));
-    await this.db.mfaSettings.update({ where: { userId }, data: { isEnabled: true, backupCodes } });
+  await this.prisma.mfaSettings.update({ where: { userId }, data: { isEnabled: true, backupCodes } });
     await this.auditService.log('MFA_ENABLED', { userId, resource: 'USER', resourceId: userId, severity: 'INFO' });
     return { success: true, data: { backupCodes } };
   }
 
   async refreshToken(refreshToken: string) {
     // Find session
-    const session = await this.db.userSession.findUnique({
+    const session = await this.prisma.userSession.findUnique({
       where: { refreshToken },
       include: { user: true },
     });
@@ -410,7 +431,7 @@ export class AuthService {
 
     // Update session with new refresh token
     const refreshTokenExpiryMs = this.parseExpiryToMilliseconds(this.refreshTokenExpiresIn);
-    await this.db.userSession.update({
+    await this.prisma.userSession.update({
       where: { id: session.id },
       data: {
         refreshToken: tokens.refreshToken,
@@ -430,10 +451,7 @@ export class AuthService {
 
   async logout(userId: string, auditContext?: { ipAddress?: string; userAgent?: string }) {
     // Deactivate all user sessions
-    await this.db.userSession.updateMany({
-      where: { userId },
-      data: { isActive: false },
-    });
+    await this.userRepo.invalidateSessions(userId);
 
     // Audit logout
     await this.auditService.log('LOGOUT_SUCCESS', {
@@ -453,9 +471,7 @@ export class AuthService {
   }
 
   async getCurrentUser(userId: string) {
-    const user = await this.db.user.findUnique({
-      where: { id: userId },
-    });
+    const user = await this.userRepo.findById(userId);
 
     if (!user) {
       throw new UnauthorizedException('User not found');
@@ -476,7 +492,7 @@ export class AuthService {
     const normalizedEmail = this.normalizeEmail(email);
 
     try {
-      const user = await this.db.user.findUnique({ where: { email: normalizedEmail } });
+      const user = await this.userRepo.findByEmail(normalizedEmail);
 
       // Always respond success to avoid revealing whether the email exists
       if (!user) {
@@ -497,19 +513,29 @@ export class AuthService {
       const expiresAt = new Date(Date.now() + expiresMs);
 
       // Store hashed token and expiry on user record
-      await this.db.user.update({ where: { id: user.id }, data: { passwordResetToken: hashed, passwordResetExpires: expiresAt } });
+      await this.userRepo.updateUser(user.id, { passwordResetToken: hashed, passwordResetExpires: expiresAt });
 
-      // Send OTP via email using configured provider (we prefer SendGrid in production).
-      const fromEmail = process.env.FROM_EMAIL || process.env.SMTP_FROM || 'noreply@ihosi.com';
-      const fromName = process.env.FROM_NAME || 'iHosi';
-      const from = fromName ? `${fromName} <${fromEmail}>` : fromEmail;
-      const subject = `${fromName} Password Reset Code`;
-      const text = `Your ${fromName} password reset code is: ${otp}. It will expire in ${Math.round(expiresMs / 60000)} minutes. If you did not request this, please ignore this message.`;
+      // Send OTP via email using EmailService
+      const from = this.fromName ? `${this.fromName} <${this.fromEmail}>` : this.fromEmail;
+      const subject = `${this.fromName} Password Reset Code`;
+      const text = `Your ${this.fromName} password reset code is: ${otp}. It will expire in ${Math.round(expiresMs / 60000)} minutes. If you did not request this, please ignore this message.`;
+      const html = `<p>Your ${this.fromName} password reset code is: <strong>${otp}</strong></p>
+                  <p>It will expire in ${Math.round(expiresMs / 60000)} minutes.</p>
+                  <p>If you did not request this, please ignore this message.</p>`;
 
-      // Try to send email via unified helper which will use SendGrid when EMAIL_SERVICE=sendgrid
-      this.sendEmail({ to: user.email, from, subject, text }).catch((err) => {
-        console.error('Failed to send password reset email:', err?.message || err);
-      });
+      // Try to send email via EmailService
+      try {
+        await this.emailService.sendEmail({
+          to: user.email,
+          from,
+          subject,
+          text,
+          html,
+        });
+        this.logger.debug(`Password reset email sent to ${user.email}`);
+      } catch (err) {
+        this.logger.error('Failed to send password reset email:', err);
+      }
 
       await this.auditService.log('PASSWORD_RESET_REQUESTED', {
         userId: user.id,
@@ -545,7 +571,7 @@ export class AuthService {
     const normalizedEmail = this.normalizeEmail(email);
     const hashedToken = this.hashToken(token);
 
-    const user = await this.db.user.findUnique({ where: { email: normalizedEmail } });
+    const user = await this.userRepo.findByEmail(normalizedEmail);
     if (!user || !user.passwordResetToken || !user.passwordResetExpires) {
       // Do not reveal missing token/user
       throw new BadRequestException('Invalid token or expired');
@@ -571,9 +597,9 @@ export class AuthService {
     // Hash new password and update user, clear reset token, and invalidate sessions
     const newHashed = await bcrypt.hash(newPassword, this.bcryptRounds);
 
-    await this.db.$transaction(async (tx) => {
+    await this.prisma.$transaction(async (tx) => {
       await tx.user.update({ where: { id: user.id }, data: { password: newHashed, passwordResetToken: null, passwordResetExpires: null, lastPasswordChange: new Date() } });
-      // Invalidate sessions
+      // Invalidate sessions using transaction
       await tx.userSession.updateMany({ where: { userId: user.id }, data: { isActive: false } });
     });
 
@@ -645,7 +671,7 @@ export class AuthService {
    */
   private validateRole(role?: string): UserRole {
     if (!role) {
-      return 'PATIENT'; // Default role
+      return UserRole.PATIENT; // Default role
     }
     
     const upperRole = role.toUpperCase();

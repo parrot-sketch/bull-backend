@@ -1,86 +1,11 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
-import { UserRole } from '@prisma/client';
-import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, Length, Matches, MinLength } from 'class-validator';
+import { ForgotPasswordDto, LoginDto, RefreshDto, RegisterDto, ResetPasswordDto } from '../dto';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { AuthService } from '../services/auth.service';
 
-export class LoginDto {
-  @IsEmail()
-  @IsNotEmpty()
-  email!: string;
-
-  @IsString()
-  @IsNotEmpty()
-  password!: string;
-
-  @IsOptional()
-  @IsString()
-  mfaCode?: string;
-}
-
-export class RegisterDto {
-  @IsEmail()
-  @IsNotEmpty()
-  email!: string;
-
-  @IsString()
-  @MinLength(8)
-  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/, {
-    message: 'Password must contain uppercase, lowercase, number and special character'
-  })
-  password!: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @Length(1, 50, { message: 'First name must be between 1 and 50 characters' })
-  @Matches(/^[a-zA-ZÀ-ÿ\s\-']+$/, {
-    message: 'First name can only contain letters, spaces, hyphens, and apostrophes'
-  })
-  firstName!: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @Length(1, 50, { message: 'Last name must be between 1 and 50 characters' })
-  @Matches(/^[a-zA-ZÀ-ÿ\s\-']+$/, {
-    message: 'Last name can only contain letters, spaces, hyphens, and apostrophes'
-  })
-  lastName!: string;
-
-  @IsOptional()
-  @IsEnum(UserRole, { message: 'Role must be one of: PATIENT, DOCTOR, NURSE, ADMIN, TECHNICIAN, RECEPTIONIST' })
-  role?: UserRole;
-}
-
-export class RefreshDto {
-  @IsString()
-  @IsNotEmpty()
-  refreshToken!: string;
-}
-
-export class ForgotPasswordDto {
-  @IsEmail()
-  @IsNotEmpty()
-  email!: string;
-}
-
-export class ResetPasswordDto {
-  @IsEmail()
-  @IsNotEmpty()
-  email!: string;
-
-  @IsString()
-  @IsNotEmpty()
-  token!: string;
-
-  @IsString()
-  @MinLength(8)
-  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/, {
-    message: 'Password must contain uppercase, lowercase, number and special character'
-  })
-  newPassword!: string;
-}
+// DTOs are defined in ../dto and imported above
 
 @ApiTags('Authentication')
 @Controller('auth')
