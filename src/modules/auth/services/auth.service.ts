@@ -23,6 +23,7 @@ import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import * as nodemailer from 'nodemailer';
 import * as speakeasy from 'speakeasy';
+import { OAuth2Client } from 'google-auth-library';
 
 // Type definitions
 import {
@@ -42,6 +43,11 @@ export class AuthService implements IAuthService {
   // Email settings
   private readonly fromEmail = process.env.FROM_EMAIL || process.env.SMTP_FROM || 'noreply@ihosi.com';
   private readonly fromName = process.env.FROM_NAME || 'iHosi';
+  private readonly googleClientIds = [
+    process.env.GOOGLE_CLIENT_ID_ANDROID,
+    process.env.GOOGLE_CLIENT_ID_IOS,
+    process.env.GOOGLE_CLIENT_ID_WEB,
+  ].filter(Boolean) as string[];
 
   // Valid user roles
   private readonly VALID_ROLES: UserRole[] = [
@@ -724,6 +730,80 @@ export class AuthService implements IAuthService {
       specialization: user.specialization,
       isVerified: user.isVerified,
       mfaEnabled: false, // Not implemented yet
+    };
+  }
+
+  async googleLogin(idToken: string, auditContext?: { ipAddress?: string; userAgent?: string }) {
+    if (!idToken) {
+      throw new BadRequestException('Missing Google ID token');
+    }
+
+    // Verify Google ID token
+    const client = new OAuth2Client();
+    let payload: any;
+    try {
+      const ticket = await client.verifyIdToken({ idToken, audience: this.googleClientIds.length ? this.googleClientIds : undefined });
+      payload = ticket.getPayload();
+    } catch (e) {
+      await this.auditService.log('LOGIN_FAILED', {
+        resource: 'USER',
+        ipAddress: auditContext?.ipAddress,
+        userAgent: auditContext?.userAgent,
+        metadata: { method: 'GOOGLE', reason: 'TOKEN_VERIFY_FAILED' },
+        severity: 'WARN',
+      });
+      throw new UnauthorizedException('Invalid Google token');
+    }
+
+    if (!payload || !payload.email || payload.email_verified !== true) {
+      throw new UnauthorizedException('Google account not verified');
+    }
+
+    const normalizedEmail = this.normalizeEmail(payload.email);
+    const firstName = (payload.given_name || '').toString();
+    const lastName = (payload.family_name || '').toString();
+
+    // Upsert user
+    let user = await this.userRepo.findByEmail(normalizedEmail);
+    if (!user) {
+      user = await this.prisma.user.create({
+        data: {
+          email: normalizedEmail,
+          password: await bcrypt.hash(crypto.randomBytes(12).toString('hex'), this.bcryptRounds),
+          firstName: firstName || 'Google',
+          lastName: lastName || 'User',
+          isActive: true,
+          isVerified: true,
+          role: 'PATIENT',
+        },
+      });
+    } else if (!user.isVerified) {
+      await this.userRepo.updateUser(user.id, { isVerified: true });
+      user.isVerified = true;
+    }
+
+    // Issue tokens and create session
+    const tokens = this.generateJwtPair(user.id);
+    const refreshTokenExpiryMs = this.parseExpiryToMilliseconds(this.refreshTokenExpiresIn);
+    await this.userRepo.createSession(user.id, tokens.refreshToken, new Date(Date.now() + refreshTokenExpiryMs), {
+      ipAddress: auditContext?.ipAddress,
+      userAgent: auditContext?.userAgent,
+    });
+
+    await this.auditService.log('LOGIN_SUCCESS', {
+      userId: user.id,
+      resource: 'USER',
+      resourceId: user.id,
+      ipAddress: auditContext?.ipAddress,
+      userAgent: auditContext?.userAgent,
+      metadata: { method: 'GOOGLE', email: normalizedEmail },
+      severity: 'INFO',
+    });
+
+    return {
+      success: true,
+      user: this.mapUserToResponse(user),
+      ...tokens,
     };
   }
 }

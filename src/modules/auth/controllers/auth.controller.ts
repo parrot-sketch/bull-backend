@@ -1,7 +1,7 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
-import { ForgotPasswordDto, LoginDto, RefreshDto, RegisterDto, ResetPasswordDto } from '../dto';
+import { ForgotPasswordDto, LoginDto, RefreshDto, RegisterDto, ResetPasswordDto, GoogleLoginDto } from '../dto';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { AuthService } from '../services/auth.service';
 
@@ -71,6 +71,19 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Token refreshed successfully' })
   async refreshToken(@Body() body: RefreshDto) {
     return this.authService.refreshToken(body.refreshToken);
+  }
+
+  @Post('google')
+  @HttpCode(HttpStatus.OK)
+  @Throttle({ default: { limit: 10, ttl: 60 } })
+  @ApiOperation({ summary: 'Login with Google ID token' })
+  @ApiResponse({ status: 200, description: 'Google login successful' })
+  async googleLogin(@Body() body: GoogleLoginDto, @Request() req: any) {
+    const auditContext = {
+      ipAddress: req.ip || req.connection.remoteAddress,
+      userAgent: req.headers['user-agent'],
+    };
+    return this.authService.googleLogin(body.idToken, auditContext);
   }
 
   @Post('logout')

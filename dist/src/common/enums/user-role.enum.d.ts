@@ -1,0 +1,8 @@
+export declare enum UserRole {
+    DOCTOR = "DOCTOR",
+    NURSE = "NURSE",
+    PATIENT = "PATIENT",
+    ADMIN = "ADMIN",
+    TECHNICIAN = "TECHNICIAN",
+    RECEPTIONIST = "RECEPTIONIST"
+}
