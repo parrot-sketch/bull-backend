@@ -15,8 +15,8 @@ const passport_1 = require("@nestjs/passport");
 const appointments_controller_1 = require("./controllers/appointments.controller");
 const auth_controller_1 = require("./controllers/auth.controller");
 const audit_service_1 = require("./services/audit.service");
-const email_service_1 = require("./services/email.service");
 const auth_service_1 = require("./services/auth.service");
+const email_service_1 = require("./services/email.service");
 const jwt_strategy_1 = require("./strategies/jwt.strategy");
 let AuthModule = class AuthModule {
 };

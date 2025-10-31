@@ -10,13 +10,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.JwtStrategy = void 0;
+const database_1 = require("../../../../libs/database/src");
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const passport_1 = require("@nestjs/passport");
 const passport_jwt_1 = require("passport-jwt");
-const database_1 = require("../../../../libs/database/src");
 let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy) {
-    constructor(configService, userRepository) {
+    constructor(configService, db) {
         super({
             jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
@@ -29,10 +29,22 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
             })(),
         });
         this.configService = configService;
-        this.userRepository = userRepository;
+        this.db = db;
     }
     async validate(payload) {
-        const user = await this.userRepository.findById(payload.userId);
+        const user = await this.db.user.findUnique({
+            where: { id: payload.userId },
+            select: {
+                id: true,
+                email: true,
+                firstName: true,
+                lastName: true,
+                role: true,
+                isActive: true,
+                isLocked: true,
+                lockedUntil: true,
+            },
+        });
         if (!user || !user.isActive) {
             throw new common_1.UnauthorizedException('User not found or inactive');
         }
@@ -52,6 +64,6 @@ exports.JwtStrategy = JwtStrategy;
 exports.JwtStrategy = JwtStrategy = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [config_1.ConfigService,
-        database_1.UserRepository])
+        database_1.PrismaService])
 ], JwtStrategy);
 //# sourceMappingURL=jwt.strategy.js.map

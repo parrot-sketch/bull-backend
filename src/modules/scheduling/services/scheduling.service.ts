@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { DatabaseService } from '../../auth/services/database.service';
 import { NotificationService } from '../../notifications/services/notification.service';
 import {
@@ -39,7 +40,7 @@ export class SchedulingService {
       data: {
         doctorId,
         ...templateData,
-      } as any,
+    } as unknown as Prisma.DoctorScheduleTemplateCreateInput,
       include: {
         timeSlots: true,
       },
@@ -77,7 +78,7 @@ export class SchedulingService {
 
     const updatedTemplate = await this.db.doctorScheduleTemplate.update({
       where: { id: templateId },
-      data: updateData as any,
+  data: updateData as unknown as Prisma.DoctorScheduleTemplateUpdateInput,
       include: {
         timeSlots: true,
       },
@@ -120,7 +121,7 @@ export class SchedulingService {
       data: {
         templateId,
         ...slotData,
-      } as any,
+      } as unknown as Prisma.DoctorTimeSlotCreateInput,
     });
 
     return {
@@ -139,7 +140,7 @@ export class SchedulingService {
 
     const updatedSlot = await this.db.doctorTimeSlot.update({
       where: { id: slotId },
-      data: updateData as any,
+  data: updateData as Prisma.DoctorTimeSlotUpdateInput,
     });
 
     return {
@@ -169,19 +170,32 @@ export class SchedulingService {
   // ===========================================
 
   async generateSchedule(doctorId: string, templateId: string, date: string) {
-    const template = await this.db.doctorScheduleTemplate.findUnique({
+    // Load template and its time slots
+    const template: any = await this.db.doctorScheduleTemplate.findUnique({
       where: { id: templateId },
+      include: { timeSlots: true },
     });
 
     if (!template) {
       throw new NotFoundException('Schedule template not found');
     }
 
+    const targetDate = new Date(date);
+
+    // Check for exceptions (blocked day)
+    const exception = await this.db.doctorScheduleException.findFirst({
+      where: { doctorId, date: targetDate, type: 'BLOCKED' },
+    });
+
+    if (exception) {
+      throw new BadRequestException('Cannot apply template on a blocked date');
+    }
+
     // Check if schedule already exists for this date
     const existingSchedule = await this.db.doctorSchedule.findFirst({
       where: {
         doctorId,
-        date: new Date(date),
+        date: targetDate,
       },
     });
 
@@ -189,39 +203,112 @@ export class SchedulingService {
       throw new BadRequestException('Schedule already exists for this date');
     }
 
-    // Get doctor profile
-    const profile = await this.db.doctorProfile.findFirst({
-      where: { doctorId },
-    });
+    // Determine day of week and derive default working window from template or timeSlots
+    const dayOfWeek = this.getDayOfWeek(targetDate);
+    const slotsForDay = (template.timeSlots || []).filter((s: any) => s.dayOfWeek === dayOfWeek);
 
-    if (!profile) {
-      throw new NotFoundException('Doctor profile not found');
+    if (!slotsForDay || slotsForDay.length === 0) {
+      throw new BadRequestException('Template has no time slots for the selected day');
     }
 
-    // Create the schedule
+    // Determine aggregated start/end time for the schedule
+    const sortedSlots = slotsForDay.sort((a: any, b: any) => a.startTime.localeCompare(b.startTime));
+    const scheduleStart = sortedSlots[0].startTime;
+    const scheduleEnd = sortedSlots.reduce((acc: string, s: any) => (s.endTime > acc ? s.endTime : acc), sortedSlots[0].endTime);
+
+    // Create a DoctorSchedule row for the date
     const schedule = await this.db.doctorSchedule.create({
       data: {
         doctorId,
-        profileId: profile.id,
         templateId,
-        dayOfWeek: this.getDayOfWeek(new Date(date)),
-        startTime: '09:00', // Default start time
-        endTime: '17:00',   // Default end time
-        date: new Date(date),
-        slotDuration: 30,
-        bufferTime: 10,
-        maxBookings: 1,
-        location: 'Main Clinic',
-        serviceType: 'CONSULTATION',
+        date: targetDate,
+        dayOfWeek,
+        startTime: scheduleStart,
+        endTime: scheduleEnd,
+        slotDuration: sortedSlots[0].slotDuration || 30,
+        bufferTime: sortedSlots[0].bufferTime || 0,
         isAvailable: true,
-      } as any,
+  location: template.location ? JSON.stringify(template.location) : undefined,
+        serviceType: sortedSlots[0].serviceType || undefined,
+        notes: `Generated from template ${template.name}`,
+      } as unknown as Prisma.DoctorScheduleCreateInput,
     });
+
+    // Generate DoctorDaySlot rows based on each timeSlot in the template for that day
+    const daySlotsToCreate: Prisma.DoctorDaySlotCreateManyInput[] = [];
+    for (const ts of slotsForDay) {
+      const slotStart = ts.startTime; // HH:MM
+      const slotEnd = ts.endTime; // HH:MM
+  const duration = ts.slotDuration || template.applicationRules?.defaultSlotDuration || 30;
+  const bufferBefore = ts.bufferBefore ?? ts.bufferTime ?? 0;
+  const bufferAfter = ts.bufferAfter ?? 0;
+
+      // compute start cursor as time after bufferBefore
+      let cursor = this.shiftTime(slotStart, bufferBefore);
+      const absoluteEnd = this.shiftTime(slotEnd, -bufferAfter);
+
+      while (this.timeLessThanOrEqual(this.addMinutes(cursor, duration), absoluteEnd)) {
+        const slotStartStr = cursor;
+        const slotEndStr = this.addMinutes(cursor, duration);
+
+        daySlotsToCreate.push({
+          doctorId,
+          scheduleId: schedule.id,
+          timeSlotId: ts.id,
+          date: targetDate,
+          startTime: slotStartStr,
+          endTime: slotEndStr,
+          isAvailable: true,
+          isBooked: false,
+          slotCapacity: ts.maxBookings ?? 1,
+          currentBookings: 0,
+          slotMetadata: ts.meta ?? undefined,
+          timezone: template.timezone ?? undefined,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+
+  // advance cursor by slot duration + bufferAfter (per-slot buffer)
+  cursor = this.addMinutes(cursor, duration + ((ts.bufferAfter ?? ts.bufferTime) ?? 0));
+      }
+    }
+
+    // Persist day slots using createMany with skipDuplicates to avoid unique constraint errors
+    if (daySlotsToCreate.length > 0) {
+      await this.db.$transaction([
+        this.db.doctorDaySlot.createMany({ data: daySlotsToCreate, skipDuplicates: true }),
+      ]);
+    }
+
+    // Return created day slots for the schedule date
+    const createdSlots = await this.db.doctorDaySlot.findMany({ where: { doctorId, date: targetDate }, orderBy: { startTime: 'asc' } });
 
     return {
       success: true,
-      data: schedule,
-      message: 'Schedule generated successfully',
+      data: {
+        schedule,
+        slots: createdSlots,
+      },
+      message: 'Schedule generated and day slots created successfully',
     };
+  }
+
+  // Helper: add minutes to HH:MM string and return HH:MM
+  private addMinutes(timeStr: string, minutes: number) {
+    const [hh, mm] = timeStr.split(':').map((n: string) => parseInt(n, 10));
+    const d = new Date(2000, 0, 1, hh, mm);
+    d.setMinutes(d.getMinutes() + minutes);
+    return d.toTimeString().split(' ')[0].substring(0,5);
+  }
+
+  // Helper: shift time by minutes (can be negative)
+  private shiftTime(timeStr: string, minutes: number) {
+    return this.addMinutes(timeStr, minutes);
+  }
+
+  // Helper: compare HH:MM strings
+  private timeLessThanOrEqual(t1: string, t2: string) {
+    return t1 <= t2;
   }
 
   private getDayOfWeek(date: Date): string {
@@ -318,105 +405,158 @@ export class SchedulingService {
   }
 
   async updateAvailability(doctorId: string, date: string, timeSlots: any[]) {
-    const scheduleDate = new Date(date);
+    // Normalize date string to YYYY-MM-DD format
+    const dateStr = date.split('T')[0]; // Extract just the date part if ISO string
+    const scheduleDate = new Date(dateStr + 'T00:00:00.000Z'); // Ensure UTC midnight
     
-    let schedule = await this.db.doctorSchedule.findFirst({
-      where: {
-        doctorId,
-        date: scheduleDate,
-      },
-    });
-
-    // If schedule doesn't exist, create it
-    if (!schedule) {
-      // Get or create a DoctorProfile for this doctor
-      let profile = await this.db.doctorProfile.findUnique({
-        where: { doctorId },
-      });
-
-      if (!profile) {
-        profile = await this.db.doctorProfile.create({
-          data: {
-            doctorId,
-            specialties: ['General Practice'],
-            isAcceptingNewPatients: true,
-          } as any,
-        });
-      }
-
-      // Get or create a default template for this doctor
-      let template = await this.db.doctorScheduleTemplate.findFirst({
-        where: { doctorId, isDefault: true },
-      });
-
-      if (!template) {
-        template = await this.db.doctorScheduleTemplate.create({
-          data: {
-            doctorId,
-            name: 'Default Availability',
-            isDefault: true,
-            isActive: true,
-          } as any,
-        });
-      }
-
-      // Extract day of week from date
-      const dayOfWeekMap: any = {
-        0: 'SUNDAY',
-        1: 'MONDAY',
-        2: 'TUESDAY',
-        3: 'WEDNESDAY',
-        4: 'THURSDAY',
-        5: 'FRIDAY',
-        6: 'SATURDAY',
-      };
-      const dayOfWeek = dayOfWeekMap[scheduleDate.getDay()];
-
-      // Get the first and last time slots to determine working hours
-      const sortedSlots = timeSlots.sort((a, b) => a.startTime.localeCompare(b.startTime));
-      const startTime = sortedSlots[0]?.startTime || '09:00';
-      const endTime = sortedSlots[sortedSlots.length - 1]?.endTime || '17:00';
-      const slotDuration = 30; // Default slot duration in minutes
-      const bufferTime = 5; // Default buffer time in minutes
-
-      // Create the schedule
-      schedule = await this.db.doctorSchedule.create({
-        data: {
+    console.log(`[BACKEND] updateAvailability called:`, { doctorId, date, dateStr, scheduleDate, slotCount: timeSlots.length });
+    
+    return await this.db.$transaction(async (tx) => {
+      let schedule = await tx.doctorSchedule.findFirst({
+        where: {
           doctorId,
-          profileId: profile.id,
-          templateId: template.id,
-          dayOfWeek,
           date: scheduleDate,
-          startTime,
-          endTime,
-          slotDuration,
-          bufferTime,
-          isAvailable: timeSlots.some(slot => slot.isAvailable),
-          notes: `Availability created for ${date}`,
-        } as any,
-      });
-    } else {
-      // Update existing schedule
-      const availableSlots = timeSlots.filter(slot => slot.isAvailable).length;
-      const totalSlots = timeSlots.length;
-      
-      await this.db.doctorSchedule.update({
-        where: { id: schedule.id },
-        data: {
-          isAvailable: availableSlots > 0,
-          notes: `Updated availability: ${availableSlots}/${totalSlots} slots available`,
         },
       });
-    }
 
-    return {
-      success: true,
-      data: {
-        schedule,
-        timeSlots,
-      },
-      message: 'Availability updated successfully',
-    };
+      // If schedule doesn't exist, create it
+      if (!schedule) {
+        // Get or create a DoctorProfile for this doctor
+        let profile = await tx.doctorProfile.findUnique({
+          where: { doctorId },
+        });
+
+        if (!profile) {
+          profile = await tx.doctorProfile.create({
+            data: {
+              doctorId,
+              specialties: ['General Practice'],
+              isAcceptingNewPatients: true,
+            } as any,
+          });
+        }
+
+        // Get or create a default template for this doctor
+        let template: any = await tx.doctorScheduleTemplate.findFirst({
+          where: { doctorId, isDefault: true },
+        });
+
+        if (!template) {
+          template = await tx.doctorScheduleTemplate.create({
+            data: {
+              doctorId,
+              name: 'Default Availability',
+              isDefault: true,
+              isActive: true,
+            } as any,
+          });
+        }
+
+        // Extract day of week from date
+        const dayOfWeekMap: any = {
+          0: 'SUNDAY',
+          1: 'MONDAY',
+          2: 'TUESDAY',
+          3: 'WEDNESDAY',
+          4: 'THURSDAY',
+          5: 'FRIDAY',
+          6: 'SATURDAY',
+        };
+        const dayOfWeek = dayOfWeekMap[scheduleDate.getDay()];
+
+        // Get the first and last time slots to determine working hours
+        const sortedSlots = timeSlots.sort((a, b) => a.startTime.localeCompare(b.startTime));
+        const startTime = sortedSlots[0]?.startTime || '09:00';
+        const endTime = sortedSlots[sortedSlots.length - 1]?.endTime || '17:00';
+        const slotDuration = 30; // Default slot duration in minutes
+        const bufferTime = 5; // Default buffer time in minutes
+
+        // Create the schedule
+        schedule = await tx.doctorSchedule.create({
+          data: {
+            doctor: { connect: { id: doctorId } },
+            profile: profile ? { connect: { id: profile.id } } : undefined,
+            template: template ? { connect: { id: template.id } } : undefined,
+            dayOfWeek,
+            date: scheduleDate,
+            startTime,
+            endTime,
+            slotDuration,
+            bufferTime,
+            isAvailable: timeSlots.some(slot => slot.isAvailable),
+            notes: `Availability created for ${date}`,
+          } as unknown as Prisma.DoctorScheduleCreateInput,
+        });
+      } else {
+        // Update existing schedule
+        const availableSlots = timeSlots.filter(slot => slot.isAvailable).length;
+        const totalSlots = timeSlots.length;
+        
+        await tx.doctorSchedule.update({
+          where: { id: schedule.id },
+          data: {
+            isAvailable: availableSlots > 0,
+            notes: `Updated availability: ${availableSlots}/${totalSlots} slots available`,
+          },
+        });
+      }
+
+      // Delete all existing DoctorDaySlot entries for this date
+      await tx.doctorDaySlot.deleteMany({
+        where: {
+          doctorId,
+          date: scheduleDate,
+        },
+      });
+
+      // Bulk insert the new time slots into DoctorDaySlot
+      const daySlotsToCreate = timeSlots.map((slot) => ({
+        doctorId,
+        scheduleId: schedule.id,
+        date: scheduleDate,
+        startTime: slot.startTime,
+        endTime: slot.endTime,
+        isAvailable: slot.isAvailable ?? true,
+        isBooked: false,
+        slotCapacity: 1,
+        currentBookings: 0,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }));
+
+      if (daySlotsToCreate.length > 0) {
+        await tx.doctorDaySlot.createMany({
+          data: daySlotsToCreate,
+          skipDuplicates: true,
+        });
+      }
+
+      // Fetch the created slots
+      const createdSlots = await tx.doctorDaySlot.findMany({
+        where: {
+          doctorId,
+          date: scheduleDate,
+        },
+        orderBy: {
+          startTime: 'asc',
+        },
+      });
+
+      return {
+        success: true,
+        data: {
+          schedule,
+          timeSlots: createdSlots.map(slot => ({
+            id: slot.id,
+            startTime: slot.startTime,
+            endTime: slot.endTime,
+            isAvailable: slot.isAvailable,
+            isBooked: slot.isBooked,
+          })),
+        },
+        message: 'Availability updated successfully',
+      };
+    });
   }
 
   // ===========================================
@@ -428,7 +568,7 @@ export class SchedulingService {
       data: {
         doctorId,
         ...exceptionData,
-      } as any,
+      } as unknown as Prisma.DoctorScheduleExceptionCreateInput,
     });
 
     return {
@@ -508,9 +648,9 @@ export class SchedulingService {
 
     const appointment = await this.db.appointment.create({
       data: {
-        patientId: appointmentData.patientId,
-        doctorId: appointmentData.doctorId,
-        scheduleId: appointmentData.scheduleId,
+        patient: { connect: { id: appointmentData.patientId } },
+        doctor: { connect: { id: appointmentData.doctorId } },
+        schedule: appointmentData.scheduleId ? { connect: { id: appointmentData.scheduleId } } : undefined,
         appointmentDate: new Date(appointmentData.date),
         startTime: appointmentData.startTime,
         endTime: appointmentData.endTime,
@@ -518,7 +658,7 @@ export class SchedulingService {
         type: appointmentData.type,
         status: 'SCHEDULED',
         notes: appointmentData.notes,
-      } as any,
+      } as unknown as Prisma.AppointmentCreateInput,
       include: {
         patient: true,
       },
@@ -647,14 +787,14 @@ export class SchedulingService {
       const updatedAppointment = await this.db.appointment.update({
         where: { id: appointmentId },
         data: {
-          status: 'CONFIRMED',
-          confirmedAt: new Date(),
-          requiresConfirmation: false,
-          ...(updateData.date && { appointmentDate: new Date(updateData.date) }),
-          ...(updateData.startTime && { startTime: updateData.startTime }),
-          ...(updateData.endTime && { endTime: updateData.endTime }),
-          ...(updateData.notes && { notes: updateData.notes }),
-        } as any,
+        status: 'CONFIRMED',
+        confirmedAt: new Date(),
+        requiresConfirmation: false,
+        ...(updateData.date && { appointmentDate: new Date(updateData.date) }),
+        ...(updateData.startTime && { startTime: updateData.startTime }),
+        ...(updateData.endTime && { endTime: updateData.endTime }),
+        ...(updateData.notes && { notes: updateData.notes }),
+      } as unknown as Prisma.AppointmentUpdateInput,
         include: {
           patient: true,
           doctor: true,

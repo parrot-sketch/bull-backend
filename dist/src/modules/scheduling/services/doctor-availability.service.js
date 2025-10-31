@@ -188,8 +188,69 @@ let DoctorAvailabilityService = class DoctorAvailabilityService {
         };
     }
     async getAvailableSlots(doctorId, date) {
-        const targetDate = new Date(date);
+        const dateStr = date.split('T')[0];
+        const targetDate = new Date(dateStr + 'T00:00:00.000Z');
+        console.log(`[BACKEND] getAvailableSlots called:`, { doctorId, date, dateStr, targetDate });
+        const persistedSlots = await this.db.doctorDaySlot.findMany({
+            where: {
+                doctorId,
+                date: targetDate,
+            },
+            orderBy: {
+                startTime: 'asc',
+            },
+        });
+        console.log(`[BACKEND] Found ${persistedSlots.length} persisted slots for date ${dateStr}`);
+        if (persistedSlots.length > 0) {
+            const existingAppointments = await this.db.appointment.findMany({
+                where: {
+                    doctorId,
+                    appointmentDate: targetDate,
+                    status: { not: 'CANCELLED' },
+                },
+            });
+            const availableSlots = persistedSlots.map(slot => {
+                const isBooked = existingAppointments.some(apt => apt.startTime === slot.startTime ||
+                    (apt.appointmentDate && new Date(apt.appointmentDate).toDateString() === targetDate.toDateString()));
+                return {
+                    id: slot.id,
+                    startTime: slot.startTime,
+                    endTime: slot.endTime,
+                    date: slot.date.toISOString().split('T')[0],
+                    isAvailable: slot.isAvailable && !isBooked,
+                    isBooked: isBooked || slot.isBooked,
+                    status: (isBooked || slot.isBooked) ? 'booked' : 'available',
+                    maxBookings: slot.slotCapacity ?? 1,
+                    currentBookings: slot.currentBookings ?? 0,
+                };
+            });
+            return { success: true, data: availableSlots, message: 'Available slots retrieved successfully' };
+        }
         const dayOfWeek = this.getDayOfWeek(targetDate);
+        const savedSchedule = await this.db.doctorSchedule.findFirst({
+            where: { doctorId, date: targetDate, isAvailable: true },
+        });
+        if (savedSchedule) {
+            const slots = this.generateTimeSlots({
+                startTime: savedSchedule.startTime,
+                endTime: savedSchedule.endTime,
+                slotDuration: savedSchedule.slotDuration,
+                bufferTime: savedSchedule.bufferTime,
+            }, date);
+            const existingAppointments = await this.db.appointment.findMany({
+                where: {
+                    doctorId,
+                    appointmentDate: targetDate,
+                    status: { not: 'CANCELLED' },
+                },
+            });
+            const availableSlots = slots.map(slot => ({
+                ...slot,
+                isAvailable: !existingAppointments.some(apt => apt.startTime === slot.startTime),
+                isBooked: existingAppointments.some(apt => apt.startTime === slot.startTime),
+            }));
+            return { success: true, data: availableSlots, message: 'Available slots retrieved successfully' };
+        }
         const exception = await this.db.doctorScheduleException.findFirst({
             where: {
                 doctorId,

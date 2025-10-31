@@ -18,10 +18,9 @@ export declare class DoctorProfileController {
             createdAt: Date;
             updatedAt: Date;
             doctorId: string;
-            specialties: string[];
-            education: string | null;
             title: string | null;
             credentials: string[];
+            specialties: string[];
             subSpecialties: string[];
             yearsExperience: number | null;
             practiceName: string | null;
@@ -39,6 +38,7 @@ export declare class DoctorProfileController {
             deaNumber: string | null;
             boardCertifications: string[];
             professionalBio: string | null;
+            education: string | null;
             awards: string[];
             publications: string[];
             languages: string[];
@@ -93,10 +93,9 @@ export declare class DoctorProfileController {
             createdAt: Date;
             updatedAt: Date;
             doctorId: string;
-            specialties: string[];
-            education: string | null;
             title: string | null;
             credentials: string[];
+            specialties: string[];
             subSpecialties: string[];
             yearsExperience: number | null;
             practiceName: string | null;
@@ -114,6 +113,7 @@ export declare class DoctorProfileController {
             deaNumber: string | null;
             boardCertifications: string[];
             professionalBio: string | null;
+            education: string | null;
             awards: string[];
             publications: string[];
             languages: string[];
@@ -139,10 +139,9 @@ export declare class DoctorProfileController {
             createdAt: Date;
             updatedAt: Date;
             doctorId: string;
-            specialties: string[];
-            education: string | null;
             title: string | null;
             credentials: string[];
+            specialties: string[];
             subSpecialties: string[];
             yearsExperience: number | null;
             practiceName: string | null;
@@ -160,6 +159,7 @@ export declare class DoctorProfileController {
             deaNumber: string | null;
             boardCertifications: string[];
             professionalBio: string | null;
+            education: string | null;
             awards: string[];
             publications: string[];
             languages: string[];
@@ -290,10 +290,9 @@ export declare class DoctorProfileController {
             createdAt: Date;
             updatedAt: Date;
             doctorId: string;
-            specialties: string[];
-            education: string | null;
             title: string | null;
             credentials: string[];
+            specialties: string[];
             subSpecialties: string[];
             yearsExperience: number | null;
             practiceName: string | null;
@@ -311,6 +310,7 @@ export declare class DoctorProfileController {
             deaNumber: string | null;
             boardCertifications: string[];
             professionalBio: string | null;
+            education: string | null;
             awards: string[];
             publications: string[];
             languages: string[];

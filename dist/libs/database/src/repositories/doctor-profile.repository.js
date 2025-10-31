@@ -20,88 +20,22 @@ let DoctorProfileRepository = class DoctorProfileRepository {
     get doctorService() { return this.prisma.doctorService; }
     get doctorInsurance() { return this.prisma.doctorInsurance; }
     get consultationFee() { return this.prisma.consultationFee; }
-    async createProfile(doctorId, data) {
-        return this.doctorProfile.create({
-            data: {
-                ...data,
-                doctorId
-            },
-            include: {
-                services: true,
-                insurances: true,
-                consultationFees: true
-            }
-        });
+    get doctorSchedule() { return this.prisma.doctorSchedule; }
+    get doctorAvailability() { return this.prisma.doctorAvailability; }
+    async findByDoctorId(doctorId) {
+        return this.doctorProfile.findUnique({ where: { doctorId } });
     }
-    async findProfileById(doctorId) {
-        const profile = await this.doctorProfile.findUnique({
-            where: { doctorId },
-            include: {
-                services: true,
-                insurances: true,
-                consultationFees: true,
-                schedules: true
-            }
-        });
-        if (!profile) {
-            throw new common_1.NotFoundException(`Doctor profile not found for ID: ${doctorId}`);
-        }
-        return profile;
+    async createProfile(data) {
+        return this.doctorProfile.create({ data: data });
     }
-    async updateProfile(doctorId, data) {
-        return this.doctorProfile.update({
-            where: { doctorId },
-            data,
-            include: {
-                services: true,
-                insurances: true,
-                schedules: true
-            }
-        });
+    async updateProfile(id, data) {
+        return this.doctorProfile.update({ where: { id }, data: data });
     }
-    async updateServices(doctorId, services) {
-        await this.doctorService.deleteMany({
-            where: { doctorId }
-        });
-        return this.prisma.$transaction(services.map(service => this.doctorService.create({
-            data: {
-                ...service,
-                doctorId,
-            }
-        })));
+    async findServicesByDoctor(doctorId) {
+        return this.doctorService.findMany({ where: { doctorId } });
     }
-    async removeService(serviceId) {
-        const service = await this.doctorService.findUnique({
-            where: { id: serviceId }
-        });
-        if (!service) {
-            throw new common_1.NotFoundException(`Service not found: ${serviceId}`);
-        }
-        return this.doctorService.delete({
-            where: { id: serviceId }
-        });
-    }
-    async updateInsurance(doctorId, providers) {
-        await this.doctorInsurance.deleteMany({
-            where: { doctorId }
-        });
-        return this.prisma.$transaction(providers.map(provider => this.doctorInsurance.create({
-            data: {
-                ...provider,
-                doctorId,
-            }
-        })));
-    }
-    async removeInsurance(id) {
-        const insurance = await this.doctorInsurance.findUnique({
-            where: { id }
-        });
-        if (!insurance) {
-            throw new common_1.NotFoundException(`Insurance provider not found: ${id}`);
-        }
-        return this.doctorInsurance.delete({
-            where: { id }
-        });
+    async findAvailability(doctorId, date) {
+        return this.doctorAvailability.findMany({ where: { doctorId, date } });
     }
 };
 exports.DoctorProfileRepository = DoctorProfileRepository;

@@ -1,64 +1,22 @@
 import { PrismaService } from '../prisma.service';
-import { CreateDoctorProfileDto, CreateDoctorServiceDto, CreateDoctorInsuranceDto } from '../types';
 export declare class DoctorProfileRepository {
-    private readonly prisma;
+    private prisma;
     constructor(prisma: PrismaService);
-    private get doctorProfile();
-    private get doctorService();
-    private get doctorInsurance();
-    private get consultationFee();
-    createProfile(doctorId: string, data: CreateDoctorProfileDto): Promise<{
-        consultationFees: {
-            id: string;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-            doctorId: string;
-            profileId: string;
-            consultationType: import(".prisma/client").$Enums.ConsultationType;
-            baseFee: import("@prisma/client/runtime/library").Decimal;
-            followUpFee: import("@prisma/client/runtime/library").Decimal | null;
-            cancellationFee: import("@prisma/client/runtime/library").Decimal | null;
-            noShowFee: import("@prisma/client/runtime/library").Decimal | null;
-        }[];
-        services: {
-            id: string;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-            name: string;
-            doctorId: string;
-            profileId: string;
-            description: string | null;
-            category: import(".prisma/client").$Enums.ServiceCategory;
-            duration: number;
-            price: import("@prisma/client/runtime/library").Decimal | null;
-            isVirtual: boolean;
-            isInPerson: boolean;
-        }[];
-        insurances: {
-            id: string;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-            doctorId: string;
-            profileId: string;
-            insuranceName: string;
-            insuranceType: import(".prisma/client").$Enums.InsuranceType;
-            planName: string | null;
-            copayAmount: import("@prisma/client/runtime/library").Decimal | null;
-            deductibleAmount: import("@prisma/client/runtime/library").Decimal | null;
-        }[];
-    } & {
+    get doctorProfile(): import(".prisma/client").Prisma.DoctorProfileDelegate<import("@prisma/client/runtime/library").DefaultArgs>;
+    get doctorService(): import(".prisma/client").Prisma.DoctorServiceDelegate<import("@prisma/client/runtime/library").DefaultArgs>;
+    get doctorInsurance(): import(".prisma/client").Prisma.DoctorInsuranceDelegate<import("@prisma/client/runtime/library").DefaultArgs>;
+    get consultationFee(): import(".prisma/client").Prisma.ConsultationFeeDelegate<import("@prisma/client/runtime/library").DefaultArgs>;
+    get doctorSchedule(): import(".prisma/client").Prisma.DoctorScheduleDelegate<import("@prisma/client/runtime/library").DefaultArgs>;
+    get doctorAvailability(): import(".prisma/client").Prisma.DoctorAvailabilityDelegate<import("@prisma/client/runtime/library").DefaultArgs>;
+    findByDoctorId(doctorId: string): Promise<{
         id: string;
         npiNumber: string | null;
         createdAt: Date;
         updatedAt: Date;
         doctorId: string;
-        specialties: string[];
-        education: string | null;
         title: string | null;
         credentials: string[];
+        specialties: string[];
         subSpecialties: string[];
         yearsExperience: number | null;
         practiceName: string | null;
@@ -76,6 +34,7 @@ export declare class DoctorProfileRepository {
         deaNumber: string | null;
         boardCertifications: string[];
         professionalBio: string | null;
+        education: string | null;
         awards: string[];
         publications: string[];
         languages: string[];
@@ -83,82 +42,15 @@ export declare class DoctorProfileRepository {
         consultationTypes: import(".prisma/client").$Enums.ConsultationType[];
         currency: string;
     }>;
-    findProfileById(doctorId: string): Promise<{
-        consultationFees: {
-            id: string;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-            doctorId: string;
-            profileId: string;
-            consultationType: import(".prisma/client").$Enums.ConsultationType;
-            baseFee: import("@prisma/client/runtime/library").Decimal;
-            followUpFee: import("@prisma/client/runtime/library").Decimal | null;
-            cancellationFee: import("@prisma/client/runtime/library").Decimal | null;
-            noShowFee: import("@prisma/client/runtime/library").Decimal | null;
-        }[];
-        services: {
-            id: string;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-            name: string;
-            doctorId: string;
-            profileId: string;
-            description: string | null;
-            category: import(".prisma/client").$Enums.ServiceCategory;
-            duration: number;
-            price: import("@prisma/client/runtime/library").Decimal | null;
-            isVirtual: boolean;
-            isInPerson: boolean;
-        }[];
-        insurances: {
-            id: string;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-            doctorId: string;
-            profileId: string;
-            insuranceName: string;
-            insuranceType: import(".prisma/client").$Enums.InsuranceType;
-            planName: string | null;
-            copayAmount: import("@prisma/client/runtime/library").Decimal | null;
-            deductibleAmount: import("@prisma/client/runtime/library").Decimal | null;
-        }[];
-        schedules: {
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            doctorId: string;
-            date: Date | null;
-            serviceType: string | null;
-            notes: string | null;
-            profileId: string;
-            templateId: string | null;
-            dayOfWeek: import(".prisma/client").$Enums.DayOfWeek;
-            startTime: string;
-            endTime: string;
-            isAvailable: boolean;
-            slotDuration: number;
-            bufferTime: number;
-            maxBookings: number;
-            location: string | null;
-            breakStartTime: string | null;
-            breakEndTime: string | null;
-            isRecurring: boolean;
-            effectiveFrom: Date;
-            effectiveUntil: Date | null;
-        }[];
-    } & {
+    createProfile(data: any): Promise<{
         id: string;
         npiNumber: string | null;
         createdAt: Date;
         updatedAt: Date;
         doctorId: string;
-        specialties: string[];
-        education: string | null;
         title: string | null;
         credentials: string[];
+        specialties: string[];
         subSpecialties: string[];
         yearsExperience: number | null;
         practiceName: string | null;
@@ -176,6 +68,7 @@ export declare class DoctorProfileRepository {
         deaNumber: string | null;
         boardCertifications: string[];
         professionalBio: string | null;
+        education: string | null;
         awards: string[];
         publications: string[];
         languages: string[];
@@ -183,69 +76,15 @@ export declare class DoctorProfileRepository {
         consultationTypes: import(".prisma/client").$Enums.ConsultationType[];
         currency: string;
     }>;
-    updateProfile(doctorId: string, data: Partial<CreateDoctorProfileDto>): Promise<{
-        services: {
-            id: string;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-            name: string;
-            doctorId: string;
-            profileId: string;
-            description: string | null;
-            category: import(".prisma/client").$Enums.ServiceCategory;
-            duration: number;
-            price: import("@prisma/client/runtime/library").Decimal | null;
-            isVirtual: boolean;
-            isInPerson: boolean;
-        }[];
-        insurances: {
-            id: string;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-            doctorId: string;
-            profileId: string;
-            insuranceName: string;
-            insuranceType: import(".prisma/client").$Enums.InsuranceType;
-            planName: string | null;
-            copayAmount: import("@prisma/client/runtime/library").Decimal | null;
-            deductibleAmount: import("@prisma/client/runtime/library").Decimal | null;
-        }[];
-        schedules: {
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            doctorId: string;
-            date: Date | null;
-            serviceType: string | null;
-            notes: string | null;
-            profileId: string;
-            templateId: string | null;
-            dayOfWeek: import(".prisma/client").$Enums.DayOfWeek;
-            startTime: string;
-            endTime: string;
-            isAvailable: boolean;
-            slotDuration: number;
-            bufferTime: number;
-            maxBookings: number;
-            location: string | null;
-            breakStartTime: string | null;
-            breakEndTime: string | null;
-            isRecurring: boolean;
-            effectiveFrom: Date;
-            effectiveUntil: Date | null;
-        }[];
-    } & {
+    updateProfile(id: string, data: any): Promise<{
         id: string;
         npiNumber: string | null;
         createdAt: Date;
         updatedAt: Date;
         doctorId: string;
-        specialties: string[];
-        education: string | null;
         title: string | null;
         credentials: string[];
+        specialties: string[];
         subSpecialties: string[];
         yearsExperience: number | null;
         practiceName: string | null;
@@ -263,6 +102,7 @@ export declare class DoctorProfileRepository {
         deaNumber: string | null;
         boardCertifications: string[];
         professionalBio: string | null;
+        education: string | null;
         awards: string[];
         publications: string[];
         languages: string[];
@@ -270,7 +110,7 @@ export declare class DoctorProfileRepository {
         consultationTypes: import(".prisma/client").$Enums.ConsultationType[];
         currency: string;
     }>;
-    updateServices(doctorId: string, services: CreateDoctorServiceDto[]): Promise<{
+    findServicesByDoctor(doctorId: string): Promise<{
         id: string;
         isActive: boolean;
         createdAt: Date;
@@ -285,45 +125,15 @@ export declare class DoctorProfileRepository {
         isVirtual: boolean;
         isInPerson: boolean;
     }[]>;
-    removeService(serviceId: string): Promise<{
+    findAvailability(doctorId: string, date: Date): Promise<{
         id: string;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-        name: string;
-        doctorId: string;
-        profileId: string;
-        description: string | null;
-        category: import(".prisma/client").$Enums.ServiceCategory;
-        duration: number;
-        price: import("@prisma/client/runtime/library").Decimal | null;
-        isVirtual: boolean;
-        isInPerson: boolean;
-    }>;
-    updateInsurance(doctorId: string, providers: CreateDoctorInsuranceDto[]): Promise<{
-        id: string;
-        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         doctorId: string;
-        profileId: string;
-        insuranceName: string;
-        insuranceType: import(".prisma/client").$Enums.InsuranceType;
-        planName: string | null;
-        copayAmount: import("@prisma/client/runtime/library").Decimal | null;
-        deductibleAmount: import("@prisma/client/runtime/library").Decimal | null;
+        date: Date;
+        startTime: string;
+        endTime: string;
+        isAvailable: boolean;
+        reason: string | null;
     }[]>;
-    removeInsurance(id: string): Promise<{
-        id: string;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-        doctorId: string;
-        profileId: string;
-        insuranceName: string;
-        insuranceType: import(".prisma/client").$Enums.InsuranceType;
-        planName: string | null;
-        copayAmount: import("@prisma/client/runtime/library").Decimal | null;
-        deductibleAmount: import("@prisma/client/runtime/library").Decimal | null;
-    }>;
 }

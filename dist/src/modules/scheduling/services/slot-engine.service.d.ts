@@ -56,14 +56,14 @@ export declare class SlotEngineService {
             duration: number;
             startTime: string;
             endTime: string;
-            location: string | null;
-            isRecurring: boolean;
             followUpDate: Date | null;
             type: import(".prisma/client").$Enums.AppointmentType;
+            location: string | null;
+            scheduleId: string | null;
+            isRecurring: boolean;
             recurringPattern: string | null;
             serviceId: string | null;
             symptoms: string | null;
-            scheduleId: string | null;
             diagnosis: string | null;
             insuranceId: string | null;
             paymentStatus: import(".prisma/client").$Enums.PaymentStatus;

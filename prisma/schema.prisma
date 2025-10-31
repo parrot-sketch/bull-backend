@@ -71,6 +71,7 @@ model User {
   doctorInsurances     DoctorInsurance[]
   doctorSchedules      DoctorSchedule[]
   doctorAvailabilities DoctorAvailability[]
+  doctorDaySlots       DoctorDaySlot[]
   consultationFees     ConsultationFee[]
   scheduleTemplates    DoctorScheduleTemplate[]
   appointments         Appointment[]             @relation("DoctorAppointments")
@@ -400,6 +401,161 @@ enum ConsentType {
   EMERGENCY_ACCESS
 }
 
+// ===========================================
+// Scheduling models (merged from scheduling-schema.prisma)
+// ===========================================
+
+// Core Scheduling Models
+
+model DoctorScheduleTemplate {
+  id          String   @id @default(cuid())
+  doctorId    String
+  name        String   // e.g., "Standard Week", "Telemedicine Week"
+  description String?
+  isDefault   Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  isPublished Boolean  @default(true)
+  timezone    String?  // e.g. "Africa/Lagos" or "UTC" - template-specific timezone
+  createdBy   String?  // user id who created the template (may differ from doctor)
+  // Booking window / notice rules (minutes/days)
+  minBookingNotice       Int? // minutes before slot when bookings are allowed (e.g., 60)
+  maxAdvanceBookingDays  Int? // how many days in advance patients can book (e.g., 90)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  doctor      User     @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  timeSlots   DoctorTimeSlot[]
+  schedules   DoctorSchedule[]
+
+  // Enhanced design fields (JSON, optional)
+  location          Json?
+  appointmentTypes  Json?   // [{ id, name, duration, color?, capacity? }]
+  applicationRules  Json?   // { mode: 'one-time'|'recurring'|'date-range', startDate?, endDate?, priority?, rrule? }
+  daysOfWeek        String[] @default([])
+  breaks            Json?   // [{ startTime, endTime, label? }]
+
+  @@unique([doctorId, isDefault])
+  @@index([doctorId, isActive])
+}
+
+
+model DoctorTimeSlot {
+  id          String   @id @default(cuid())
+  templateId  String
+  dayOfWeek   DayOfWeek
+  startTime   String   // HH:MM format (e.g., "09:00")
+  endTime     String   // HH:MM format (e.g., "17:00")
+  slotDuration Int     @default(30) // minutes
+  bufferTime  Int      @default(0) // minutes between slots (deprecated: prefer bufferBefore/After)
+  bufferBefore Int     @default(0) // minutes before the slot reserved
+  bufferAfter  Int     @default(0) // minutes after the slot reserved
+  isAvailable Boolean  @default(true)
+  maxBookings Int      @default(1) // appointments per slot
+  allowOverlap Boolean @default(false) // permit overlapping bookings in this slot (for group sessions)
+  location    String?  // "Main Office", "Telemedicine", "Hospital A"
+  serviceType String?  // "Consultation", "Follow-up", "Emergency"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  template    DoctorScheduleTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  // bookings were removed: Appointment model does not reference DoctorTimeSlot directly
+  exceptions  DoctorScheduleException[]
+  daySlots    DoctorDaySlot[]
+
+  @@index([templateId, dayOfWeek])
+  @@index([startTime, endTime])
+}
+
+model DoctorSchedule {
+  id          String   @id @default(cuid())
+  doctorId    String
+  templateId  String?
+  date        DateTime @db.Date
+  startTime   String   // HH:MM format
+  endTime     String   // HH:MM format
+  slotDuration Int     @default(30)
+  bufferTime  Int      @default(0)
+  // per-day timezone (falls back to template.timezone or doctor's timezone)
+  timezone    String?
+  isAvailable Boolean  @default(true)
+  maxBookings Int      @default(1)
+  currentBookings Int  @default(0)
+  location    String?
+  serviceType String?
+  notes       String?  // "Conference day", "Half day"
+  meta        Json?    // free-form metadata about how this schedule was generated/applied
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  doctor      User     @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  template    DoctorScheduleTemplate? @relation(fields: [templateId], references: [id])
+  profileId   String?
+  profile     DoctorProfile? @relation(fields: [profileId], references: [id])
+  dayOfWeek   DayOfWeek?
+  daySlots    DoctorDaySlot[]
+  bookings    Appointment[]
+  exceptions  DoctorScheduleException[]
+
+  @@unique([doctorId, date, startTime])
+  @@index([doctorId, date])
+  @@index([date, isAvailable])
+}
+
+// Persisted per-date, per-slot availability rows
+model DoctorDaySlot {
+  id          String   @id @default(cuid())
+  doctorId    String
+  scheduleId  String?
+  timeSlotId  String?  // optional link back to the template time slot that generated this day slot
+  date        DateTime @db.Date
+  startTime   String   // HH:MM
+  endTime     String   // HH:MM
+  isAvailable Boolean  @default(true)
+  isBooked    Boolean  @default(false)
+  slotCapacity Int     @default(1)
+  currentBookings Int  @default(0)
+  slotMetadata Json?
+  timezone    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
+
+  doctor      User     @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  schedule    DoctorSchedule? @relation(fields: [scheduleId], references: [id], onDelete: SetNull)
+  timeSlot    DoctorTimeSlot?  @relation(fields: [timeSlotId], references: [id], onDelete: SetNull)
+
+  @@unique([doctorId, date, startTime])
+  @@index([doctorId, date])
+}
+
+model DoctorScheduleException {
+  id          String   @id @default(cuid())
+  doctorId    String
+  scheduleId  String?
+  timeSlotId  String?
+  date        DateTime @db.Date
+  startTime   String?  // HH:MM format
+  endTime     String?  // HH:MM format
+  type        ExceptionType
+  reason      String?  // "Sick leave", "Conference", "Personal"
+  isAllDay    Boolean  @default(false)
+  isRecurring Boolean  @default(false)
+  recurringPattern String? // "weekly", "monthly", "yearly"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  doctor      User     @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  schedule    DoctorSchedule? @relation(fields: [scheduleId], references: [id])
+  timeSlot    DoctorTimeSlot? @relation(fields: [timeSlotId], references: [id])
+
+  @@index([doctorId, date])
+  @@index([date, type])
+}
+
+
 enum SecurityEventType {
   LOGIN_FAILURE
   PASSWORD_BREACH
@@ -555,48 +711,7 @@ model ConsultationFee {
 }
 
 // Doctor Schedule
-model DoctorSchedule {
-  id         String                  @id @default(cuid())
-  doctorId   String
-  doctor     User                    @relation(fields: [doctorId], references: [id], onDelete: Cascade)
-  profileId  String
-  profile    DoctorProfile           @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  templateId String?
-  template   DoctorScheduleTemplate? @relation(fields: [templateId], references: [id])
-
-  // Schedule Details
-  dayOfWeek   DayOfWeek
-  startTime   String // HH:MM format
-  endTime     String // HH:MM format
-  isAvailable Boolean   @default(true)
-
-  // Additional fields for scheduling
-  date         DateTime?
-  slotDuration Int       @default(30)
-  bufferTime   Int       @default(5)
-  maxBookings  Int       @default(1)
-  location     String?
-  serviceType  String?
-  notes        String?
-
-  // Break Times
-  breakStartTime String?
-  breakEndTime   String?
-
-  // Recurring Schedule
-  isRecurring    Boolean   @default(true)
-  effectiveFrom  DateTime  @default(now())
-  effectiveUntil DateTime?
-
-  // Relations
-  bookings Appointment[]
-
-  // Timestamps
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("doctor_schedules")
-}
+// (Older DoctorSchedule model removed - consolidated into the enhanced scheduling models above.)
 
 // Doctor Availability Override (for specific dates)
 model DoctorAvailability {
@@ -660,78 +775,6 @@ enum InsuranceType {
   OTHER
 }
 
-// ===========================================
-// SCHEDULING MODELS
-// ===========================================
-
-model DoctorScheduleTemplate {
-  id       String @id @default(cuid())
-  doctorId String
-  doctor   User   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
-
-  // Template Details
-  name        String
-  description String?
-  isDefault   Boolean @default(false)
-  isActive    Boolean @default(true)
-
-  // Relations
-  timeSlots DoctorTimeSlot[]
-  schedules DoctorSchedule[]
-
-  // Timestamps
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("doctor_schedule_templates")
-}
-
-model DoctorTimeSlot {
-  id         String                 @id @default(cuid())
-  templateId String
-  template   DoctorScheduleTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
-
-  // Time Details
-  dayOfWeek    DayOfWeek
-  startTime    String // HH:MM format
-  endTime      String // HH:MM format
-  slotDuration Int       @default(30) // minutes
-  bufferTime   Int       @default(5) // minutes between slots
-  isAvailable  Boolean   @default(true)
-  maxBookings  Int       @default(1)
-
-  // Location & Service
-  location    String?
-  serviceType String?
-
-  // Timestamps
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("doctor_time_slots")
-}
-
-model DoctorScheduleException {
-  id       String @id @default(cuid())
-  doctorId String
-  doctor   User   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
-
-  // Exception Details
-  date             DateTime
-  startTime        String? // HH:MM format, null for all-day
-  endTime          String? // HH:MM format, null for all-day
-  type             ExceptionType
-  reason           String?
-  isAllDay         Boolean       @default(false)
-  isRecurring      Boolean       @default(false)
-  recurringPattern String? // weekly, monthly, yearly
-
-  // Timestamps
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("doctor_schedule_exceptions")
-}
 
 // ===========================================
 // PATIENT-SPECIFIC MODELS

@@ -22,5 +22,4 @@ __exportStar(require("./repositories/emr.repository"), exports);
 __exportStar(require("./repositories/notification.repository"), exports);
 __exportStar(require("./repositories/scheduling.repository"), exports);
 __exportStar(require("./repositories/user.repository"), exports);
-__exportStar(require("./types"), exports);
 //# sourceMappingURL=index.js.map

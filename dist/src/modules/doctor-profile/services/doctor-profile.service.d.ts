@@ -1,7 +1,7 @@
-import { PrismaService } from '@/database';
+import { DatabaseService } from '../../auth/services/database.service';
 export declare class DoctorProfileService {
     private readonly db;
-    constructor(db: PrismaService);
+    constructor(db: DatabaseService);
     createProfile(doctorId: string, profileData: {
         specialization?: string;
         specialties?: string[];
@@ -19,10 +19,9 @@ export declare class DoctorProfileService {
             createdAt: Date;
             updatedAt: Date;
             doctorId: string;
-            specialties: string[];
-            education: string | null;
             title: string | null;
             credentials: string[];
+            specialties: string[];
             subSpecialties: string[];
             yearsExperience: number | null;
             practiceName: string | null;
@@ -40,6 +39,7 @@ export declare class DoctorProfileService {
             deaNumber: string | null;
             boardCertifications: string[];
             professionalBio: string | null;
+            education: string | null;
             awards: string[];
             publications: string[];
             languages: string[];
@@ -94,10 +94,9 @@ export declare class DoctorProfileService {
             createdAt: Date;
             updatedAt: Date;
             doctorId: string;
-            specialties: string[];
-            education: string | null;
             title: string | null;
             credentials: string[];
+            specialties: string[];
             subSpecialties: string[];
             yearsExperience: number | null;
             practiceName: string | null;
@@ -115,6 +114,7 @@ export declare class DoctorProfileService {
             deaNumber: string | null;
             boardCertifications: string[];
             professionalBio: string | null;
+            education: string | null;
             awards: string[];
             publications: string[];
             languages: string[];
@@ -141,10 +141,9 @@ export declare class DoctorProfileService {
             createdAt: Date;
             updatedAt: Date;
             doctorId: string;
-            specialties: string[];
-            education: string | null;
             title: string | null;
             credentials: string[];
+            specialties: string[];
             subSpecialties: string[];
             yearsExperience: number | null;
             practiceName: string | null;
@@ -162,6 +161,7 @@ export declare class DoctorProfileService {
             deaNumber: string | null;
             boardCertifications: string[];
             professionalBio: string | null;
+            education: string | null;
             awards: string[];
             publications: string[];
             languages: string[];
@@ -288,10 +288,9 @@ export declare class DoctorProfileService {
             createdAt: Date;
             updatedAt: Date;
             doctorId: string;
-            specialties: string[];
-            education: string | null;
             title: string | null;
             credentials: string[];
+            specialties: string[];
             subSpecialties: string[];
             yearsExperience: number | null;
             practiceName: string | null;
@@ -309,6 +308,7 @@ export declare class DoctorProfileService {
             deaNumber: string | null;
             boardCertifications: string[];
             professionalBio: string | null;
+            education: string | null;
             awards: string[];
             publications: string[];
             languages: string[];

@@ -6,4 +6,3 @@ export * from './repositories/emr.repository';
 export * from './repositories/notification.repository';
 export * from './repositories/scheduling.repository';
 export * from './repositories/user.repository';
-export * from './types';

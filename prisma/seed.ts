@@ -212,15 +212,13 @@ async function main() {
         profileId: doctorProfile.id,
         templateId: scheduleTemplate.id,
         date: scheduleDate,
-        dayOfWeek: scheduleDate.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase() as any,
         startTime: '09:00',
         endTime: '17:00',
         isAvailable: true,
-        isRecurring: i === 0, // Only today is recurring
+
         slotDuration: 30,
         bufferTime: 5,
         maxBookings: 1,
-        effectiveFrom: scheduleDate,
       },
     });
   }
@@ -447,23 +445,20 @@ async function main() {
     for (let i = 0; i < 7; i++) {
       const scheduleDate = new Date(today);
       scheduleDate.setDate(today.getDate() + i);
-      const dayOfWeek = scheduleDate.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase();
-      
       await prisma.doctorSchedule.create({
         data: {
           doctorId: newDoctor.id,
           profileId: newDoctorProfile.id,
           templateId: newScheduleTemplate.id,
           date: scheduleDate,
-          dayOfWeek: dayOfWeek as any,
+
           startTime: '09:00',
           endTime: '17:00',
           isAvailable: true,
-          isRecurring: i === 0,
+
           slotDuration: 30,
           bufferTime: 5,
           maxBookings: 1,
-          effectiveFrom: scheduleDate,
         },
       });
     }

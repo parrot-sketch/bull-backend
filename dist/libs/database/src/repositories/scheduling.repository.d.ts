@@ -12,24 +12,21 @@ export declare class SchedulingRepository {
             createdAt: Date;
             updatedAt: Date;
             doctorId: string;
-            date: Date | null;
+            date: Date;
             serviceType: string | null;
             notes: string | null;
-            profileId: string;
-            templateId: string | null;
-            dayOfWeek: import(".prisma/client").$Enums.DayOfWeek;
+            profileId: string | null;
             startTime: string;
             endTime: string;
             isAvailable: boolean;
+            templateId: string | null;
             slotDuration: number;
             bufferTime: number;
+            timezone: string | null;
             maxBookings: number;
+            currentBookings: number;
             location: string | null;
-            breakStartTime: string | null;
-            breakEndTime: string | null;
-            isRecurring: boolean;
-            effectiveFrom: Date;
-            effectiveUntil: Date | null;
+            meta: import("@prisma/client/runtime/library").JsonValue | null;
         }[];
         exceptions: {
             id: string;
@@ -39,10 +36,12 @@ export declare class SchedulingRepository {
             date: Date;
             startTime: string | null;
             endTime: string | null;
-            isRecurring: boolean;
-            type: import(".prisma/client").$Enums.ExceptionType;
             reason: string | null;
+            type: import(".prisma/client").$Enums.ExceptionType;
+            scheduleId: string | null;
+            timeSlotId: string | null;
             isAllDay: boolean;
+            isRecurring: boolean;
             recurringPattern: string | null;
         }[];
     }>;
@@ -54,10 +53,12 @@ export declare class SchedulingRepository {
         date: Date;
         startTime: string | null;
         endTime: string | null;
-        isRecurring: boolean;
-        type: import(".prisma/client").$Enums.ExceptionType;
         reason: string | null;
+        type: import(".prisma/client").$Enums.ExceptionType;
+        scheduleId: string | null;
+        timeSlotId: string | null;
         isAllDay: boolean;
+        isRecurring: boolean;
         recurringPattern: string | null;
     }>;
     getTemplate(doctorId: string): Promise<{
@@ -68,6 +69,16 @@ export declare class SchedulingRepository {
         name: string;
         doctorId: string;
         description: string | null;
+        timezone: string | null;
+        location: import("@prisma/client/runtime/library").JsonValue | null;
         isDefault: boolean;
+        isPublished: boolean;
+        createdBy: string | null;
+        minBookingNotice: number | null;
+        maxAdvanceBookingDays: number | null;
+        appointmentTypes: import("@prisma/client/runtime/library").JsonValue | null;
+        applicationRules: import("@prisma/client/runtime/library").JsonValue | null;
+        daysOfWeek: string[];
+        breaks: import("@prisma/client/runtime/library").JsonValue | null;
     }>;
 }
